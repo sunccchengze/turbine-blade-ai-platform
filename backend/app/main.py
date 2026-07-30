@@ -41,8 +41,12 @@ app = FastAPI(
 # ── CORS 配置（允许前端跨域访问）──────────────────────────
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],   # 开发阶段允许所有来源
-    allow_credentials=True,
+    allow_origins=[
+        "https://turbine-blade-ai-scz.pages.dev",
+        "http://localhost:5173",
+        "http://localhost:3000",
+    ],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
