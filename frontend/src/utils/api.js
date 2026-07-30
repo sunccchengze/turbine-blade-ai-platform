@@ -1,8 +1,3 @@
-/**
- * api.js
- * 封装所有后端 API 调用
- */
-
 import axios from 'axios'
 
 const BASE_URL = 'http://localhost:8000'
@@ -20,6 +15,11 @@ export const predictPerformance = async (features, includeUncertainty = false) =
     include_uncertainty: includeUncertainty,
     n_mc_samples: 100,
   })
+  return response.data
+}
+
+export const getBaselineFeatures = async () => {
+  const response = await api.get('/api/predict/baseline-features')
   return response.data
 }
 

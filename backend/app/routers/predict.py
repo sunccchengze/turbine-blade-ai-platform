@@ -121,3 +121,58 @@ async def model_info():
         ],
         "training_data": "NASA Rotor 37 (PLAID Dataset, 1000 samples)",
     }
+@router.get("/baseline-features")
+async def get_baseline_features():
+    """
+    返回基准样本的74维特征向量
+    前端用这个作为滑块的初始值
+    """
+    import pandas as pd
+    from pathlib import Path
+
+    features_path = (
+        Path(__file__).resolve().parent.parent.parent.parent
+        / "data" / "processed" / "plaid_rotor37_features.csv"
+    )
+
+    df = pd.read_csv(features_path)
+
+    # 取中位数样本作为基准（最具代表性）
+    input_cols = [c for c in df.columns
+                  if c not in ['sample_id', 'Compression_ratio',
+                               'Efficiency', 'Massflow']]
+
+    # 找最接近均值的样本
+    from sklearn.preprocessing import StandardScaler
+    import numpy as np
+
+    X = df[input_cols].values
+    scaler = StandardScaler()
+    X_sc   = scaler.fit_transform(X)
+    dists  = np.linalg.norm(X_sc, axis=1)
+    median_idx = int(np.argmin(dists))
+
+    baseline = df[input_cols].iloc[median_idx].to_dict()
+    true_perf = {
+        'Compression_ratio': float(df['Compression_ratio'].iloc[median_idx]),
+        'Efficiency':        float(df['Efficiency'].iloc[median_idx]),
+        'Massflow':          float(df['Massflow'].iloc[median_idx]),
+    }
+
+    # 同时返回数据集的统计范围（用于滑块的 min/max）
+    stats = {}
+    for col in input_cols:
+        stats[col] = {
+            'min':  float(df[col].min()),
+            'max':  float(df[col].max()),
+            'mean': float(df[col].mean()),
+        }
+
+    return {
+        'status':        'success',
+        'baseline_idx':  median_idx,
+        'features':      baseline,
+        'feature_names': input_cols,
+        'true_performance': true_perf,
+        'stats':         stats,
+    }
