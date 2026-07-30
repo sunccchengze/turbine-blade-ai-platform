@@ -1,0 +1,13 @@
+# 数据集缓存（太大，不上传GitHub）
+cache/
+data/raw/cache/
+data/raw/*.tgz
+data/raw/*.zip
+data/raw/*.tar.gz
+
+# Jupyter 检查点
+.ipynb_checkpoints/
+
+# Python 缓存
+__pycache__/
+*.pyc
