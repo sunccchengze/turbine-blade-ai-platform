@@ -131,7 +131,7 @@ async def get_baseline_features():
     from pathlib import Path
 
     features_path = (
-        Path(__file__).resolve().parent.parent.parent.parent
+        Path(__file__).resolve().parent.parent.parent
         / "data" / "processed" / "plaid_rotor37_features.csv"
     )
 
