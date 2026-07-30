@@ -12,9 +12,11 @@ import pandas as pd
 from pathlib import Path
 
 # ── 路径配置 ──────────────────────────────────────────────
+import os
+
 BASE_DIR   = Path(__file__).resolve().parent.parent.parent
-MODELS_DIR = BASE_DIR / "models"
-DATA_DIR   = BASE_DIR / "data" / "processed"
+MODELS_DIR = Path(os.getenv("MODELS_DIR", str(BASE_DIR / "models")))
+DATA_DIR   = Path(os.getenv("DATA_DIR",   str(BASE_DIR / "data" / "processed")))
 
 # ── 模型结构定义（必须和训练时完全一致）────────────────────
 class ResidualBlock(nn.Module):
