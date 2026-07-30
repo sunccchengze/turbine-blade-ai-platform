@@ -1,12 +1,357 @@
-export default function UQPage() {
+import { useEffect, useState } from 'react'
+import { motion } from 'framer-motion'
+import Plot from 'react-plotly.js'
+import {
+  BarChart3, RefreshCw, AlertCircle,
+  Shield, Info, TrendingUp, Gauge, Wind
+} from 'lucide-react'
+import { getUQResults } from '../utils/api'
+
+// ── 覆盖率徽章 ─────────────────────────────────────────────
+function CoverageBadge({ value }) {
+  const good = value >= 85
   return (
-    <div className="min-h-screen pt-24 px-6 flex items-center justify-center">
-      <div className="glass rounded-2xl p-12 text-center">
-        <h1 className="text-2xl font-bold text-white mb-4">
-          Uncertainty Quantification
-        </h1>
-        <p className="text-slate-400">Coming Day 13 — MC Dropout confidence intervals</p>
+    <span style={{
+      display: 'inline-flex', alignItems: 'center', gap: '4px',
+      padding: '2px 8px', borderRadius: '9999px',
+      fontSize: '11px', fontWeight: 600,
+      background: good ? 'rgba(52,211,153,0.1)' : 'rgba(251,191,36,0.1)',
+      color: good ? '#34d399' : '#fbbf24',
+      border: `1px solid ${good ? 'rgba(52,211,153,0.2)' : 'rgba(251,191,36,0.2)'}`,
+    }}>
+      {value.toFixed(1)}% coverage
+    </span>
+  )
+}
+
+// ── 单指标 UQ 分析面板 ─────────────────────────────────────
+function UQPanel({ label, trueKey, predKey, sigmaKey, lowerKey, upperKey,
+                   color, icon: Icon, data }) {
+  if (!data?.length) return null
+
+  const trueVals  = data.map(d => d[trueKey])
+  const predVals  = data.map(d => d[predKey])
+  const sigmaVals = data.map(d => d[sigmaKey])
+  const lowerVals = data.map(d => d[lowerKey])
+  const upperVals = data.map(d => d[upperKey])
+
+  // 按真实值排序
+  const sortIdx  = trueVals.map((_, i) => i).sort((a, b) => trueVals[a] - trueVals[b])
+  const xAxis    = sortIdx.map((_, i) => i)
+  const trueSorted  = sortIdx.map(i => trueVals[i])
+  const predSorted  = sortIdx.map(i => predVals[i])
+  const lowerSorted = sortIdx.map(i => lowerVals[i])
+  const upperSorted = sortIdx.map(i => upperVals[i])
+
+  // 覆盖率
+  const covered  = data.filter((d, i) =>
+    d[trueKey] >= d[lowerKey] && d[trueKey] <= d[upperKey]
+  ).length
+  const coverage = (covered / data.length) * 100
+
+  // 平均 sigma
+  const avgSigma = sigmaVals.reduce((a, b) => a + b, 0) / sigmaVals.length
+
+  // 误差
+  const errors   = predVals.map((p, i) => Math.abs(p - trueVals[i]))
+  const mae      = errors.reduce((a, b) => a + b, 0) / errors.length
+
+  // 置信区间带图
+  const ciTrace = {
+    type: 'scatter',
+    mode: 'lines',
+    name: '95% CI',
+    x: [...xAxis, ...xAxis.slice().reverse()],
+    y: [...upperSorted, ...lowerSorted.slice().reverse()],
+    fill: 'toself',
+    fillcolor: `${color}18`,
+    line: { color: 'transparent' },
+    hoverinfo: 'skip',
+  }
+
+  const trueTrace = {
+    type: 'scatter', mode: 'lines',
+    name: 'True Value',
+    x: xAxis, y: trueSorted,
+    line: { color: '#f1f5f9', width: 1.5 },
+    hovertemplate: `True: %{y:.5f}<extra></extra>`,
+  }
+
+  const predTrace = {
+    type: 'scatter', mode: 'lines',
+    name: 'Predicted Mean',
+    x: xAxis, y: predSorted,
+    line: { color, width: 1.5, dash: 'dot' },
+    hovertemplate: `Pred: %{y:.5f}<extra></extra>`,
+  }
+
+  const layout = {
+    paper_bgcolor: 'rgba(0,0,0,0)',
+    plot_bgcolor:  'rgba(0,0,0,0)',
+    font: { color: '#94a3b8', size: 10 },
+    xaxis: {
+      title: { text: 'Test Samples (sorted)', font: { color: '#64748b', size: 11 } },
+      gridcolor: 'rgba(255,255,255,0.03)',
+      tickfont: { color: '#475569' },
+    },
+    yaxis: {
+      title: { text: label, font: { color: '#64748b', size: 11 } },
+      gridcolor: 'rgba(255,255,255,0.03)',
+      tickfont: { color: '#475569' },
+    },
+    legend: {
+      bgcolor: 'rgba(15,23,42,0.8)',
+      bordercolor: 'rgba(255,255,255,0.05)',
+      borderwidth: 1,
+      font: { color: '#94a3b8', size: 10 },
+      orientation: 'h',
+      y: -0.2,
+    },
+    margin: { t: 10, b: 60, l: 60, r: 10 },
+    hoverlabel: {
+      bgcolor: '#1e293b',
+      bordercolor: `${color}50`,
+      font: { color: '#e2e8f0', size: 11 },
+    },
+  }
+
+  // Sigma 分布直方图
+  const sigmaHist = {
+    type: 'histogram',
+    x: sigmaVals,
+    name: 'σ distribution',
+    marker: {
+      color: `${color}60`,
+      line: { color: color, width: 0.5 },
+    },
+    nbinsx: 15,
+    hovertemplate: 'σ range: %{x}<br>Count: %{y}<extra></extra>',
+  }
+
+  const histLayout = {
+    paper_bgcolor: 'rgba(0,0,0,0)',
+    plot_bgcolor:  'rgba(0,0,0,0)',
+    font: { color: '#94a3b8', size: 10 },
+    xaxis: {
+      title: { text: 'Uncertainty σ', font: { color: '#64748b', size: 11 } },
+      gridcolor: 'rgba(255,255,255,0.03)',
+      tickfont: { color: '#475569' },
+    },
+    yaxis: {
+      title: { text: 'Count', font: { color: '#64748b', size: 11 } },
+      gridcolor: 'rgba(255,255,255,0.03)',
+      tickfont: { color: '#475569' },
+    },
+    margin: { t: 10, b: 50, l: 45, r: 10 },
+    showlegend: false,
+  }
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="glass-card"
+      style={{ padding: '20px', border: `1px solid ${color}18` }}
+    >
+      {/* 卡片标题行 */}
+      <div style={{
+        display: 'flex', alignItems: 'center',
+        justifyContent: 'space-between', marginBottom: '16px',
+        flexWrap: 'wrap', gap: '8px',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{
+            width: '30px', height: '30px', borderRadius: '8px',
+            background: `${color}15`,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            <Icon size={14} color={color} />
+          </div>
+          <span style={{ fontSize: '14px', fontWeight: 600, color: '#e2e8f0' }}>
+            {label}
+          </span>
+        </div>
+
+        {/* 关键指标 */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+          <CoverageBadge value={coverage} />
+          <span style={{
+            fontSize: '11px', color: '#475569',
+            padding: '2px 8px', borderRadius: '9999px',
+            background: 'rgba(255,255,255,0.03)',
+            border: '1px solid rgba(255,255,255,0.05)',
+          }}>
+            avg σ = {avgSigma.toFixed(5)}
+          </span>
+          <span style={{
+            fontSize: '11px', color: '#475569',
+            padding: '2px 8px', borderRadius: '9999px',
+            background: 'rgba(255,255,255,0.03)',
+            border: '1px solid rgba(255,255,255,0.05)',
+          }}>
+            MAE = {mae.toFixed(5)}
+          </span>
+        </div>
       </div>
+
+      {/* 图表区域：左 CI 带图 + 右 sigma 分布 */}
+      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '12px' }}>
+        <Plot
+          data={[ciTrace, trueTrace, predTrace]}
+          layout={layout}
+          config={{ displayModeBar: false, responsive: true }}
+          style={{ width: '100%', height: '240px' }}
+        />
+        <Plot
+          data={[sigmaHist]}
+          layout={histLayout}
+          config={{ displayModeBar: false, responsive: true }}
+          style={{ width: '100%', height: '240px' }}
+        />
+      </div>
+    </motion.div>
+  )
+}
+
+// ── 主页面 ─────────────────────────────────────────────────
+export default function UQPage() {
+  const [uqData,  setUqData]  = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error,   setError]   = useState(null)
+
+  useEffect(() => {
+    getUQResults()
+      .then(res => setUqData(res.results))
+      .catch(e => setError(e.message))
+      .finally(() => setLoading(false))
+  }, [])
+
+  if (loading) return (
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ textAlign: 'center', color: '#64748b' }}>
+        <RefreshCw size={28} style={{ margin: '0 auto 10px', animation: 'spin 1s linear infinite' }} />
+        <p style={{ fontSize: '14px' }}>Loading UQ results...</p>
+      </div>
+    </div>
+  )
+
+  if (error) return (
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{
+        padding: '20px 24px', borderRadius: '12px',
+        background: 'rgba(248,113,113,0.08)',
+        border: '1px solid rgba(248,113,113,0.2)',
+        display: 'flex', alignItems: 'center', gap: '10px', color: '#f87171',
+      }}>
+        <AlertCircle size={16} />
+        <span style={{ fontSize: '14px' }}>{error}</span>
+      </div>
+    </div>
+  )
+
+  return (
+    <div style={{ background: '#0f172a', minHeight: '100vh', padding: '32px 24px' }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+
+        {/* 页面标题 */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          style={{ marginBottom: '28px' }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+            <div style={{
+              width: '36px', height: '36px', borderRadius: '10px',
+              background: 'rgba(167,139,250,0.12)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <Shield size={18} color="#a78bfa" />
+            </div>
+            <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#f1f5f9' }}>
+              Uncertainty Quantification
+            </h1>
+          </div>
+          <p style={{ fontSize: '14px', color: '#64748b', maxWidth: '620px' }}>
+            MC Dropout inference with{' '}
+            <span style={{ color: '#a78bfa', fontWeight: 500 }}>100 forward passes</span>
+            {' '}per prediction. The shaded band shows the 95% confidence interval.
+            Good UQ means the true value consistently falls within the band.
+          </p>
+        </motion.div>
+
+        {/* 方法说明卡片 */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05 }}
+          style={{ marginBottom: '24px' }}
+        >
+          <div className="glass-card" style={{
+            padding: '16px 20px',
+            border: '1px solid rgba(167,139,250,0.12)',
+            background: 'rgba(167,139,250,0.04)',
+            display: 'flex', alignItems: 'flex-start', gap: '12px',
+          }}>
+            <Info size={15} color="#a78bfa" style={{ flexShrink: 0, marginTop: '1px' }} />
+            <div style={{ fontSize: '13px', color: '#64748b', lineHeight: 1.8 }}>
+              <span style={{ color: '#94a3b8', fontWeight: 600 }}>MC Dropout method: </span>
+              During inference, Dropout layers remain active (unlike standard evaluation).
+              Running 100 stochastic forward passes produces a distribution of predictions.
+              The{' '}
+              <span style={{ color: '#a78bfa' }}>mean</span>
+              {' '}is the final prediction; the{' '}
+              <span style={{ color: '#a78bfa' }}>standard deviation σ</span>
+              {' '}quantifies epistemic uncertainty.
+              Wide confidence intervals indicate out-of-distribution inputs.
+            </div>
+          </div>
+        </motion.div>
+
+        {/* 三个指标的 UQ 分析面板 */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <UQPanel
+            label="Isentropic Efficiency η"
+            trueKey="Efficiency_true"
+            predKey="Efficiency_pred"
+            sigmaKey="Efficiency_sigma"
+            lowerKey="Efficiency_lower"
+            upperKey="Efficiency_upper"
+            color="#818cf8"
+            icon={TrendingUp}
+            data={uqData}
+          />
+          <UQPanel
+            label="Total Pressure Ratio π"
+            trueKey="Compression_ratio_true"
+            predKey="Compression_ratio_pred"
+            sigmaKey="Compression_ratio_sigma"
+            lowerKey="Compression_ratio_lower"
+            upperKey="Compression_ratio_upper"
+            color="#22d3ee"
+            icon={Gauge}
+            data={uqData}
+          />
+          <UQPanel
+            label="Mass Flow Rate ṁ (kg/s)"
+            trueKey="Massflow_true"
+            predKey="Massflow_pred"
+            sigmaKey="Massflow_sigma"
+            lowerKey="Massflow_lower"
+            upperKey="Massflow_upper"
+            color="#34d399"
+            icon={Wind}
+            data={uqData}
+          />
+        </div>
+
+      </div>
+
+      <style>{`
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to   { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
   )
 }
