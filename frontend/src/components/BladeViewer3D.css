@@ -1,0 +1,59 @@
+.blade-viewer-container {
+  position: relative;
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(99, 102, 241, 0.08) 0%,
+    rgba(15, 23, 42, 0.95) 70%
+  );
+  border: 1px solid rgba(99, 102, 241, 0.15);
+}
+
+.blade-viewer-canvas {
+  display: block;
+  width: 100% !important;
+}
+
+.blade-viewer-overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+}
+
+.blade-viewer-label {
+  position: absolute;
+  top: 12px; left: 14px;
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(148, 163, 184, 0.8);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-family: 'Inter', sans-serif;
+}
+
+.blade-viewer-hint {
+  position: absolute;
+  bottom: 10px; right: 12px;
+  font-size: 10px;
+  color: rgba(71, 85, 105, 0.8);
+  font-family: 'Inter', sans-serif;
+}
+
+.blade-viewer-stats {
+  position: absolute;
+  bottom: 10px; left: 14px;
+  display: flex;
+  gap: 10px;
+}
+
+.blade-stat-chip {
+  font-size: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: rgba(148, 163, 184, 0.9);
+}

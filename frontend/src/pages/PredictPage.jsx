@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
+import BladeViewer3D from '../components/BladeViewer3D'
 import { motion } from 'framer-motion'
 import {
   Cpu, RefreshCw, AlertCircle,
@@ -446,7 +447,22 @@ export default function PredictPage() {
                 Computing prediction...
               </div>
             )}
-
+    
+            {/* 3D 叶片可视化 */}
+            <motion.div
+            initial={{ opacity: 0, scale: 0.97 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.2 }}
+            style={{ marginBottom: '16px' }}
+            >
+            <BladeViewer3D
+                params={features}
+                efficiency={getPredVal('Efficiency')}
+                pressureRatio={getPredVal('Compression_ratio')}
+                massflow={getPredVal('Massflow')}
+                height={300}
+            />
+            </motion.div>
             {/* 三个结果卡片 */}
             <div style={{
               display: 'grid',
