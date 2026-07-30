@@ -13,7 +13,7 @@ import onnxruntime as ort
 from pathlib import Path
 
 # ── 路径配置 ──────────────────────────────────────────────
-BASE_DIR   = Path(__file__).resolve().parent.parent.parent
+BASE_DIR   = Path(__file__).resolve().parent.parent
 MODELS_DIR = Path(os.getenv("MODELS_DIR", str(BASE_DIR / "models")))
 DATA_DIR   = Path(os.getenv("DATA_DIR",   str(BASE_DIR / "data" / "processed")))
 
