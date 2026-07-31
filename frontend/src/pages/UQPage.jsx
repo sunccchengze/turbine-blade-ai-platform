@@ -26,7 +26,7 @@ function CoverageBadge({ value }) {
 
 // ── 单指标 UQ 分析面板 ─────────────────────────────────────
 function UQPanel({ label, trueKey, predKey, sigmaKey, lowerKey, upperKey,
-                   color, icon: Icon, data }) {
+                   color, icon: Icon, data, isNarrow }) {
   if (!data?.length) return null
 
   const trueVals  = data.map(d => d[trueKey])
@@ -195,7 +195,7 @@ function UQPanel({ label, trueKey, predKey, sigmaKey, lowerKey, upperKey,
       </div>
 
       {/* 图表区域：左 CI 带图 + 右 sigma 分布 */}
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '12px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: isNarrow ? '1fr' : '2fr 1fr', gap: '12px' }}>
         <Plot
           data={[ciTrace, trueTrace, predTrace]}
           layout={layout}
@@ -220,6 +220,14 @@ export default function UQPage() {
   const [uqData,  setUqData]  = useState(null)
   const [loading, setLoading] = useState(true)
   const [error,   setError]   = useState(null)
+  // 窄屏（<900px）时 CI 带图与 σ 分布图改单列
+  const [isNarrow, setIsNarrow] = useState(() => window.innerWidth < 900)
+
+  useEffect(() => {
+    const onResize = () => setIsNarrow(window.innerWidth < 900)
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
 
   useEffect(() => {
     getUQResults()
@@ -331,6 +339,7 @@ export default function UQPage() {
             color="#818cf8"
             icon={TrendingUp}
             data={uqData}
+            isNarrow={isNarrow}
           />
           <UQPanel
             label="总压比 Total Pressure Ratio π"
@@ -342,6 +351,7 @@ export default function UQPage() {
             color="#22d3ee"
             icon={Gauge}
             data={uqData}
+            isNarrow={isNarrow}
           />
           <UQPanel
             label="质量流量 Mass Flow ṁ (kg/s)"
@@ -353,6 +363,7 @@ export default function UQPage() {
             color="#34d399"
             icon={Wind}
             data={uqData}
+            isNarrow={isNarrow}
           />
         </div>
 

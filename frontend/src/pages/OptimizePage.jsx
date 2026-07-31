@@ -47,6 +47,14 @@ export default function OptimizePage() {
   const [colorBy,       setColorBy]       = useState('Compression_ratio')
   const [evolutionData, setEvolutionData] = useState(null)
   const [evolutionErr,  setEvolutionErr]  = useState(false)
+  // 窄屏（<900px）时图表与右侧详情改单列，避免 300px 侧栏挤占主图
+  const [isNarrow, setIsNarrow] = useState(() => window.innerWidth < 900)
+
+  useEffect(() => {
+    const onResize = () => setIsNarrow(window.innerWidth < 900)
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
 
   useEffect(() => {
     Promise.all([getParetoFront(), getTrainingStats()])
@@ -387,7 +395,7 @@ export default function OptimizePage() {
         </motion.div>
 
         {/* 主体：图表 + 选中点详情 */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: '20px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: isNarrow ? '1fr' : '1fr 300px', gap: '20px' }}>
 
           {/* Pareto 前沿图 */}
           <motion.div

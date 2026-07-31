@@ -207,6 +207,14 @@ export default function PredictPage() {
   const [loading,      setLoading]      = useState(false)
   const [error,        setError]        = useState(null)
   const [history,      setHistory]      = useState([])
+  // 窄屏（<900px）时双栏改单列，避免 360px 固定左栏在手机上溢出
+  const [isNarrow,     setIsNarrow]     = useState(() => window.innerWidth < 900)
+
+  useEffect(() => {
+    const onResize = () => setIsNarrow(window.innerWidth < 900)
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
   const [withUQ,       setWithUQ]       = useState(true)
   const debounceRef = useRef(null)
 
@@ -339,7 +347,7 @@ export default function PredictPage() {
           </div>
         )}
 
-        <div style={{ display: 'grid', gridTemplateColumns: '360px 1fr', gap: '24px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: isNarrow ? '1fr' : '360px 1fr', gap: '24px' }}>
 
           {/* ── 左侧：参数控制面板 ─────────────────────── */}
           <motion.div

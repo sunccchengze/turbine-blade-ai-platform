@@ -17,11 +17,11 @@ export default function Navbar() {
   const location                      = useLocation()
   const [scrolled,    setScrolled]    = useState(false)
   const [mobileOpen,  setMobileOpen]  = useState(false)
-  const [isMobile,    setIsMobile]    = useState(window.innerWidth < 768)
+  const [isMobile,    setIsMobile]    = useState(window.innerWidth < 1024)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20)
-    const onResize = () => setIsMobile(window.innerWidth < 768)
+    const onResize = () => setIsMobile(window.innerWidth < 1024)
     window.addEventListener('scroll', onScroll)
     window.addEventListener('resize', onResize)
     return () => {
