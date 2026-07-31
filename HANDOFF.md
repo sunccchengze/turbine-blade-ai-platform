@@ -219,6 +219,7 @@ ca61c0f  ← Day 20 About + devlog
 - 图素材 `docs/fig01–16`；fig09/fig10 已复制进 `frontend/public/figures/`（随站打包）。
 - `docs/`：devlog/、D23-walkthrough-v1.md、pressure-test-D31.md、terminology.md、final-acceptance-D36.md、report-one-pager-D37.md、preheat-workflow.md。
 - `docs/knowledge-boost-2026-07.md`（Day 38 新增）：2026 上半年国际前沿（KIT 303s / CFM RISE PDR / CJ-1000A / AEP100 / 空客×MTU / RDE / scramjet 等）+ AI×叶轮机械文献弹药库（5 篇代理优化真实工作）+ 数字锚表 + 自测题。**升级冲刺的主要素材库。**
+- `docs/upgrade-blueprint-D38.md`（Day 38 新增）：**升级作战总纲**（P1 场级代理 / P2 校准UQ / P3 扩散生成 / P4 SU2 闭环 / E5 LLM 助手；技术选型、引用、里程碑、数字口径、验收清单）。升级会话先读它。
 - `backend/scripts/generate_pareto_evolution.py`：一键复现 NSGA-II（3 秒）→ 生成 pareto_evolution.csv + 覆盖 pareto_front_solutions.csv（同源）。
 
 ## 9. 沙盒坑与教训（血泪汇总）
@@ -269,22 +270,21 @@ cd frontend && npm install --no-audit --no-fund && npm run build && npm run lint
 
 ### 12.1 任务背景（一句话）
 
-承泽已向郭老师汇报完毕（2026-08-01 前后）；项目进入「研究型升级」阶段：疯狂检索国际前沿 → 找出所有能升级的点 → 给平台一次脱胎换骨的变化 → 产出一份《设计优化课题申报书》（大创/挑战杯/课程课题级别）。
+承泽已向郭老师汇报完毕（2026-08-01 前后）；项目进入「**脱胎换骨升级冲刺**」：把平台从「代理筛选器」升级为「**生成式闭环设计引擎**」。承泽已拍板：**全方案五层（P1 场级代理 / P2 校准UQ / P3 扩散生成 / P4 SU2 真闭环 / E5 LLM 助手）＋ 本地 GPU ＋ 交付物 = 平台升级**（课题申报书降级为可选「立项思路」）。作战总纲 = `docs/upgrade-blueprint-D38.md`（本会话已写好，含技术选型、引用依据、里程碑、数字口径、验收清单）。
 
 ### 12.2 任务产出物（按顺序交付）
 
-1. **《升级点全清单》**：疯狂检索（Web + arXiv + ASME Turbo Expo / AIAA / NeurIPS 等）后，逐条列出升级点：现状 → 痛点 → 新方法 → 预期收益 → 实现难度 → 与现有代码的接口。方向至少包括：
-   - 物理信息神经网络（PINN）/ 守恒律 / 嵌入 N-S 残差的代理模型（升级现有「边界裁剪级」物理约束——README 已披露的 future work）
-   - UQ 升级：Deep Ensembles / 异方差输出头（μ+σ）/ Conformal Prediction 校准（升级 MC Dropout 名义 95% 实际只覆盖 65–89% 的问题）
-   - 几何深度学习：PointNet / GNN 直接吃 29,773 节点点云，取代统计特征化（当前最大短板，README「局限」第 1 条已点明）
-   - 生成式设计：扩散模型 / VAE 生成叶片几何
-   - 多保真度建模（multi-fidelity）/ 迁移学习 / 叶轮机械基础模型
-   - 优化算法对比：贝叶斯优化、进化算法新变体 vs 现有 NSGA-II
-   - 数字孪生、LLM 辅助设计等交叉方向
-2. **落地实现 3–5 条**：从清单中选高价值且本仓库可落地的升级，直接实现 + 训练/推理验证 + 数字口径对齐。⚠️ 铁律 4：任何新数字必须仓库内可复现；R² / NSGA-II 口径沿用现有规范（先讲口径再报数字）。
-3. **《设计优化课题申报书》**（最终交付物）：按大创/挑战杯/课程课题标准格式：题目、背景与意义、国内外研究现状、研究内容、技术路线、创新点、预期成果、进度安排、可行性分析。把升级点写进课题，让「AI 赋能的叶轮机械设计优化」成为一门有头有尾的研究课题。
-4. **汇报材料更新**：docs/report-one-pager-D37.md 升级版（或新文档）。
-5. **HANDOFF.md 更新到 v7**：状态快照、悬而未决、交付物登记进 §8。
+0. **基线锁定**：先复现 README 全部数字（R² 三组 / NSGA-II 三组），锁定基线再动工。
+1. **P1 场级几何感知代理**（周 1–3）：PointNet 优先、FNO 并行小验证；点云下采样管线；3D 叶片压力/温度热力图。
+2. **P2 校准不确定性**（周 3–4）：Deep Ensembles（5 种子）+ Conformal 校准；校准曲线 + ACD；修复 65–89% 覆盖问题。
+3. **P3 条件扩散生成式反设计**（周 4–6）：VAE 潜在空间 + 条件扩散；先 2D 叶型（Bernstein）后 3D 点云；「生成图库」前端。
+4. **P4 SU2 真实 CFD 闭环**（周 6–7）：生成→代理筛选→SU2 精验证 top-k→回灌重训；「已 CFD 验证」徽章；加速比改实测口径。
+5. **E5 LLM 设计助手**（周 7–8）：自然语言→调参→代理预测→解释；前端对话面板。
+6. **前端整合 + 数字口径更新**：README/terminology.md 更新（新指标族：场误差/覆盖/命中率/验证偏差/实测加速比）；全站双语规范。
+7. **课题立项思路（可选）**：从蓝图 §7 导出（承泽暂不报课题，留火种）。
+8. **HANDOFF.md 升到 v7**：状态快照、悬而未决、交付物登记。
+
+> 详细技术选型、引用文献、里程碑、风险与降级全部在 `docs/upgrade-blueprint-D38.md`，先读它。
 
 ### 12.3 铁律与约束（必须遵守）
 
@@ -299,32 +299,34 @@ cd frontend && npm install --no-audit --no-fund && npm run build && npm run lint
 
 ```
 你好，我上传了 HANDOFF.md（若未落盘，把全文贴给你）。这是一个「AI 赋能的叶轮机械
-多学科设计优化平台」项目的交接，本次会话是一次研究型升级冲刺。
+多学科设计优化平台」项目的交接，本次会话是【脱胎换骨升级冲刺】。承泽已拍板：
+全方案五层 + 本地 GPU + 真 SU2 闭环 + 交付物 = 平台升级。
 
 【第一步 · 对齐环境】
 1. 连接仓库 sunccchengze/turbine-blade-ai-platform，按系统提示的分支工作（勿切分支）。
 2. 按 HANDOFF.md §0 开场清单：git fetch、git status、浅仓库检查（shallow 则 fetch --unshallow）、
    UTF-8 体检（8 个文件）、cd frontend && npm install。
-3. 读背景：README.md → HANDOFF.md（§1 全景 / §3 状态快照 / §8 技术知识库）→
-   docs/report-one-pager-D37.md → docs/pressure-test-D31.md →
-   docs/knowledge-boost-2026-07.md（Day 38 检索整理的 2026 上半年国际前沿 + AI×叶轮机械
-   文献弹药库，升级主要素材）→ notebooks/01–06（训练管线）。
+3. 读背景（按顺序）：README.md → HANDOFF.md（§1/§3/§8）→ docs/report-one-pager-D37.md →
+   docs/pressure-test-D31.md → docs/knowledge-boost-2026-07.md →
+   docs/upgrade-blueprint-D38.md（★升级作战总纲，先读它）→ notebooks/01–06。
 4. 遵守五条铁律（HANDOFF §0.-1）。
 
-【第二步 · 本会话任务 = 脱胎换骨升级 + 设计优化课题】（详见 HANDOFF §12）
-1. 疯狂检索（Web + arXiv + ASME Turbo Expo / AIAA / NeurIPS），至少覆盖：PINN/N-S 残差物理约束、
-   UQ 升级（Deep Ensembles / 异方差 / Conformal）、几何深度学习（PointNet/GNN 吃点云取代统计特征化）、
-   生成式设计（扩散模型）、多保真度/迁移学习/基础模型、优化算法对比（BO vs NSGA-II）、数字孪生/LLM 等。
-2. 产出《升级点全清单》：现状 → 痛点 → 新方法 → 预期收益 → 难度 → 代码接口。
-3. 选 3–5 条落地实现 + 复现验证 + 数字口径对齐（铁律 4）。
-4. 最终交付《设计优化课题申报书》（大创/挑战杯格式：题目/背景意义/国内外现状/研究内容/
-   技术路线/创新点/预期成果/进度/可行性）。
-5. 更新汇报材料；HANDOFF.md 升到 v7；每完成一个可交付单元 commit + push。
-6. 结束时告诉我：做了什么、哪些数字可信可复现、哪些还未验证。
+【第二步 · 本会话任务 = 脱胎换骨升级】（详见 HANDOFF §12 + upgrade-blueprint-D38.md）
+0. 基线锁定：先复现 README 全部数字（R² 三组 / NSGA-II 三组），锁定基线再动工。
+1. P1 场级几何感知代理（PointNet 优先，FNO 并行验证）：点云下采样管线 + 3D 叶片压力/温度热力图。
+2. P2 Deep Ensembles + Conformal 校准：把 MC Dropout 65–89% 覆盖修到「名义 95% = 实测 95%」。
+3. P3 VAE 潜在空间 + 条件扩散生成式反设计：先 2D 叶型后 3D 点云，出「生成图库」。
+4. P4 SU2 真 CFD 闭环：生成→代理筛选→SU2 验证 top-k→回灌重训；「已 CFD 验证」徽章；
+   加速比改实测口径（SU2 与 PLAID 定位为相对趋势验证）。
+5. E5 LLM 设计助手：自然语言→调参→预测→解释，前端对话面板。
+6. 前端整合 + README/terminology 数字口径更新（新指标族：场误差/覆盖/命中率/验证偏差/实测加速比）。
+7. 每完成一个可交付单元 commit + push；结束时汇报：做了什么、哪些数字可复现、哪些未验证。
 
 【约束】不合并 PR、不推 main；.github/workflows 只做 docs 模板；全站叙事统一「叶轮机械」；
-新数字先讲口径再报数字。
+新数字先讲口径再报数字；所有新指标附复现脚本。
 ```
+
+> 说明：蓝图 `upgrade-blueprint-D38.md` 已含技术选型、引用文献、周里程碑、风险与降级、验收清单——下一会话照蓝图执行即可。
 
 ---
 
@@ -348,3 +350,8 @@ cd frontend && npm install --no-audit --no-fund && npm run build && npm run lint
 - §8：登记 `docs/knowledge-boost-2026-07.md`（Day 38 弹药库）。
 - 新增 §12：下一会话任务书（脱胎换骨升级 + 设计优化课题）+ 开场白模板。
 - §0.0：新会话开场白改指向 §12。
+
+**v6.1 我改了什么**（2026-08-01，承泽拍板后）：
+- 承泽决策：全方案五层（P1–P4 + E5）／本地 GPU／真 SU2 闭环／交付物=平台升级（课题申报书→可选立项思路）。
+- §12 全面改写为五层任务书；新增 `docs/upgrade-blueprint-D38.md` 作战总纲（技术选型/引用/里程碑/口径/验收）。
+- §12.4 开场白模板更新为新决策版本。
