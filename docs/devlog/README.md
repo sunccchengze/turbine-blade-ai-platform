@@ -7,8 +7,8 @@
 > This devlog mirrors the real commit history of this repository. Every entry links to
 > an actual commit, and every number is reproducible from this repo (see README § Reproduce).
 
-**周期**：2026-07-30（Day 1）→ 2026-07-31（Day 24，当前）
-**提交数**：45 个（截至 Day 24，`df6abf2`）
+**周期**：2026-07-30（Day 1）→ 2026-07-31（Day 30 部分，当前）
+**提交数**：48 个（截至 Day 30 部分，`06c1d0f`）
 **作者**：孙承泽 · 本科二年级 · 独立完成（Sun Chengze · Undergraduate (Year 2) · Independent Project）
 
 ---
@@ -269,6 +269,27 @@ OptimizePage 点选 Pareto 解 → `BladeViewer3D` 实时渲染对应叶型 + �
 留出测试集精度（0.9844/0.9561/0.9827）→ MC Dropout（含覆盖率诚实披露）→ NSGA-II（0.9173/21.74/2.1073，
 与 README/动画同源）→ 五条诚实披露。导航加入口。
 **口径一致**：本页所有数字与 README、devlog、API 来自同一条可复现流水线。
+
+---
+
+## Day 27 — 精度验证区块
+
+- `06c1d0f` Day 27: validation block on Methodology page (pred-vs-true + residual figures)
+
+**产出**：方法论页新增「精度验证」区块：基线 MLP（fig09）与残差网络（fig10）的预测 vs 真实散点 +
+残差分布直方图（测试集 n=100），图片经 `frontend/public/figures/` 随站点打包（懒加载）。
+**对比价值**：并排展示基线 vs 残差网络，直接可见残差模型散点更贴 y=x、残差均值近零（无系统性偏差）。
+
+---
+
+## Day 30 — 备份三件套（前两件）
+
+- 预热 workflow `.github/workflows/preheat.yml`：每 10 分钟 ping 后端 `/health`（失败不报错，冷启动期自动重试）；
+  汇报当天容器保持热状态。
+- 本地一键启动 `scripts/start-local.bat`（Windows / conda turbine-ai）+ `scripts/start-local.sh`（Unix/WSL）。
+
+**注意**：GitHub Actions 定时任务只在默认分支（main）生效 —— 合入 main 后才会自动预热；
+若仓库未启用 Actions 需承泽在 Settings → Actions 开启。第三件（录屏）随 D35 演示视频终版完成。
 
 ---
 
