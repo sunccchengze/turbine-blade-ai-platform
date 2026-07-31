@@ -82,8 +82,9 @@ function ResultCard({ label, value, sigma, unit, color, icon: Icon, baseline }) 
 }
 
 // ── 滑块组件 ───────────────────────────────────────────────
-function ParamSlider({ label, value, min, max, step, onChange, unit, color = '#818cf8' }) {
+function ParamSlider({ label, value, min, max, step, onChange, unit, color = '#818cf8', hint }) {
   const pct = ((value - min) / (max - min)) * 100
+  const [showHint, setShowHint] = useState(false)
 
   return (
     <div style={{ marginBottom: '20px' }}>
@@ -91,8 +92,53 @@ function ParamSlider({ label, value, min, max, step, onChange, unit, color = '#8
         display: 'flex', justifyContent: 'space-between',
         alignItems: 'center', marginBottom: '8px',
       }}>
-        <span style={{ fontSize: '12px', fontWeight: 600, color: '#94a3b8' }}>
+        <span style={{
+          display: 'inline-flex', alignItems: 'center', gap: '5px',
+          fontSize: '12px', fontWeight: 600, color: '#94a3b8',
+        }}>
           {label}
+          {hint && (
+            <span
+              tabIndex={0}
+              onMouseEnter={() => setShowHint(true)}
+              onMouseLeave={() => setShowHint(false)}
+              onFocus={() => setShowHint(true)}
+              onBlur={() => setShowHint(false)}
+              style={{
+                position: 'relative', display: 'inline-flex',
+                cursor: 'help', outline: 'none',
+                borderRadius: '50%',
+              }}
+              aria-label={hint.en}
+            >
+              <Info size={12} color="#475569" style={{ pointerEvents: 'none' }} />
+              {showHint && (
+                <span style={{
+                  position: 'absolute', left: '50%', bottom: 'calc(100% + 8px)',
+                  transform: 'translateX(-50%)', width: '250px', zIndex: 30,
+                  padding: '10px 12px', borderRadius: '10px',
+                  background: 'rgba(15,23,42,0.97)',
+                  border: '1px solid rgba(99,102,241,0.3)',
+                  boxShadow: '0 8px 24px rgba(0,0,0,0.45)',
+                  fontSize: '11px', lineHeight: 1.65, textAlign: 'left',
+                  pointerEvents: 'none',
+                }}>
+                  <span style={{ color: '#c7d2fe' }}>{hint.cn}</span>
+                  <br />
+                  <span style={{ color: '#64748b' }}>{hint.en}</span>
+                  {/* 小三角 */}
+                  <span style={{
+                    position: 'absolute', left: '50%', bottom: '-5px',
+                    transform: 'translateX(-50%) rotate(45deg)',
+                    width: '8px', height: '8px',
+                    background: 'rgba(15,23,42,0.97)',
+                    borderRight: '1px solid rgba(99,102,241,0.3)',
+                    borderBottom: '1px solid rgba(99,102,241,0.3)',
+                  }} />
+                </span>
+              )}
+            </span>
+          )}
         </span>
         <span className="num" style={{
           fontSize: '13px', fontWeight: 700, color,
@@ -338,6 +384,10 @@ export default function PredictPage() {
                 unit="rpm"
                 color="#818cf8"
                 onChange={v => handleChange('Omega', v)}
+                hint={{
+                  cn: '转子转速，决定压气机运行点与叶片相对速度场。转速越高，单位质量流量与压比通常越高。',
+                  en: 'Rotor speed; sets the operating point and the blade relative velocity field. Higher speed generally raises mass flow and pressure ratio.',
+                }}
               />
 
               {/* P 滑块 */}
@@ -350,6 +400,10 @@ export default function PredictPage() {
                 unit="Pa"
                 color="#22d3ee"
                 onChange={v => handleChange('P', v)}
+                hint={{
+                  cn: '进口总压（背压工况），与转速共同决定级压比与流量。背压越高，压比越高而流量越小。',
+                  en: 'Inlet total pressure (back-pressure condition); together with speed it sets stage pressure ratio and flow. Higher back pressure raises ratio but lowers flow.',
+                }}
               />
 
               {/* 分隔线 */}
@@ -381,6 +435,12 @@ export default function PredictPage() {
                   { key: 'CoordinateY_mean', label: '径向位置均值 Radial Position Mean', color: '#34d399', unit: 'm'   },
                 ].map(({ key, label, color, unit }) => {
                   if (!stats[key]) return null
+                  const hints = {
+                    Pressure_mean:    { cn: '叶片表面压力场的统计均值，反映整体气动载荷水平。', en: 'Mean of the blade surface pressure field; overall aerodynamic loading.' },
+                    Pressure_std:     { cn: '表面压力标准差。分布越宽，载荷梯度越陡，流动越易分离。', en: 'Std of surface pressure. Wider spread means steeper loading gradients and higher separation risk.' },
+                    Temperature_mean: { cn: '叶片表面温度场的统计均值，与热负荷及状态方程直接相关。', en: 'Mean surface temperature; tied to thermal load and the equation of state.' },
+                    CoordinateY_mean: { cn: '叶片表面径向坐标的统计均值，是展向几何位置的代表量。', en: 'Mean radial coordinate of the blade surface; representative of spanwise geometry.' },
+                  }
                   return (
                     <ParamSlider
                       key={key}
@@ -392,6 +452,7 @@ export default function PredictPage() {
                       unit={unit}
                       color={color}
                       onChange={v => handleChange(key, v)}
+                      hint={hints[key]}
                     />
                   )
                 })}
