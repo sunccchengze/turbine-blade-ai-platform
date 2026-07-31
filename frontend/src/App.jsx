@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { Zap } from 'lucide-react'
 import Navbar from './components/Navbar'
+import WakeUpBanner from './components/WakeUpBanner'
 import HomePage from './pages/HomePage'
 import PredictPage from './pages/PredictPage'
 import OptimizePage from './pages/OptimizePage'
@@ -68,6 +69,7 @@ export default function App() {
       <div style={{ position: 'relative', zIndex: 1 }}>
         <Navbar />
         <NewsBanner />
+        <WakeUpBanner />
         <Routes>
           <Route path="/"         element={<HomePage />}    />
           <Route path="/predict"  element={<PredictPage />} />

@@ -1,12 +1,31 @@
 import axios from 'axios'
 
-const BASE_URL = import.meta.env.VITE_API_URL || 'https://turbine-blade-api-c4f40.containers.snapdeploy.app'
+const BASE_URL = import.meta.env.VITE_API_URL ||
+  'https://turbine-blade-api-c4f40.containers.snapdeploy.app'
 
 const api = axios.create({
   baseURL: BASE_URL,
-  timeout: 30000,
+  timeout: 60000,  // 60秒超时，应对冷启动
   headers: { 'Content-Type': 'application/json' },
 })
+
+// 请求拦截器
+api.interceptors.request.use(config => config)
+
+// 响应拦截器：统一错误处理
+api.interceptors.response.use(
+  response => response,
+  error => {
+    if (error.code === 'ECONNABORTED') {
+      error.userMessage = 'Server is waking up, please wait...'
+    } else if (!error.response) {
+      error.userMessage = 'Cannot connect to server. Please try again.'
+    } else {
+      error.userMessage = `Server error: ${error.response.status}`
+    }
+    return Promise.reject(error)
+  }
+)
 
 // ── 预测相关 ──────────────────────────────────────────────
 export const predictPerformance = async (features, includeUncertainty = false) => {
