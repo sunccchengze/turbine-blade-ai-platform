@@ -8,7 +8,7 @@ generate_pareto_evolution.py
 
 输出：backend/data/processed/pareto_evolution.csv
   列：gen, design_id, Efficiency, Massflow, Compression_ratio
-  （每 10 代记录一帧非支配前沿，共 20 帧；design_id 为帧内序号）
+  （记录 gen=1 及每 10 代一帧非支配前沿，共 21 帧；design_id 为帧内序号）
 
 用法：python backend/scripts/generate_pareto_evolution.py
 """

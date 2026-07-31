@@ -304,7 +304,7 @@ export default function OptimizePage() {
     if (!data?.points?.length) return
     const pt    = data.points[0]
     const idx   = pt.pointIndex
-    if (pt.data.name === 'Pareto Front') {
+    if (pt.data.name === 'Pareto 前沿 Front') {
       setSelected(pareto[idx])
     }
   }

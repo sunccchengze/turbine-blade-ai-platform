@@ -399,8 +399,8 @@ export default function HomePage() {
                         icon: Shield, color: '#34d399',
                         bg: 'rgba(52,211,153,0.08)',
                         label: 'MC Dropout UQ',
-                        desc: <>100 次采样推理 · 95% 置信区间<br />
-                          <span style={{ color: '#475569' }}>100-sample inference · 95% confidence intervals</span></>,
+                        desc: <>σ 统计量（训练期 100 次采样）· 95% 置信区间<br />
+                          <span style={{ color: '#475569' }}>σ statistics (100 samples during training) · 95% confidence intervals</span></>,
                       },
                       {
                         icon: Target, color: '#fbbf24',

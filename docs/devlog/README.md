@@ -1,4 +1,4 @@
-# 🗓️ 开发日志 Devlog（Day 1 – Day 19）
+# 🗓️ 开发日志 Devlog（Day 1 – Day 37）
 
 > 本文件记录「AI 赋能的叶轮机械多学科设计优化平台」从立项到上线的完整开发过程。
 > 每条记录都对应仓库中的真实提交（SHA 可点开查看），所有数字均可在本仓库复现
@@ -7,8 +7,8 @@
 > This devlog mirrors the real commit history of this repository. Every entry links to
 > an actual commit, and every number is reproducible from this repo (see README § Reproduce).
 
-**周期**：2026-07-30（Day 1）→ 2026-07-31（Day 33 冲刺收尾，当前）
-**提交数**：66 个（截至 Day 37 收尾，[a811386](https://github.com/sunccchengze/turbine-blade-ai-platform/commit/a811386)）
+**周期**：2026-07-30（Day 1）→ 2026-07-31（Day 37 终审完成，当前）
+**提交数**：79 个（截至 Day 37 终审，`HEAD`）
 **作者**：孙承泽 · 本科二年级 · 独立完成（Sun Chengze · Undergraduate (Year 2) · Independent Project）
 
 ---
@@ -372,5 +372,15 @@ Q&A 20 问标准答法（数据模型/精度验证/优化/工程部署/项目个
 | 全站双语 + 定稿站名 | 17 | [b05c087](https://github.com/sunccchengze/turbine-blade-ai-platform/commit/b05c087) |
 | 线上总验收 | 18 | [e23b769](https://github.com/sunccchengze/turbine-blade-ai-platform/commit/e23b769) |
 | 门面 README + 数字口径修正 | 19 | [1839aa5](https://github.com/sunccchengze/turbine-blade-ai-platform/commit/1839aa5) |
+| About/署名 + devlog | 20 | [ca61c0f](https://github.com/sunccchengze/turbine-blade-ai-platform/commit/ca61c0f) |
+| Pareto → 3D 联动 | 21 | [b829618](https://github.com/sunccchengze/turbine-blade-ai-platform/commit/b829618) |
+| 演化动画 + 数据流水线统一 | 22 | [5d768f8](https://github.com/sunccchengze/turbine-blade-ai-platform/commit/5d768f8) |
+| 功能冻结 + 走查表 | 23 | [bf151fa](https://github.com/sunccchengze/turbine-blade-ai-platform/commit/bf151fa) |
+| 方法论页 + 精度验证 | 24/27 | [df6abf2](https://github.com/sunccchengze/turbine-blade-ai-platform/commit/df6abf2) [06c1d0f](https://github.com/sunccchengze/turbine-blade-ai-platform/commit/06c1d0f) |
+| 移动端布局修复 | 28 | [1efb5ea](https://github.com/sunccchengze/turbine-blade-ai-platform/commit/1efb5ea) |
+| 预热模板 + 启动脚本 | 30 | [3b4ba54](https://github.com/sunccchengze/turbine-blade-ai-platform/commit/3b4ba54) |
+| 压力测试问答稿 | 31 | [fb25138](https://github.com/sunccchengze/turbine-blade-ai-platform/commit/fb25138) |
+| 术语/单位统一 + 数字清理 | 32/33 | [4c1c8c5](https://github.com/sunccchengze/turbine-blade-ai-platform/commit/4c1c8c5) [24927c4](https://github.com/sunccchengze/turbine-blade-ai-platform/commit/24927c4) |
+| 验收清单 / 汇报一页纸 | 34/36/37 | [f9e1556](https://github.com/sunccchengze/turbine-blade-ai-platform/commit/f9e1556) [ce4b37b](https://github.com/sunccchengze/turbine-blade-ai-platform/commit/ce4b37b) |
 
-> 后续进度在此文档持续追加（Day 20+）。
+> 后续进度在此文档持续追加。

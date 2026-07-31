@@ -8,11 +8,6 @@ import {
 } from 'lucide-react'
 import { predictPerformance, getBaselineFeatures } from '../utils/api'
 
-// ── 工具函数 ───────────────────────────────────────────────
-function clamp(val, min, max) {
-  return Math.min(Math.max(val, min), max)
-}
-
 // ── 结果卡片 ───────────────────────────────────────────────
 function ResultCard({ label, value, sigma, unit, color, icon: Icon, baseline }) {
   const improvement = baseline
@@ -479,7 +474,7 @@ export default function PredictPage() {
                     不确定性量化 UQ
                   </div>
                   <div style={{ fontSize: '11px', color: '#475569', marginTop: '2px' }}>
-                    MC Dropout · 100 次采样
+                    σ 统计量（训练期 MC Dropout）
                   </div>
                 </div>
                 <button

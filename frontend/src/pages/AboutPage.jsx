@@ -192,7 +192,7 @@ export default function AboutPage() {
           <SectionHeader
             tag="The Journey"
             title="技术旅程"
-            subtitle="19 天、37 次提交：从零到线上。完整逐日记录见 docs/devlog。The journey — 19 days, 37 commits, from zero to production. Full day-by-day log in docs/devlog."
+            subtitle="37 个开发日、77 次提交：从零到线上。完整逐日记录见 docs/devlog。The journey — 37 development days, 77 commits, from zero to production. Full day-by-day log in docs/devlog."
           />
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             {milestones.map((m, i) => (
