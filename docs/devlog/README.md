@@ -293,6 +293,17 @@ OptimizePage 点选 Pareto 解 → `BladeViewer3D` 实时渲染对应叶型 + �
 
 ---
 
+## Day 28 — 移动端适配（代码级第一轮）
+
+- `1efb5ea` Day 28: mobile-first layout fixes (stack columns <900px, nav breakpoint 1024)
+
+**产出**：三处固定双栏布局在窄屏（<900px）改为单列 —— PredictPage（360px 左栏）、OptimizePage（300px 侧栏）、
+UQPage（2fr 1fr）；Navbar 胶囊断点 768→1024（7 个导航项不再在平板宽度溢出）。
+**过程教训**：UQPage 初版把状态加在主组件、却在子组件里使用，lint 抓到「declared but never used」——
+改为 prop 传递后复核通过。移动端真机全面走查仍在 D29。
+
+---
+
 ## 里程碑一览
 
 | 里程碑 | Day | 提交 |
