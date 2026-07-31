@@ -7,8 +7,8 @@
 > This devlog mirrors the real commit history of this repository. Every entry links to
 > an actual commit, and every number is reproducible from this repo (see README § Reproduce).
 
-**周期**：2026-07-30（Day 1）→ 2026-07-31（Day 22，当前）
-**提交数**：41 个（截至 Day 22，`5d768f8`）
+**周期**：2026-07-30（Day 1）→ 2026-07-31（Day 24，当前）
+**提交数**：45 个（截至 Day 24，`df6abf2`）
 **作者**：孙承泽 · 本科二年级 · 独立完成（Sun Chengze · Undergraduate (Year 2) · Independent Project）
 
 ---
@@ -248,6 +248,27 @@ OptimizePage 点选 Pareto 解 → `BladeViewer3D` 实时渲染对应叶型 + �
   是旧 pymoo 环境产物，与当前可复现流水线不一致（评估器本身逐位一致，R²=1.000000，差异纯来自优化器版本）。
   已统一为同源新结果 **η 0.9173 / ṁ 21.74 / π 2.1073**，并同步更新 README 与 devlog ——
   现在主图、动画末帧、README、API 全部来自同一条可复现流水线。
+
+---
+
+## Day 23 — 功能冻结 + 全站走查表 v1
+
+- `bf151fa` Day 23: param tooltips on PredictPage + full-site walkthrough checklist v1
+
+**产出**：PredictPage 参数 Tooltip 重实现（`ParamSlider` 新增 `hint` 属性，6 个参数 hover/键盘 focus 弹双语解释卡）；
+`docs/D23-walkthrough-v1.md` 全站走查表（4 大类 14 项，双语/交互/视觉全过；4 项待办排期到 D28–29 / D32–33）。
+**功能冻结**：此后不加计划外新功能。
+
+---
+
+## Day 24 — 方法论页
+
+- `df6abf2` Day 24: Methodology page (data -> features -> surrogate -> physics -> UQ -> NSGA-II)
+
+**产出**：新增 `/methodology` 页（独立 chunk 15.7 kB 懒加载）：数据 → 特征工程（74 维）→ 残差网络架构 →
+留出测试集精度（0.9844/0.9561/0.9827）→ MC Dropout（含覆盖率诚实披露）→ NSGA-II（0.9173/21.74/2.1073，
+与 README/动画同源）→ 五条诚实披露。导航加入口。
+**口径一致**：本页所有数字与 README、devlog、API 来自同一条可复现流水线。
 
 ---
 
