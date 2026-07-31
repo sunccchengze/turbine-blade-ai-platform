@@ -299,7 +299,7 @@ export default function HomePage() {
                     </div>
                   </div>
 
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '13px', color: '#94a3b8', lineHeight: 1.8 }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', fontSize: '14.5px', color: '#94a3b8', lineHeight: 2.1 }}>
                     <p>
                       KIT 实现无压气机燃气轮机连续运行{' '}
                       <span style={{ color: '#fbbf24', fontWeight: 600 }}>303 秒</span>
@@ -651,8 +651,7 @@ export default function HomePage() {
                 </h4>
                 <div style={{
                   fontSize: '13px', color: '#94a3b8',
-                  lineHeight: 1.9, display: 'flex',
-                  flexDirection: 'column', gap: '8px',
+                  lineHeight: 2.0,
                 }}>
                   <p>
                     开发阶段完整实现了基于{' '}
