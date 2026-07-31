@@ -220,6 +220,7 @@ ca61c0f  ← Day 20 About + devlog
 - `docs/`：devlog/、D23-walkthrough-v1.md、pressure-test-D31.md、terminology.md、final-acceptance-D36.md、report-one-pager-D37.md、preheat-workflow.md。
 - `docs/knowledge-boost-2026-07.md`（Day 38 新增）：2026 上半年国际前沿（KIT 303s / CFM RISE PDR / CJ-1000A / AEP100 / 空客×MTU / RDE / scramjet 等）+ AI×叶轮机械文献弹药库（5 篇代理优化真实工作）+ 数字锚表 + 自测题。**升级冲刺的主要素材库。**
 - `docs/upgrade-blueprint-D38.md`（Day 38 新增）：**升级作战总纲**（P1 场级代理 / P2 校准UQ / P3 扩散生成 / P4 SU2 闭环 / E5 LLM 助手；技术选型、引用、里程碑、数字口径、验收清单）。升级会话先读它。
+- `docs/plan-30day-D38.md`（Day 38 新增）：**30 天逐日计划（AI 内阁评审定稿版）**：Day 1–30 每天任务、Phase Gate、降级路径、验收清单。本会话执行基线。
 - `backend/scripts/generate_pareto_evolution.py`：一键复现 NSGA-II（3 秒）→ 生成 pareto_evolution.csv + 覆盖 pareto_front_solutions.csv（同源）。
 
 ## 9. 沙盒坑与教训（血泪汇总）
@@ -274,7 +275,7 @@ cd frontend && npm install --no-audit --no-fund && npm run build && npm run lint
 
 ### 12.2 任务产出物（按顺序交付）
 
-0. **基线锁定**：先复现 README 全部数字（R² 三组 / NSGA-II 三组），锁定基线再动工。
+0. **基线锁定 + 执行 30 天计划**：先复现 README 全部数字（R² 三组 / NSGA-II 三组），锁定基线再动工。**30 天逐日计划 + Gate/降级路径 = `docs/plan-30day-D38.md`（AI 内阁评审定稿版），是本会话的执行基线**。核心裁决：P1 双头融合（点云+统计）、P4 抽查验证模块（非完整飞轮）、P3 2D 先行、E5 MVP。
 1. **P1 场级几何感知代理**（周 1–3）：PointNet 优先、FNO 并行小验证；点云下采样管线；3D 叶片压力/温度热力图。
 2. **P2 校准不确定性**（周 3–4）：Deep Ensembles（5 种子）+ Conformal 校准；校准曲线 + ACD；修复 65–89% 覆盖问题。
 3. **P3 条件扩散生成式反设计**（周 4–6）：VAE 潜在空间 + 条件扩散；先 2D 叶型（Bernstein）后 3D 点云；「生成图库」前端。
