@@ -56,8 +56,9 @@ Interactive 3D Design Explorer (React + Three.js)
 - [ ] Day 29-42: Full-stack interactive platform (FastAPI + React + Three.js — 5 pages live, in progress)
 - [ ] Day 43-50: Testing, optimization & deployment
 
-**Current status — Day 16:** backend & frontend deployed and live;
-design-space explorer (response-surface heatmap) shipped on Day 15.
+**Current status — Day 18:** backend & frontend deployed and live;
+design-space explorer (response-surface heatmap) shipped on Day 15;
+full Chinese-English bilingual UI across all 5 pages completed on Day 17.
 
 ---
 
