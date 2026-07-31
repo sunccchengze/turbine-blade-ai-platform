@@ -99,7 +99,7 @@ function RangeInputs({ lo, hi, statLo, statHi, onChange }) {
         ))}
       </div>
       <div style={{ fontSize: '11px', color: '#475569', marginTop: '5px' }}>
-        训练数据范围 [{statLo?.toPrecision(5)} ~ {statHi?.toPrecision(5)}]
+        训练数据范围 Training range: [{statLo?.toPrecision(5)} ~ {statHi?.toPrecision(5)}]
       </div>
     </div>
   )
@@ -136,7 +136,7 @@ export default function ExplorePage() {
         setYRange([sy.min, sy.max])
         initialized.current = true
       })
-      .catch(() => setLoadError('无法连接推理服务器。服务可能正在冷启动，请稍候刷新。'))
+      .catch(() => setLoadError('无法连接推理服务器。服务可能正在冷启动，请稍候刷新。 Cannot reach the inference server — it may be cold-starting, please refresh shortly.'))
   }, [])
 
   // ── 核心：发起扫描 ──────────────────────────────────────
@@ -152,7 +152,7 @@ export default function ExplorePage() {
 
     // 客户端前置校验（与服务端的物理越界保护一致）
     if (px === py) {
-      setSweepError('X 轴和 Y 轴不能选择同一个参数，请换一个维度。')
+      setSweepError('X 轴和 Y 轴不能是同一个参数，请换一个维度。X and Y must be different parameters.')
       return
     }
     const stats = baseline.stats
@@ -166,7 +166,8 @@ export default function ExplorePage() {
       const bad = !cx.ok ? [px, cx] : [py, cy]
       setSweepError(
         `'${bad[0]}' 的扫描范围超出了训练数据范围 [${bad[1].lo.toPrecision(5)} ~ ${bad[1].hi.toPrecision(5)}]。` +
-        '代理模型（Surrogate Model）只在做内插预测时可信，这是刻意保留的物理防线。'
+        '代理模型（Surrogate Model）只在做内插预测时可信，这是刻意保留的物理防线。' +
+        ' Interpolation only — extrapolation is deliberately blocked.'
       )
       return
     }
@@ -187,7 +188,7 @@ export default function ExplorePage() {
     })
       .then(res => { setResult(res); setClicked(null) })
       .catch(err => setSweepError(
-        err.response?.data?.detail || err.userMessage || '扫描请求失败，请重试。'
+        err.response?.data?.detail || err.userMessage || '扫描请求失败，请重试。 Sweep request failed, please retry.'
       ))
       .finally(() => setSweeping(false))
   }, [baseline, paramX, paramY, outputK, gridN, xRange, yRange])
@@ -244,7 +245,7 @@ export default function ExplorePage() {
     return (
       <div style={{ maxWidth: '1152px', margin: '0 auto', padding: '100px 24px', textAlign: 'center' }}>
         <RefreshCw size={22} color="#818cf8" className="spin" style={{ margin: '0 auto 12px' }} />
-        <p style={{ color: '#64748b', fontSize: '13px' }}>正在加载基准设计特征…</p>
+        <p style={{ color: '#64748b', fontSize: '13px' }}>正在加载基准设计特征… Loading…</p>
       </div>
     )
   }
@@ -275,6 +276,13 @@ export default function ExplorePage() {
           {' '}{gridN} 次，整张网格由代理模型一次批量推理完成。
           颜色越亮的区域，{outMeta.label}（{outMeta.symbol}）越高——
           这就是多学科设计优化（MDO）里工程师建立设计直觉的方式。
+          <br />
+          <span style={{ fontSize: '12px', color: '#64748b' }}>
+            A two-parameter response surface over the 74-dimensional design space — the surrogate
+            evaluates the entire {gridN}×{gridN} grid in one batched inference. Brighter regions
+            mean higher {outMeta.label} ({outMeta.symbol}), which is how MDO engineers build
+            design intuition.
+          </span>
         </p>
       </motion.div>
 
@@ -287,11 +295,11 @@ export default function ExplorePage() {
 
         {/* 控制面板 */}
         <div className="glass-card" style={{ padding: '22px' }}>
-          <FieldLabel>X 轴参数</FieldLabel>
+          <FieldLabel>X 轴参数 X-Axis</FieldLabel>
           <ParamSelect value={paramX} onChange={n => switchAxis('x', n)}
                        names={baseline.feature_names} />
           <div style={{ height: '12px' }} />
-          <FieldLabel>X 轴扫描范围</FieldLabel>
+          <FieldLabel>X 轴扫描范围 X Sweep Range</FieldLabel>
           <RangeInputs lo={xRange[0]} hi={xRange[1]}
                        statLo={baseline.stats[paramX].min} statHi={baseline.stats[paramX].max}
                        onChange={r => setXRange(r)} />
@@ -299,11 +307,11 @@ export default function ExplorePage() {
           <div style={{ height: '18px', borderBottom: '1px solid rgba(148,163,184,0.08)' }} />
           <div style={{ height: '18px' }} />
 
-          <FieldLabel>Y 轴参数</FieldLabel>
+          <FieldLabel>Y 轴参数 Y-Axis</FieldLabel>
           <ParamSelect value={paramY} onChange={n => switchAxis('y', n)}
                        names={baseline.feature_names} />
           <div style={{ height: '12px' }} />
-          <FieldLabel>Y 轴扫描范围</FieldLabel>
+          <FieldLabel>Y 轴扫描范围 Y Sweep Range</FieldLabel>
           <RangeInputs lo={yRange[0]} hi={yRange[1]}
                        statLo={baseline.stats[paramY].min} statHi={baseline.stats[paramY].max}
                        onChange={r => setYRange(r)} />
@@ -387,6 +395,12 @@ export default function ExplorePage() {
               为什么不允许超出训练范围？代理模型只「见过」训练数据分布内的物理规律，
               外推（Extrapolation）预测可能违背物理。宁可拒绝回答，也不给你错误答案——
               这是工程可信度的底线。
+              <br />
+              <span style={{ color: '#475569' }}>
+                Why is out-of-range sweeping blocked? The surrogate has only seen physics inside
+                the training distribution — extrapolation can break it. Refusing to answer beats
+                giving a wrong answer: that is the bottom line of engineering trustworthiness.
+              </span>
             </span>
           </div>
         </div>
@@ -478,6 +492,10 @@ export default function ExplorePage() {
                 }}>
                   同样的 {result.n_evaluations} 个点用 CFD 约需 {cfdDays} 天
                   （按单场仿真 ≈ 30 min 估算）
+                  <br />
+                  <span style={{ fontSize: '10px', color: '#475569' }}>
+                    The same grid would take ~{cfdDays} days of CFD (est. 30 min per run).
+                  </span>
                 </span>
               </div>
             )}
@@ -498,9 +516,9 @@ export default function ExplorePage() {
               {result && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '9px' }}>
                   {[
-                    { label: `最高 ${outMeta.label}`, v: result.z_max, d: pct(result.z_max), c: '#34d399' },
-                    { label: `最低 ${outMeta.label}`, v: result.z_min, d: pct(result.z_min), c: '#f87171' },
-                    { label: '基准设计预测', v: result.baseline_prediction, d: null, c: '#fbbf24' },
+                    { label: `最高 ${outMeta.label} Max`, v: result.z_max, d: pct(result.z_max), c: '#34d399' },
+                    { label: `最低 ${outMeta.label} Min`, v: result.z_min, d: pct(result.z_min), c: '#f87171' },
+                    { label: '基准设计预测 Baseline', v: result.baseline_prediction, d: null, c: '#fbbf24' },
                   ].map(({ label, v, d, c }) => (
                     <div key={label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
                       <span style={{ fontSize: '12px', color: '#94a3b8' }}>{label}</span>
@@ -550,7 +568,7 @@ export default function ExplorePage() {
                       {clicked.z.toFixed(5)}
                       {pct(clicked.z) !== null && (
                         <span style={{ fontSize: '11px', fontWeight: 500, color: '#64748b', marginLeft: '6px' }}>
-                          vs 基准 {pct(clicked.z) >= 0 ? '+' : ''}{pct(clicked.z).toFixed(2)}%
+                          vs 基准 baseline {pct(clicked.z) >= 0 ? '+' : ''}{pct(clicked.z).toFixed(2)}%
                         </span>
                       )}
                     </span>
@@ -559,6 +577,8 @@ export default function ExplorePage() {
               ) : (
                 <p style={{ fontSize: '12px', color: '#475569', lineHeight: 1.7 }}>
                   点击热力图上的任意位置，查看该设计的预测性能与基准设计的差距。
+                  <br />
+                  Click anywhere on the heatmap to inspect that design's prediction vs. baseline.
                 </p>
               )}
             </div>

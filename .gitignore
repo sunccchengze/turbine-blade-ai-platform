@@ -11,3 +11,6 @@ data/raw/*.tar.gz
 # Python 缓存
 __pycache__/
 *.pyc
+# 交接文档（内部作战信息，勿推 GitHub）
+HANDOFF.md
+handoff/
