@@ -389,7 +389,7 @@ export default function PredictPage() {
                 min={stats.Omega.min}
                 max={stats.Omega.max}
                 step={1}
-                unit="rpm"
+                unit="rad/s"
                 color="#818cf8"
                 onChange={v => handleChange('Omega', v)}
                 hint={{

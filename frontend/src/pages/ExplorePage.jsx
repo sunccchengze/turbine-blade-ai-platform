@@ -15,10 +15,11 @@ const OUTPUTS = [
 ]
 
 // 单位提示（统计量无物理单位的留空）
+// Omega 为角速度 (rad/s)：Rotor 37 设计转速 16,188 rpm ≈ 1,695 rad/s，数据范围 1620–1800 rad/s
 const UNITS = {
-  Omega: 'rpm', P: 'Pa', Pressure_mean: 'Pa', Density_mean: 'kg/m³',
-  Temperature_mean: 'K', CoordinateX_mean: 'mm', CoordinateY_mean: 'mm',
-  CoordinateZ_mean: 'mm',
+  Omega: 'rad/s', P: 'Pa', Pressure_mean: 'Pa', Density_mean: 'kg/m³',
+  Temperature_mean: 'K', CoordinateX_mean: 'm', CoordinateY_mean: 'm',
+  CoordinateZ_mean: 'm',
 }
 
 // 特征分组（中文组名 + 前缀匹配）
