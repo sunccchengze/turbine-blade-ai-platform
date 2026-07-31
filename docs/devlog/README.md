@@ -284,8 +284,9 @@ OptimizePage 点选 Pareto 解 → `BladeViewer3D` 实时渲染对应叶型 + �
 
 ## Day 30 — 备份三件套（前两件）
 
-- 预热 workflow `.github/workflows/preheat.yml`：每 10 分钟 ping 后端 `/health`（失败不报错，冷启动期自动重试）；
-  汇报当天容器保持热状态。
+- 预热 workflow：**模板在 `docs/preheat-workflow.md`**（每 10 分钟 ping 后端 `/health`，失败不报错，冷启动期自动重试）。
+  ⚠️ Arena 的 GitHub App 无 `workflows` 权限，无法直接推送 `.github/workflows/*.yml`（推送被 GitHub 拒绝），
+  已改为网页可粘贴的模板，承泽在 Actions 页 30 秒安装。
 - 本地一键启动 `scripts/start-local.bat`（Windows / conda turbine-ai）+ `scripts/start-local.sh`（Unix/WSL）。
 
 **注意**：GitHub Actions 定时任务只在默认分支（main）生效 —— 合入 main 后才会自动预热；

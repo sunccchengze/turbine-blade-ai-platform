@@ -367,7 +367,7 @@ EOF
 - [x] **Day 23** 功能冻结 + 全站走查表 v1（参数 Tooltip 重实现）
 - [x] **Day 24** 方法论页（数据 → 特征 → 代理模型 → 物理约束 → UQ → NSGA-II，含诚实披露）
 - [x] **Day 27** 精度验证区块（预测 vs 真实 + 残差分布图，基线 MLP vs 残差网络对比）
-- [x] **Day 30** 备份三件套 · 前两件：预热 workflow（GitHub Actions 每 10 分钟 ping 后端）+ 本地一键启动脚本（`scripts/start-local.bat` / `.sh`）
+- [x] **Day 30** 备份三件套 · 前两件：预热 workflow（模板在 `docs/preheat-workflow.md`，需在 GitHub Actions 页手动安装）+ 本地一键启动脚本（`scripts/start-local.bat` / `.sh`）
 - [x] **Day 28** 移动端适配（代码级第一轮）：窄屏 <900px 双栏改单列、导航断点 1024
 - [x] **Day 31** 质疑点压力测试问答稿（docs/pressure-test-D31.md，5 问 + R² 口径故事）
 - [x] **Day 32** 术语/单位统一表（docs/terminology.md）；修正 Ω 单位 rad/s、坐标单位 m 的显示错误
