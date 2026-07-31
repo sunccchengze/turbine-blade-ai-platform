@@ -345,6 +345,7 @@ export default function OptimizePage() {
               layout={layout}
               config={config}
               onClick={handlePlotClick}
+              useResizeHandler={true}
               style={{ width: '100%', height: '420px' }}
             />
           </motion.div>

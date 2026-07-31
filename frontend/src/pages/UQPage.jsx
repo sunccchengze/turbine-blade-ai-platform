@@ -200,12 +200,14 @@ function UQPanel({ label, trueKey, predKey, sigmaKey, lowerKey, upperKey,
           data={[ciTrace, trueTrace, predTrace]}
           layout={layout}
           config={{ displayModeBar: false, responsive: true }}
+          useResizeHandler={true}
           style={{ width: '100%', height: '240px' }}
         />
         <Plot
           data={[sigmaHist]}
           layout={histLayout}
           config={{ displayModeBar: false, responsive: true }}
+          useResizeHandler={true}
           style={{ width: '100%', height: '240px' }}
         />
       </div>

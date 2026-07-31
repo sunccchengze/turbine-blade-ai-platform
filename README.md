@@ -51,10 +51,13 @@ Interactive 3D Design Explorer (React + Three.js)
 
 ## 📅 Development Progress
 
-- [ ] Day 01-12: Data pipeline & preprocessing
-- [ ] Day 13-28: PyTorch surrogate model
-- [ ] Day 29-42: Full-stack interactive platform
+- [x] Day 01-12: Data pipeline & preprocessing (PLAID NASA Rotor 37, 1,000 samples)
+- [x] Day 13-28: PyTorch surrogate model (Residual MLP + physics constraints, MC Dropout UQ, NSGA-II)
+- [ ] Day 29-42: Full-stack interactive platform (FastAPI + React + Three.js — 5 pages live, in progress)
 - [ ] Day 43-50: Testing, optimization & deployment
+
+**Current status — Day 16:** backend & frontend deployed and live;
+design-space explorer (response-surface heatmap) shipped on Day 15.
 
 ---
 

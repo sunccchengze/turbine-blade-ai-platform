@@ -448,6 +448,7 @@ export default function ExplorePage() {
                   legend: { x: 0, y: 1.08, orientation: 'h', font: { size: 11, color: '#94a3b8' } },
                 }}
                 config={{ displayModeBar: false, responsive: true }}
+                useResizeHandler={true}
                 style={{ width: '100%' }}
                 onClick={ev => {
                   const p = ev.points?.[0]

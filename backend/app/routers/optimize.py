@@ -83,14 +83,3 @@ async def get_uq_results():
         "n_samples": len(df),
         "results":   df.to_dict('records'),
     }
-
-
-@router.get("/debug-path")
-async def debug_path():
-    """调试端点：查看服务器上的文件路径"""
-    return {
-        "BASE_DIR":    str(BASE_DIR),
-        "DATA_DIR":    str(DATA_DIR),
-        "DATA_EXISTS": DATA_DIR.exists(),
-        "FILES":       [f.name for f in DATA_DIR.iterdir()] if DATA_DIR.exists() else [],
-    }
