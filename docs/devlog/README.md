@@ -7,8 +7,8 @@
 > This devlog mirrors the real commit history of this repository. Every entry links to
 > an actual commit, and every number is reproducible from this repo (see README § Reproduce).
 
-**周期**：2026-07-30（Day 1）→ 2026-07-31（Day 19，当前）
-**提交数**：37 个（截至 Day 19，`1839aa5`）
+**周期**：2026-07-30（Day 1）→ 2026-07-31（Day 22，当前）
+**提交数**：41 个（截至 Day 22，`5d768f8`）
 **作者**：孙承泽 · 本科二年级 · 独立完成（Sun Chengze · Undergraduate (Year 2) · Independent Project）
 
 ---
@@ -213,6 +213,41 @@ lint 16 warnings 0 errors）；线上部分由作者在**移动端 + 电脑端**
 统一修正为**留出测试集（n=100, random_state=42）实测**的 **0.9844 / 0.9561 / 0.9827**，
 并在 README 附一键复现脚本、API 新增 `r2_evaluated_on` 字段说明评估口径。
 **为什么重要**：评估口径（训练集/测试集）是评审第一问 —— 答不出口径比数字低一点致命得多。
+
+---
+
+## Day 20 — About 页 + 署名 + devlog
+
+- `ca61c0f` Day 20: About page with author credit + devlog for Day 1-19
+
+**产出**：新增 `/about` 页（署名「孙承泽 · 本科二年级 · 独立完成」、项目缘起、技术旅程时间线、
+方法与数据、GitHub 链接），独立 chunk 懒加载（14.9 kB，不进首屏）；导航加入口、首页 footer 加署名模块；
+新建 `docs/devlog/README.md` 回溯 Day 1–19（37 个真实提交对号入座）。
+
+---
+
+## Day 21 — Pareto → 3D 叶片联动
+
+- `b829618` Day 21: Pareto-to-3D blade linkage (select solution -> render geometry)
+
+**产出**：`/api/optimize/pareto` 每条解新增 `geometry`（Ω / P / 表面压力均值·标准差 / 温度均值 / 径向均值）；
+OptimizePage 点选 Pareto 解 → `BladeViewer3D` 实时渲染对应叶型 + 工况参数小表。
+
+---
+
+## Day 22 — NSGA-II 演化动画 + 数据流水线统一
+
+- `5d768f8` Day 22: NSGA-II evolution animation + unify Pareto data pipeline (reproducible via backend/scripts)
+
+**产出**：
+- `backend/scripts/generate_pareto_evolution.py`：同 seed (42) 同配置重跑 NSGA-II，每 10 代记录一帧
+  非支配前沿 → `pareto_evolution.csv`（21 帧、1,830 条，全流程约 3 秒，可一键复现）。
+- 新端点 `GET /api/optimize/pareto-evolution`。
+- OptimizePage 新增**演化动画**（Plotly frames：播放/暂停 + 代际滑块，200 代优化过程 8 秒播完）。
+- **数字口径统一**：复现时发现原 `pareto_front_solutions.csv`（及 README 引用的 η 0.9211 / ṁ 21.64 / π 2.1012）
+  是旧 pymoo 环境产物，与当前可复现流水线不一致（评估器本身逐位一致，R²=1.000000，差异纯来自优化器版本）。
+  已统一为同源新结果 **η 0.9173 / ṁ 21.74 / π 2.1073**，并同步更新 README 与 devlog ——
+  现在主图、动画末帧、README、API 全部来自同一条可复现流水线。
 
 ---
 
