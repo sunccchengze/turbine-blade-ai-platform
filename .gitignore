@@ -11,6 +11,17 @@ data/raw/*.tar.gz
 # Python 缓存
 __pycache__/
 *.pyc
-# 交接文档（内部作战信息，勿推 GitHub）
-HANDOFF.md
-handoff/
+
+# 本地环境与密钥
+.env
+.env.local
+*.pem
+*.key
+
+# 构建产物与依赖
+node_modules/
+dist/
+build/
+*.egg-info/
+.venv/
+venv/
