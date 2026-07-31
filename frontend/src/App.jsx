@@ -79,10 +79,18 @@ function RouteTitles() {
   return null
 }
 
+// 路由切换自动回到页顶（SPA 细节：避免从页面中部切入新页面）
+function ScrollToTop() {
+  const { pathname } = useLocation()
+  useEffect(() => { window.scrollTo(0, 0) }, [pathname])
+  return null
+}
+
 export default function App() {
   return (
     <BrowserRouter>
       <RouteTitles />
+      <ScrollToTop />
       {/* 全局背景光球 */}
       <div style={{
         position: 'fixed', inset: 0,
