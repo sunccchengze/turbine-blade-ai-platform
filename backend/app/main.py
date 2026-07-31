@@ -46,6 +46,9 @@ app.add_middleware(
         "http://localhost:5173",
         "http://localhost:3000",
     ],
+    # 本地开发兜底：Vite 在端口被占用时会自动顺延（5173→5174→…），
+    # 放行所有 localhost / 127.0.0.1 端口，避免换端口后健康检查被浏览器拦截。
+    allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$",
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -68,6 +71,7 @@ async def root():
             "predict":          "/api/predict/",
             "predict_health":   "/api/predict/health",
             "model_info":       "/api/predict/model-info",
+            "design_sweep":     "/api/predict/sweep",
             "pareto_front":     "/api/optimize/pareto",
             "training_stats":   "/api/optimize/training-data-stats",
             "uq_results":       "/api/optimize/uq-results",

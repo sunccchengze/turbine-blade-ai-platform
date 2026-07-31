@@ -1,11 +1,30 @@
+import { lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import { Zap } from 'lucide-react'
+import { Zap, Loader2 } from 'lucide-react'
 import Navbar from './components/Navbar'
 import WakeUpBanner from './components/WakeUpBanner'
 import HomePage from './pages/HomePage'
-import PredictPage from './pages/PredictPage'
-import OptimizePage from './pages/OptimizePage'
-import UQPage from './pages/UQPage'
+
+// ── 路由级代码分割 ──────────────────────────────────────────
+// three.js (Predict) 和 Plotly (Explore/Optimize/UQ) 体积巨大，
+// 按路由懒加载后，首页首屏只需下载 ~500KB 而非整个 6MB bundle。
+const PredictPage  = lazy(() => import('./pages/PredictPage'))
+const ExplorePage  = lazy(() => import('./pages/ExplorePage'))
+const OptimizePage = lazy(() => import('./pages/OptimizePage'))
+const UQPage       = lazy(() => import('./pages/UQPage'))
+
+// 懒加载占位屏：与站点暗色风格一致的轻量转圈
+function PageLoading() {
+  return (
+    <div style={{
+      display: 'flex', flexDirection: 'column', alignItems: 'center',
+      justifyContent: 'center', minHeight: '50vh', gap: '12px',
+    }}>
+      <Loader2 size={24} color="#818cf8" className="spin" />
+      <span style={{ fontSize: '12px', color: '#475569' }}>Loading module…</span>
+    </div>
+  )
+}
 
 function NewsBanner() {
   return (
@@ -70,12 +89,15 @@ export default function App() {
         <Navbar />
         <NewsBanner />
         <WakeUpBanner />
-        <Routes>
-          <Route path="/"         element={<HomePage />}    />
-          <Route path="/predict"  element={<PredictPage />} />
-          <Route path="/optimize" element={<OptimizePage />}/>
-          <Route path="/uq"       element={<UQPage />}      />
-        </Routes>
+        <Suspense fallback={<PageLoading />}>
+          <Routes>
+            <Route path="/"         element={<HomePage />}    />
+            <Route path="/predict"  element={<PredictPage />} />
+            <Route path="/explore"  element={<ExplorePage />} />
+            <Route path="/optimize" element={<OptimizePage />}/>
+            <Route path="/uq"       element={<UQPage />}      />
+          </Routes>
+        </Suspense>
       </div>
     </BrowserRouter>
   )

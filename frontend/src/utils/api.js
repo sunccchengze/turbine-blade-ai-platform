@@ -42,6 +42,12 @@ export const getBaselineFeatures = async () => {
   return response.data
 }
 
+// 设计空间二维扫描：固定其余72维，x×y网格批量预测（热力图数据源）
+export const sweepDesignSpace = async (payload) => {
+  const response = await api.post('/api/predict/sweep', payload)
+  return response.data
+}
+
 export const getModelInfo = async () => {
   const response = await api.get('/api/predict/model-info')
   return response.data

@@ -6,8 +6,12 @@ predict.py
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 from typing import List, Optional
+import time
 import numpy as np
-from app.model import predict_single, predict_with_uncertainty
+from app.model import (
+    predict_single, predict_with_uncertainty, predict_batch,
+    INPUT_COLS, OUTPUT_COLS, FEATURE_STATS,
+)
 
 router = APIRouter(prefix="/api/predict", tags=["Prediction"])
 
@@ -121,6 +125,102 @@ async def model_info():
         ],
         "training_data": "NASA Rotor 37 (PLAID Dataset, 1000 samples)",
     }
+class SweepRequest(BaseModel):
+    """设计空间二维扫描请求（设计空间探索热力图的数据源）"""
+    base_features: List[float] = Field(
+        ...,
+        description="74维基准特征向量，非扫描维度固定取这里的值",
+        min_length=74,
+        max_length=74,
+    )
+    param_x: str = Field(..., description="X轴扫描参数名（必须是74个输入特征之一）")
+    param_y: str = Field(..., description="Y轴扫描参数名（必须与param_x不同）")
+    x_values: List[float] = Field(..., min_length=2, max_length=40)
+    y_values: List[float] = Field(..., min_length=2, max_length=40)
+    output:   str = Field(
+        default="Efficiency",
+        description="扫描的输出指标：Compression_ratio | Efficiency | Massflow",
+    )
+
+
+@router.post("/sweep")
+async def sweep_design_space(request: SweepRequest):
+    """
+    设计空间二维参数扫描（MDO 敏感性分析的核心端点）
+
+    将 base_features 中除 (param_x, param_y) 外的 72 个维度固定，
+    在 x×y 网格上批量推理，返回性能响应面 z[y][x]。
+    前端据此渲染设计空间热力图。
+
+    越界保护：扫描值超出训练数据观测范围时返回 422，
+    因为代理模型在外推区域的预测物理上不可信。
+    """
+    # ── 校验：参数名合法且互不相同 ─────────────────────────
+    if request.param_x == request.param_y:
+        raise HTTPException(
+            status_code=422,
+            detail=f"param_x 和 param_y 不能相同（都是 '{request.param_x}'）",
+        )
+    for name in (request.param_x, request.param_y):
+        if name not in INPUT_COLS:
+            raise HTTPException(
+                status_code=422,
+                detail=f"未知特征 '{name}'。合法特征名见 /api/predict/baseline-features 的 feature_names",
+            )
+    if request.output not in OUTPUT_COLS:
+        raise HTTPException(
+            status_code=422,
+            detail=f"未知输出 '{request.output}'，可选：{OUTPUT_COLS}",
+        )
+
+    # ── 校验：扫描范围不得外推出训练分布 ───────────────────
+    for name, values in ((request.param_x, request.x_values),
+                         (request.param_y, request.y_values)):
+        lo, hi = FEATURE_STATS[name]
+        vmin, vmax = min(values), max(values)
+        if vmin < lo or vmax > hi:
+            raise HTTPException(
+                status_code=422,
+                detail=(
+                    f"'{name}' 扫描范围 [{vmin:.6g}, {vmax:.6g}] 超出训练数据范围 "
+                    f"[{lo:.6g}, {hi:.6g}]。代理模型不支持外推预测。"
+                ),
+            )
+
+    # ── 构建网格批量输入（(nx*ny, 74)，x 为快变轴）─────────
+    t0 = time.perf_counter()
+    nx, ny = len(request.x_values), len(request.y_values)
+    base   = np.asarray(request.base_features, dtype=float)
+    batch  = np.repeat(base[None, :], nx * ny, axis=0)
+    ix     = INPUT_COLS.index(request.param_x)
+    iy     = INPUT_COLS.index(request.param_y)
+    batch[:, ix] = np.tile(request.x_values, ny)
+    batch[:, iy] = np.repeat(request.y_values, nx)
+
+    # ── 一次 ONNX 批量推理 ─────────────────────────────────
+    preds  = predict_batch(batch)
+    z_flat = np.array([p[request.output] for p in preds], dtype=float)
+    z_grid = z_flat.reshape(ny, nx)  # z[y_idx][x_idx]
+    elapsed_ms = (time.perf_counter() - t0) * 1000
+
+    return {
+        "status":    "success",
+        "param_x":   request.param_x,
+        "param_y":   request.param_y,
+        "output":    request.output,
+        "x_values":  request.x_values,
+        "y_values":  request.y_values,
+        "z":         [[float(v) for v in row] for row in z_grid],
+        "z_min":     float(z_grid.min()),
+        "z_max":     float(z_grid.max()),
+        "z_mean":    float(z_grid.mean()),
+        "baseline_prediction": predict_single(base)[request.output],
+        "n_evaluations": nx * ny,
+        "elapsed_ms":    round(elapsed_ms, 1),
+        "model_version": "ResidualSurrogate-v2",
+    }
+
+
 @router.get("/baseline-features")
 async def get_baseline_features():
     """
