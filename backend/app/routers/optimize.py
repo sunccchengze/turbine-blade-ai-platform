@@ -35,6 +35,33 @@ def load_pareto_results():
     return []
 
 
+@router.get("/pareto-evolution")
+async def get_pareto_evolution():
+    """NSGA-II 演化轨迹（每 10 代一帧非支配前沿，供前端演化动画使用）"""
+    evo_path = DATA_DIR / "pareto_evolution.csv"
+    if not evo_path.exists():
+        raise HTTPException(
+            status_code=404,
+            detail=f"Pareto evolution data not found. Looking in: {DATA_DIR}",
+        )
+    df = pd.read_csv(evo_path)
+    generations = []
+    for gen, grp in df.groupby("gen"):
+        generations.append({
+            "generation":   int(gen),
+            "n_solutions":  len(grp),
+            "solutions":    grp[['Efficiency', 'Massflow',
+                                 'Compression_ratio']].to_dict('records'),
+        })
+    generations.sort(key=lambda g: g["generation"])
+    return {
+        "status":         "success",
+        "n_generations":  len(generations),
+        "max_generation": generations[-1]["generation"],
+        "generations":    generations,
+    }
+
+
 @router.get("/pareto")
 async def get_pareto_front():
     results = load_pareto_results()

@@ -90,7 +90,8 @@
 - `1d34040` Day 08: NSGA-II optimization complete, Pareto front generated
 
 **产出**：NSGA-II（pymoo，种群 100、200 代），约束 π≥1.8、η≥0.84，得到 **100 个 Pareto 非支配解**。
-**结果**：最优 η = 0.9211（+5.84% vs 训练集均值），最大 ṁ = 21.64 kg/s（+10.93%）。
+**结果**：最优 η = 0.9173（+5.40% vs 训练集均值），最大 ṁ = 21.74 kg/s（+11.42%）
+（数字于 Day 22 统一为 pymoo 0.6.1 + 生产 ONNX 的可复现流水线，见 `backend/scripts/generate_pareto_evolution.py`）。
 
 ---
 

@@ -6,7 +6,7 @@ import {
   RefreshCw, AlertCircle, Info,
   ChevronRight, BarChart3
 } from 'lucide-react'
-import { getParetoFront, getTrainingStats } from '../utils/api'
+import { getParetoFront, getTrainingStats, getParetoEvolution } from '../utils/api'
 import BladeViewer3D from '../components/BladeViewer3D'
 
 // ── 指标卡片 ───────────────────────────────────────────────
@@ -45,6 +45,8 @@ export default function OptimizePage() {
   const [error,         setError]         = useState(null)
   const [selected,      setSelected]      = useState(null)
   const [colorBy,       setColorBy]       = useState('Compression_ratio')
+  const [evolutionData, setEvolutionData] = useState(null)
+  const [evolutionErr,  setEvolutionErr]  = useState(false)
 
   useEffect(() => {
     Promise.all([getParetoFront(), getTrainingStats()])
@@ -59,6 +61,11 @@ export default function OptimizePage() {
       })
       .catch(e => setError(e.message))
       .finally(() => setLoading(false))
+
+    // 演化轨迹（独立容错：旧后端无此端点时只隐藏动画，不影响主页面）
+    getParetoEvolution()
+      .then(setEvolutionData)
+      .catch(() => setEvolutionErr(true))
   }, [])
 
   if (loading) return (
@@ -199,6 +206,89 @@ export default function OptimizePage() {
     modeBarButtonsToRemove: ['lasso2d', 'select2d', 'autoScale2d'],
     displaylogo: false,
     responsive: true,
+  }
+
+  // ── NSGA-II 演化动画（每 10 代一帧）──────────────────────
+  const evolutionFrames = (evolutionData?.generations || []).map(g => ({
+    name: `gen_${g.generation}`,
+    data: [{
+      type: 'scatter', mode: 'markers',
+      x: g.solutions.map(s => s.Massflow),
+      y: g.solutions.map(s => s.Efficiency),
+      text: g.solutions.map(() => `第 ${g.generation} 代 Generation ${g.generation}`),
+      marker: {
+        size: 8, color: '#22d3ee', opacity: 0.85,
+        line: { color: 'rgba(255,255,255,0.4)', width: 0.5 },
+      },
+      hovertemplate: 'η = %{y:.4f}<br>ṁ = %{x:.3f} kg/s<br>%{text}<extra>演化前沿 Evolution</extra>',
+    }],
+  }))
+
+  // 坐标范围固定（取全部帧的 min/max + 5% padding），保证「前沿铺开」的动感
+  const allEvoSolutions = (evolutionData?.generations || []).flatMap(g => g.solutions)
+  let evoXmin = 19, evoXmax = 22, evoYmin = 0.85, evoYmax = 0.93
+  if (allEvoSolutions.length > 0) {
+    const xs = allEvoSolutions.map(s => s.Massflow)
+    const ys = allEvoSolutions.map(s => s.Efficiency)
+    const padX = (Math.max(...xs) - Math.min(...xs)) * 0.05 || 0.05
+    const padY = (Math.max(...ys) - Math.min(...ys)) * 0.05 || 0.005
+    evoXmin = Math.min(...xs) - padX; evoXmax = Math.max(...xs) + padX
+    evoYmin = Math.min(...ys) - padY; evoYmax = Math.max(...ys) + padY
+  }
+
+  const evolutionTrace0 = evolutionFrames[0]?.data[0]
+    || { type: 'scatter', mode: 'markers', x: [], y: [] }
+
+  const evolutionLayout = {
+    paper_bgcolor: 'rgba(0,0,0,0)',
+    plot_bgcolor:  'rgba(0,0,0,0)',
+    font:  { color: '#94a3b8', family: 'Inter, sans-serif', size: 11 },
+    xaxis: {
+      title: { text: '质量流量 Mass Flow ṁ (kg/s)', font: { color: '#64748b', size: 12 } },
+      range: [evoXmin, evoXmax],
+      gridcolor: 'rgba(255,255,255,0.04)', zerolinecolor: 'rgba(255,255,255,0.06)',
+      tickfont: { color: '#475569' },
+    },
+    yaxis: {
+      title: { text: '等熵效率 Isentropic Efficiency η', font: { color: '#64748b', size: 12 } },
+      range: [evoYmin, evoYmax],
+      gridcolor: 'rgba(255,255,255,0.04)', zerolinecolor: 'rgba(255,255,255,0.06)',
+      tickfont: { color: '#475569' },
+    },
+    margin: { t: 44, b: 60, l: 60, r: 20 },
+    annotations: [{
+      text: 'NSGA-II 演化：每 10 代前沿快照 · 共 200 代',
+      x: 0, y: 1.06, xref: 'paper', yref: 'paper', showarrow: false,
+      font: { color: '#475569', size: 11 },
+    }],
+    updatemenus: [{
+      type: 'buttons', showactive: false, x: 1, y: 1.12, xanchor: 'right', yanchor: 'top',
+      font: { color: '#e2e8f0', size: 11 },
+      bgcolor: 'rgba(99,102,241,0.2)', bordercolor: 'rgba(99,102,241,0.4)', borderwidth: 1,
+      buttons: [
+        { label: '▶ 播放 Play', method: 'animate',
+          args: [null, { frame: { duration: 450, redraw: false }, fromcurrent: true, transition: { duration: 200 } }] },
+        { label: '⏸ 暂停 Pause', method: 'animate',
+          args: [[null], { frame: { duration: 0, redraw: false }, mode: 'immediate' }] },
+      ],
+    }],
+    sliders: [{
+      pad: { t: 24 },
+      currentvalue: {
+        prefix: '代数 Generation ', font: { color: '#818cf8', size: 12 },
+        xanchor: 'right', offset: 6,
+      },
+      steps: evolutionFrames.map(f => ({
+        label: String(f.name.replace('gen_', '')),
+        method: 'animate',
+        args: [[f.name], { mode: 'immediate', frame: { duration: 0, redraw: false } }],
+      })),
+      bgcolor: 'rgba(30,41,59,0.6)',
+      bordercolor: 'rgba(255,255,255,0.08)',
+      activebgcolor: 'rgba(99,102,241,0.4)',
+      activecolor: '#e2e8f0',
+      font: { color: '#94a3b8', size: 10 },
+    }],
   }
 
   // 点击事件处理
@@ -355,6 +445,41 @@ export default function OptimizePage() {
               useResizeHandler={true}
               style={{ width: '100%', height: '420px' }}
             />
+
+            {/* NSGA-II 演化动画（Day 22） */}
+            <div style={{ marginTop: '24px' }}>
+              <h3 style={{ fontSize: '14px', fontWeight: 600, color: '#e2e8f0', marginBottom: '3px' }}>
+                NSGA-II 演化动画 Evolution Animation
+              </h3>
+              <p style={{ fontSize: '11px', color: '#475569', marginBottom: '10px' }}>
+                200 代优化过程中每 10 代的前沿快照 · 播放观看非支配前沿如何逐步铺开
+                <br />
+                <span style={{ fontSize: '10px', color: '#334155' }}>
+                  Front snapshots every 10 generations during the 200-generation NSGA-II run.
+                </span>
+              </p>
+              {evolutionErr ? (
+                <div style={{
+                  padding: '24px', textAlign: 'center', color: '#475569', fontSize: '12px',
+                  border: '1px dashed rgba(255,255,255,0.08)', borderRadius: '10px',
+                }}>
+                  演化动画需要后端端点 /api/optimize/pareto-evolution（更新后端后可用）
+                </div>
+              ) : evolutionFrames.length > 0 ? (
+                <Plot
+                  data={[evolutionTrace0]}
+                  layout={evolutionLayout}
+                  frames={evolutionFrames}
+                  config={{ displayModeBar: false, displaylogo: false, responsive: true }}
+                  useResizeHandler={true}
+                  style={{ width: '100%', height: '380px' }}
+                />
+              ) : (
+                <div style={{ padding: '24px', textAlign: 'center', color: '#475569', fontSize: '12px' }}>
+                  加载演化数据… Loading evolution data…
+                </div>
+              )}
+            </div>
           </motion.div>
 
           {/* 右侧：选中点详情 */}
