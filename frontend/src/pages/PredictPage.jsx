@@ -4,7 +4,7 @@ import { motion } from 'framer-motion'
 import {
   Cpu, RefreshCw, AlertCircle,
   TrendingUp, Gauge, Wind,
-  ChevronRight, Info
+  Info
 } from 'lucide-react'
 import { predictPerformance, getBaselineFeatures } from '../utils/api'
 
@@ -221,7 +221,7 @@ export default function PredictPage() {
         setFeatures({ ...data.features })
         setStats(data.stats)
       })
-      .catch(err => setError('基准设计特征加载失败 / Failed to load baseline features'))
+      .catch(() => setError('基准设计特征加载失败 / Failed to load baseline features'))
   }, [])
 
   // 防抖预测（用户停止拖动300ms后触发）
@@ -265,10 +265,14 @@ export default function PredictPage() {
     triggerPredict(resetFeats)
   }
 
-  // 页面加载完成后自动预测一次
+  // 页面加载完成后自动预测一次（用 ref 保证只触发一次，依赖数组干净）
+  const didInit = useRef(false)
   useEffect(() => {
-    if (features) triggerPredict(features)
-  }, [features && Object.keys(features).length > 0])
+    if (features && !didInit.current) {
+      didInit.current = true
+      triggerPredict(features)
+    }
+  }, [features, triggerPredict])
 
   // 从结果中提取数值
   const getPredVal = (key) => {

@@ -139,13 +139,16 @@ function buildBladeGeometry(params) {
 function BladeMesh({ params }) {
   const groupRef = useRef()
 
-  const geometry = useMemo(() => buildBladeGeometry(params), [
+  // 几何重建 key：量化后的参数。微小变化（<量化步长）不重建几何，拖动滑块时避免卡顿。
+  const geometryKey = [
     Math.round((params.omega  || 1710)   / 5),
     Math.round((params.pMean  || 109000) / 1000),
     Math.round((params.pStd   || 34000)  / 500),
     Math.round((params.tMean  || 349)    / 2),
     Math.round((params.rMean  || 0.220)  * 200),
-  ])
+  ]
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- 依赖是量化后的 key，属有意优化
+  const geometry = useMemo(() => buildBladeGeometry(params), geometryKey)
 
   useFrame((state) => {
     if (groupRef.current) {

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import Plot from 'react-plotly.js'
 import {
-  BarChart3, RefreshCw, AlertCircle,
+  RefreshCw, AlertCircle,
   Shield, Info, TrendingUp, Gauge, Wind
 } from 'lucide-react'
 import { getUQResults } from '../utils/api'
@@ -44,7 +44,7 @@ function UQPanel({ label, trueKey, predKey, sigmaKey, lowerKey, upperKey,
   const upperSorted = sortIdx.map(i => upperVals[i])
 
   // 覆盖率
-  const covered  = data.filter((d, i) =>
+  const covered  = data.filter((d) =>
     d[trueKey] >= d[lowerKey] && d[trueKey] <= d[upperKey]
   ).length
   const coverage = (covered / data.length) * 100

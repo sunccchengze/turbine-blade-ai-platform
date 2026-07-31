@@ -1,0 +1,13 @@
+# 构建镜像时排除：减小体积、加快部署（后端运行时不需要）
+.git
+.gitignore
+__pycache__
+*.pyc
+*.pth
+*.log
+.venv
+venv
+cache/
+data/raw/cache/
+data/raw/*.tgz
+data/raw/*.zip
