@@ -19,7 +19,7 @@ function CoverageBadge({ value }) {
       color: good ? '#34d399' : '#fbbf24',
       border: `1px solid ${good ? 'rgba(52,211,153,0.2)' : 'rgba(251,191,36,0.2)'}`,
     }}>
-      {value.toFixed(1)}% coverage
+      覆盖率 {value.toFixed(1)}%
     </span>
   )
 }
@@ -60,7 +60,7 @@ function UQPanel({ label, trueKey, predKey, sigmaKey, lowerKey, upperKey,
   const ciTrace = {
     type: 'scatter',
     mode: 'lines',
-    name: '95% CI',
+    name: '95% 置信区间 CI',
     x: [...xAxis, ...xAxis.slice().reverse()],
     y: [...upperSorted, ...lowerSorted.slice().reverse()],
     fill: 'toself',
@@ -71,7 +71,7 @@ function UQPanel({ label, trueKey, predKey, sigmaKey, lowerKey, upperKey,
 
   const trueTrace = {
     type: 'scatter', mode: 'lines',
-    name: 'True Value',
+    name: '真实值 True',
     x: xAxis, y: trueSorted,
     line: { color: '#f1f5f9', width: 1.5 },
     hovertemplate: `True: %{y:.5f}<extra></extra>`,
@@ -79,7 +79,7 @@ function UQPanel({ label, trueKey, predKey, sigmaKey, lowerKey, upperKey,
 
   const predTrace = {
     type: 'scatter', mode: 'lines',
-    name: 'Predicted Mean',
+    name: '预测均值 Predicted',
     x: xAxis, y: predSorted,
     line: { color, width: 1.5, dash: 'dot' },
     hovertemplate: `Pred: %{y:.5f}<extra></extra>`,
@@ -90,7 +90,7 @@ function UQPanel({ label, trueKey, predKey, sigmaKey, lowerKey, upperKey,
     plot_bgcolor:  'rgba(0,0,0,0)',
     font: { color: '#94a3b8', size: 10 },
     xaxis: {
-      title: { text: 'Test Samples (sorted)', font: { color: '#64748b', size: 11 } },
+      title: { text: '测试样本（按真实值排序）Test Samples', font: { color: '#64748b', size: 11 } },
       gridcolor: 'rgba(255,255,255,0.03)',
       tickfont: { color: '#475569' },
     },
@@ -119,7 +119,7 @@ function UQPanel({ label, trueKey, predKey, sigmaKey, lowerKey, upperKey,
   const sigmaHist = {
     type: 'histogram',
     x: sigmaVals,
-    name: 'σ distribution',
+    name: 'σ 分布 distribution',
     marker: {
       color: `${color}60`,
       line: { color: color, width: 0.5 },
@@ -133,12 +133,12 @@ function UQPanel({ label, trueKey, predKey, sigmaKey, lowerKey, upperKey,
     plot_bgcolor:  'rgba(0,0,0,0)',
     font: { color: '#94a3b8', size: 10 },
     xaxis: {
-      title: { text: 'Uncertainty σ', font: { color: '#64748b', size: 11 } },
+      title: { text: '不确定性 Uncertainty σ', font: { color: '#64748b', size: 11 } },
       gridcolor: 'rgba(255,255,255,0.03)',
       tickfont: { color: '#475569' },
     },
     yaxis: {
-      title: { text: 'Count', font: { color: '#64748b', size: 11 } },
+      title: { text: '样本数 Count', font: { color: '#64748b', size: 11 } },
       gridcolor: 'rgba(255,255,255,0.03)',
       tickfont: { color: '#475569' },
     },
@@ -232,7 +232,7 @@ export default function UQPage() {
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <div style={{ textAlign: 'center', color: '#64748b' }}>
         <RefreshCw size={28} style={{ margin: '0 auto 10px', animation: 'spin 1s linear infinite' }} />
-        <p style={{ fontSize: '14px' }}>Loading UQ results...</p>
+        <p style={{ fontSize: '14px' }}>正在加载 UQ 结果… Loading…</p>
       </div>
     </div>
   )
@@ -270,14 +270,21 @@ export default function UQPage() {
               <Shield size={18} color="#a78bfa" />
             </div>
             <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#f1f5f9' }}>
-              Uncertainty Quantification
+              不确定性量化
+              <span style={{ fontSize: '11px', color: '#475569', fontWeight: 600, marginLeft: '10px', letterSpacing: '0.08em' }}>
+                UNCERTAINTY QUANTIFICATION
+              </span>
             </h1>
           </div>
-          <p style={{ fontSize: '14px', color: '#64748b', maxWidth: '620px' }}>
-            MC Dropout inference with{' '}
-            <span style={{ color: '#a78bfa', fontWeight: 500 }}>100 forward passes</span>
-            {' '}per prediction. The shaded band shows the 95% confidence interval.
-            Good UQ means the true value consistently falls within the band.
+          <p style={{ fontSize: '14px', color: '#64748b', maxWidth: '700px', lineHeight: 1.7 }}>
+            每次预测执行{' '}
+            <span style={{ color: '#a78bfa', fontWeight: 500 }}>100 次 MC Dropout 随机前向传播</span>
+            ，阴影带为 95% 置信区间。可靠的不确定性量化（UQ）意味着真实值稳定落在置信带内——这是代理模型工程可信度的直接证据。
+            <br />
+            <span style={{ fontSize: '12px', color: '#475569' }}>
+              100 stochastic forward passes per prediction; the shaded band is the 95% confidence interval.
+              Trustworthy UQ keeps true values consistently inside the band.
+            </span>
           </p>
         </motion.div>
 
@@ -296,15 +303,18 @@ export default function UQPage() {
           }}>
             <Info size={15} color="#a78bfa" style={{ flexShrink: 0, marginTop: '1px' }} />
             <div style={{ fontSize: '13px', color: '#64748b', lineHeight: 1.8 }}>
-              <span style={{ color: '#94a3b8', fontWeight: 600 }}>MC Dropout method: </span>
-              During inference, Dropout layers remain active (unlike standard evaluation).
-              Running 100 stochastic forward passes produces a distribution of predictions.
-              The{' '}
-              <span style={{ color: '#a78bfa' }}>mean</span>
-              {' '}is the final prediction; the{' '}
-              <span style={{ color: '#a78bfa' }}>standard deviation σ</span>
-              {' '}quantifies epistemic uncertainty.
-              Wide confidence intervals indicate out-of-distribution inputs.
+              <span style={{ color: '#94a3b8', fontWeight: 600 }}>方法原理 MC Dropout Method： </span>
+              推理时保持 Dropout 层激活（与常规评估不同），100 次随机前向传播产生预测分布。
+              <span style={{ color: '#a78bfa' }}>均值 Mean</span>
+              作为最终预测，
+              <span style={{ color: '#a78bfa' }}>标准差 σ</span>
+              量化认识不确定性（Epistemic Uncertainty）。置信带异常变宽通常说明输入超出训练分布（Out-of-Distribution）。
+              <br />
+              <span style={{ fontSize: '12px', color: '#475569' }}>
+                Dropout stays active during inference; 100 stochastic passes yield a prediction distribution —
+                the mean is the final prediction, σ quantifies epistemic uncertainty. Wide intervals flag
+                out-of-distribution inputs.
+              </span>
             </div>
           </div>
         </motion.div>
@@ -312,7 +322,7 @@ export default function UQPage() {
         {/* 三个指标的 UQ 分析面板 */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <UQPanel
-            label="Isentropic Efficiency η"
+            label="等熵效率 Isentropic Efficiency η"
             trueKey="Efficiency_true"
             predKey="Efficiency_pred"
             sigmaKey="Efficiency_sigma"
@@ -323,7 +333,7 @@ export default function UQPage() {
             data={uqData}
           />
           <UQPanel
-            label="Total Pressure Ratio π"
+            label="总压比 Total Pressure Ratio π"
             trueKey="Compression_ratio_true"
             predKey="Compression_ratio_pred"
             sigmaKey="Compression_ratio_sigma"
@@ -334,7 +344,7 @@ export default function UQPage() {
             data={uqData}
           />
           <UQPanel
-            label="Mass Flow Rate ṁ (kg/s)"
+            label="质量流量 Mass Flow ṁ (kg/s)"
             trueKey="Massflow_true"
             predKey="Massflow_pred"
             sigmaKey="Massflow_sigma"

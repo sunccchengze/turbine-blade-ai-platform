@@ -74,7 +74,7 @@ function ResultCard({ label, value, sigma, unit, color, icon: Icon, baseline }) 
           fontSize: '11px', fontWeight: 600,
           color: parseFloat(improvement) >= 0 ? '#34d399' : '#f87171',
         }}>
-          {parseFloat(improvement) >= 0 ? '▲' : '▼'} {Math.abs(improvement)}% vs baseline
+          {parseFloat(improvement) >= 0 ? '▲' : '▼'} {Math.abs(improvement)}% 相对基准 vs baseline
         </div>
       )}
     </div>
@@ -172,7 +172,7 @@ export default function PredictPage() {
         setFeatures({ ...data.features })
         setStats(data.stats)
       })
-      .catch(err => setError('Failed to load baseline features'))
+      .catch(err => setError('基准设计特征加载失败 / Failed to load baseline features'))
   }, [])
 
   // 防抖预测（用户停止拖动300ms后触发）
@@ -194,7 +194,7 @@ export default function PredictPage() {
           p: feats.P,
         }, ...prev].slice(0, 8))
       } catch (e) {
-        setError(e.message || 'Prediction failed')
+        setError(e.message || '预测失败 Prediction failed')
       } finally {
         setLoading(false)
       }
@@ -241,7 +241,7 @@ export default function PredictPage() {
       }}>
         <div style={{ textAlign: 'center', color: '#64748b' }}>
           <RefreshCw size={32} style={{ margin: '0 auto 12px', animation: 'spin 1s linear infinite' }} />
-          <p>Loading baseline features...</p>
+          <p>正在加载基准设计特征… Loading…</p>
         </div>
       </div>
     )
@@ -266,12 +266,18 @@ export default function PredictPage() {
               <Cpu size={18} color="#818cf8" />
             </div>
             <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#f1f5f9' }}>
-              Live Prediction
+              实时性能预测
+              <span style={{ fontSize: '11px', color: '#475569', fontWeight: 600, marginLeft: '10px', letterSpacing: '0.08em' }}>
+                LIVE PREDICTION
+              </span>
             </h1>
           </div>
-          <p style={{ fontSize: '14px', color: '#64748b', maxWidth: '560px' }}>
-            Adjust blade operating parameters and get real-time aerodynamic performance
-            predictions from the surrogate model — no CFD required.
+          <p style={{ fontSize: '14px', color: '#64748b', maxWidth: '680px', lineHeight: 1.7 }}>
+            调节压气机叶片的运行参数，气动代理模型（Aerodynamic Surrogate Model）实时输出气动性能预测——无需 CFD 计算。
+            <br />
+            <span style={{ fontSize: '12px', color: '#475569' }}>
+              Adjust blade operating parameters and get real-time aerodynamic performance predictions from the surrogate model — no CFD required.
+            </span>
           </p>
         </motion.div>
 
@@ -303,7 +309,7 @@ export default function PredictPage() {
                 justifyContent: 'space-between', marginBottom: '24px',
               }}>
                 <h3 style={{ fontSize: '14px', fontWeight: 600, color: '#e2e8f0' }}>
-                  Operating Parameters
+                  运行参数 Operating Parameters
                 </h3>
                 <button
                   onClick={handleReset}
@@ -318,13 +324,13 @@ export default function PredictPage() {
                   onMouseEnter={e => e.currentTarget.style.color = '#94a3b8'}
                   onMouseLeave={e => e.currentTarget.style.color = '#64748b'}
                 >
-                  <RefreshCw size={11} /> Reset
+                  <RefreshCw size={11} /> 重置 Reset
                 </button>
               </div>
 
               {/* Omega 滑块 */}
               <ParamSlider
-                label="Rotational Speed Ω"
+                label="转速 Ω · Rotational Speed"
                 value={features.Omega}
                 min={stats.Omega.min}
                 max={stats.Omega.max}
@@ -336,7 +342,7 @@ export default function PredictPage() {
 
               {/* P 滑块 */}
               <ParamSlider
-                label="Inlet Pressure P"
+                label="进口总压 P · Inlet Pressure"
                 value={features.P}
                 min={stats.P.min}
                 max={stats.P.max}
@@ -360,19 +366,19 @@ export default function PredictPage() {
                   marginBottom: '16px',
                 }}>
                   <span style={{ fontSize: '12px', fontWeight: 600, color: '#64748b' }}>
-                    Key Geometric Features
+                    关键统计特征 Key Statistical Features
                   </span>
                   <div style={{ position: 'relative', display: 'inline-flex' }}
-                    title="These represent statistical properties of the blade surface geometry">
+                    title="叶片表面气动与几何场的统计特征 Statistical properties of blade surface fields">
                     <Info size={12} color="#475569" style={{ cursor: 'help' }} />
                   </div>
                 </div>
 
                 {[
-                  { key: 'Pressure_mean',    label: 'Surface Pressure Mean',  color: '#fb923c', unit: 'Pa'  },
-                  { key: 'Pressure_std',     label: 'Surface Pressure Std',   color: '#f87171', unit: 'Pa'  },
-                  { key: 'Temperature_mean', label: 'Surface Temp Mean',      color: '#fbbf24', unit: 'K'   },
-                  { key: 'CoordinateY_mean', label: 'Radial Position Mean',   color: '#34d399', unit: 'm'   },
+                  { key: 'Pressure_mean',    label: '表面压力均值 Surface Pressure Mean', color: '#fb923c', unit: 'Pa'  },
+                  { key: 'Pressure_std',     label: '表面压力标准差 Surface Pressure Std', color: '#f87171', unit: 'Pa'  },
+                  { key: 'Temperature_mean', label: '表面温度均值 Surface Temp Mean', color: '#fbbf24', unit: 'K'   },
+                  { key: 'CoordinateY_mean', label: '径向位置均值 Radial Position Mean', color: '#34d399', unit: 'm'   },
                 ].map(({ key, label, color, unit }) => {
                   if (!stats[key]) return null
                   return (
@@ -401,10 +407,10 @@ export default function PredictPage() {
               }}>
                 <div>
                   <div style={{ fontSize: '12px', fontWeight: 600, color: '#94a3b8' }}>
-                    Uncertainty Quantification
+                    不确定性量化 UQ
                   </div>
                   <div style={{ fontSize: '11px', color: '#475569', marginTop: '2px' }}>
-                    MC Dropout · 100 samples
+                    MC Dropout · 100 次采样
                   </div>
                 </div>
                 <button
@@ -444,7 +450,7 @@ export default function PredictPage() {
                 fontSize: '12px', color: '#818cf8',
               }}>
                 <RefreshCw size={12} style={{ animation: 'spin 0.8s linear infinite' }} />
-                Computing prediction...
+                代理模型推理中… Computing…
               </div>
             )}
     
@@ -470,7 +476,7 @@ export default function PredictPage() {
               gap: '14px', marginBottom: '20px',
             }}>
               <ResultCard
-                label="Pressure Ratio"
+                label="总压比 Pressure Ratio"
                 value={getPredVal('Compression_ratio')}
                 sigma={getPredSigma('Compression_ratio')}
                 unit="π"
@@ -479,7 +485,7 @@ export default function PredictPage() {
                 baseline={baseline?.true_performance?.Compression_ratio}
               />
               <ResultCard
-                label="Efficiency"
+                label="等熵效率 Efficiency"
                 value={getPredVal('Efficiency')}
                 sigma={getPredSigma('Efficiency')}
                 unit="η"
@@ -488,7 +494,7 @@ export default function PredictPage() {
                 baseline={baseline?.true_performance?.Efficiency}
               />
               <ResultCard
-                label="Mass Flow"
+                label="质量流量 Mass Flow"
                 value={getPredVal('Massflow')}
                 sigma={getPredSigma('Massflow')}
                 unit="kg/s"
@@ -505,7 +511,7 @@ export default function PredictPage() {
                 textTransform: 'uppercase', letterSpacing: '0.05em',
                 marginBottom: '12px',
               }}>
-                Current Parameters
+                当前参数 Current Parameters
               </div>
               <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
                 {[
@@ -533,7 +539,7 @@ export default function PredictPage() {
                   textTransform: 'uppercase', letterSpacing: '0.05em',
                   marginBottom: '12px',
                 }}>
-                  Prediction History
+                  预测历史 Prediction History
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                   {history.map((h, i) => {
@@ -570,7 +576,7 @@ export default function PredictPage() {
                             fontSize: '10px', padding: '1px 6px', borderRadius: '4px',
                             background: 'rgba(99,102,241,0.15)', color: '#818cf8',
                           }}>
-                            latest
+                            最新
                           </span>
                         )}
                       </div>
