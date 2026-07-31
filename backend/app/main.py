@@ -69,13 +69,15 @@ async def root():
         "docs":        "/docs",
         "status":      "running",
         "endpoints": {
-            "predict":          "/api/predict/",
-            "predict_health":   "/api/predict/health",
-            "model_info":       "/api/predict/model-info",
-            "design_sweep":     "/api/predict/sweep",
-            "pareto_front":     "/api/optimize/pareto",
-            "training_stats":   "/api/optimize/training-data-stats",
-            "uq_results":       "/api/optimize/uq-results",
+            "predict":            "/api/predict/",
+            "predict_health":     "/api/predict/health",
+            "model_info":         "/api/predict/model-info",
+            "baseline_features":  "/api/predict/baseline-features",
+            "design_sweep":       "/api/predict/sweep",
+            "pareto_front":       "/api/optimize/pareto",
+            "pareto_evolution":   "/api/optimize/pareto-evolution",
+            "training_stats":     "/api/optimize/training-data-stats",
+            "uq_results":         "/api/optimize/uq-results",
         }
     }
 
