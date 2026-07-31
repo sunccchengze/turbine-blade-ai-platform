@@ -13,8 +13,25 @@ def load_pareto_results():
     pareto_path = DATA_DIR / "pareto_front_solutions.csv"
     if pareto_path.exists():
         df = pd.read_csv(pareto_path)
-        return df[['design_id', 'Efficiency',
-                   'Massflow', 'Compression_ratio']].to_dict('records')
+        records = []
+        for _, row in df.iterrows():
+            records.append({
+                "design_id":          int(row['design_id']),
+                "Efficiency":         float(row['Efficiency']),
+                "Massflow":           float(row['Massflow']),
+                "Compression_ratio":  float(row['Compression_ratio']),
+                # 该 Pareto 解的几何/工况参数（前端 3D 叶片联动用）：
+                # Omega/P 为扫描工况，其余为 BladeViewer3D 参数化几何的输入。
+                "geometry": {
+                    "Omega":             float(row['Omega']),
+                    "P":                 float(row['P']),
+                    "Pressure_mean":     float(row['Pressure_mean']),
+                    "Pressure_std":      float(row['Pressure_std']),
+                    "Temperature_mean":  float(row['Temperature_mean']),
+                    "CoordinateY_mean":  float(row['CoordinateY_mean']),
+                },
+            })
+        return records
     return []
 
 

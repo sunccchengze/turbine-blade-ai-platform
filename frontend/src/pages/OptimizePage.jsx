@@ -7,6 +7,7 @@ import {
   ChevronRight, BarChart3
 } from 'lucide-react'
 import { getParetoFront, getTrainingStats } from '../utils/api'
+import BladeViewer3D from '../components/BladeViewer3D'
 
 // ── 指标卡片 ───────────────────────────────────────────────
 function MetricCard({ label, value, sub, color, icon: Icon }) {
@@ -427,6 +428,63 @@ export default function OptimizePage() {
                   textAlign: 'center', padding: '20px 0', color: '#334155', fontSize: '13px',
                 }}>
                   点击 Pareto 前沿上的任意点，查看该设计方案的气动性能参数
+                </div>
+              )}
+            </div>
+
+            {/* 3D 叶型联动：点选 Pareto 解 → 渲染对应叶型 */}
+            <div className="glass-card" style={{
+              padding: '16px',
+              border: selected ? '1px solid rgba(129,140,248,0.2)' : '1px solid rgba(255,255,255,0.05)',
+            }}>
+              <div style={{ marginBottom: '12px' }}>
+                <span style={{ fontSize: '12px', fontWeight: 600, color: selected ? '#a5b4fc' : '#475569' }}>
+                  3D 叶型联动 3D Blade Preview
+                </span>
+                <div style={{ fontSize: '10px', color: '#475569', marginTop: '3px' }}>
+                  基于该解的几何参数实时生成 · Generated from this solution's geometry parameters
+                </div>
+              </div>
+
+              {selected ? (
+                <>
+                  <BladeViewer3D
+                    params={selected.geometry || {}}
+                    efficiency={selected.Efficiency}
+                    pressureRatio={selected.Compression_ratio}
+                    massflow={selected.Massflow}
+                    height={220}
+                  />
+                  {/* 工况与几何参数 */}
+                  <div style={{
+                    display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
+                    gap: '8px', marginTop: '12px',
+                  }}>
+                    {[
+                      { label: '转速 Ω', value: selected.geometry?.Omega != null ? `${selected.geometry.Omega.toFixed(0)} rad/s` : '—' },
+                      { label: '背压 P', value: selected.geometry?.P != null ? `${(selected.geometry.P / 1000).toFixed(0)} kPa` : '—' },
+                      { label: '表面压力均值', value: selected.geometry?.Pressure_mean != null ? `${(selected.geometry.Pressure_mean / 1000).toFixed(0)} kPa` : '—' },
+                      { label: '表面温度均值', value: selected.geometry?.Temperature_mean != null ? `${selected.geometry.Temperature_mean.toFixed(0)} K` : '—' },
+                    ].map(item => (
+                      <div key={item.label} style={{
+                        padding: '8px 10px', borderRadius: '8px',
+                        background: 'rgba(255,255,255,0.02)',
+                        border: '1px solid rgba(255,255,255,0.05)',
+                      }}>
+                        <div style={{ fontSize: '10px', color: '#475569', marginBottom: '3px' }}>{item.label}</div>
+                        <div style={{ fontSize: '13px', fontWeight: 600, color: '#e2e8f0' }}>{item.value}</div>
+                      </div>
+                    ))}
+                  </div>
+                  <div style={{
+                    fontSize: '10px', color: '#334155', marginTop: '10px', lineHeight: 1.6,
+                  }}>
+                    注：叶型为基于几何参数的示意重建，非 CFD 网格。Note: schematic geometry reconstruction from parameters, not CFD mesh.
+                  </div>
+                </>
+              ) : (
+                <div style={{ textAlign: 'center', padding: '16px 0', color: '#334155', fontSize: '12px' }}>
+                  选择一个 Pareto 解后在此预览对应叶型
                 </div>
               )}
             </div>
