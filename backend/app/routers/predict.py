@@ -50,14 +50,6 @@ class UncertaintyOutput(BaseModel):
     upper_95: float
 
 
-class PredictResponse(BaseModel):
-    """预测响应"""
-    Compression_ratio: dict
-    Efficiency:        dict
-    Massflow:          dict
-    model_version:     str = "ResidualSurrogate-v2"
-
-
 # ── 端点定义 ───────────────────────────────────────────────
 @router.post("/", response_model=dict)
 async def predict(request: PredictRequest):

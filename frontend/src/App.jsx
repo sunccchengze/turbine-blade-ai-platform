@@ -52,7 +52,11 @@ function NewsBanner() {
           NEW
         </span>
         <span style={{ fontSize: '12px', color: '#92400e' }}>
-          KIT Breakthrough · Feb 2026 · 303-second Compressorless Gas Turbine sets new world record
+          KIT 突破 · 2026.02 · 无压气机燃气轮机连续运行 303 秒，刷新世界纪录
+          <br />
+          <span style={{ fontSize: '11px', color: '#a16207' }}>
+            KIT Breakthrough · Feb 2026 · 303-second Compressorless Gas Turbine sets new world record
+          </span>
         </span>
       </div>
     </div>
