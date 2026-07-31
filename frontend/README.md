@@ -1,16 +1,38 @@
-# React + Vite
+# 前端 Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+> 叶轮机械多学科设计优化平台的前端应用。完整说明见仓库根目录 [README](../README.md)。
+>
+> Frontend of the Turbomachinery MDO platform. Full documentation: [main README](../README.md).
 
-Currently, two official plugins are available:
+## 技术栈 Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+React 19 · Vite · Three.js（3D 叶片查看器）· Plotly.js（图表）· Framer Motion · Axios
 
-## React Compiler
+## 开发 Dev
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+npm install
+npm run dev        # http://localhost:5173（端口被占会自动顺延，后端 CORS 已放行任意本地端口）
+```
 
-## Expanding the Oxlint configuration
+> 默认连接线上后端；本地调试在 `.env.local` 写 `VITE_API_URL=http://localhost:8000`。
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+## 构建与检查 Build & Lint
+
+```bash
+npm run build      # 产物在 dist/（Cloudflare Pages 构建命令）
+npm run lint       # oxlint；当前基线 16 warnings / 0 errors
+```
+
+## 页面 Pages
+
+| 路由 | 页面 |
+|---|---|
+| `/` | 首页（叙事 + 核心指标） |
+| `/predict` | 实时预测（74 维输入 → 三项性能 + MC Dropout UQ） |
+| `/explore` | **设计空间探索器**（响应面热力图，主功能） |
+| `/optimize` | 多目标优化（Pareto 前沿 + 演化动画 + 3D 叶型联动） |
+| `/uq` | 不确定性分析 |
+| `/methodology` | 方法论（数据 → 模型 → 验证 → 诚实披露） |
+| `/about` | 关于与署名 |
+| `*` | 404 兜底 |
