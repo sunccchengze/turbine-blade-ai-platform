@@ -7,8 +7,8 @@
 > This devlog mirrors the real commit history of this repository. Every entry links to
 > an actual commit, and every number is reproducible from this repo (see README § Reproduce).
 
-**周期**：2026-07-30（Day 1）→ 2026-07-31（Day 32，当前）
-**提交数**：54 个（截至 Day 32，`4c1c8c5`）
+**周期**：2026-07-30（Day 1）→ 2026-07-31（Day 37 文档预演，当前）
+**提交数**：57 个（截至 Day 37 文档，`f9e1556`）
 **作者**：孙承泽 · 本科二年级 · 独立完成（Sun Chengze · Undergraduate (Year 2) · Independent Project）
 
 ---
@@ -325,7 +325,27 @@ UQPage（2fr 1fr）；Navbar 胶囊断点 768→1024（7 个导航项不再在�
 
 ---
 
+## Day 34 / 36 — 外行试讲与终版验收清单
+
+- `f9e1556` Day 34/36: stranger-test & final acceptance checklists
+
+**产出**：`docs/final-acceptance-D36.md` —— 外行试讲流程与卡点记录模板（任务 A/B/C + 三问）、
+终版验收清单（页面×双端、内容口径、兜底）、汇报日时间线。
+
+---
+
+## Day 37 — 汇报一页纸 + Q&A 预演稿
+
+- `ce4b37b` Day 37: one-page report + 20-question Q&A rehearsal draft
+
+**产出**：`docs/report-one-pager-D37.md` —— 一页纸汇报结构（背景钩子/八步成果/诚实边界/入口）、
+Q&A 20 问标准答法（数据模型/精度验证/优化/工程部署/项目个人五组）、汇报当天操作清单。
+与 `pressure-test-D31.md`（5 大质疑点）配套使用。
+
+---
+
 ## 里程碑一览
+
 
 | 里程碑 | Day | 提交 |
 |---|---|---|
