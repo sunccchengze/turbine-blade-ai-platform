@@ -21,7 +21,8 @@
   <img alt="ONNX" src="https://img.shields.io/badge/ONNX-Runtime%201.18-005CED?logo=onnx&amp;logoColor=white">
   <img alt="FastAPI" src="https://img.shields.io/badge/FastAPI-0.110-009688?logo=fastapi&amp;logoColor=white">
   <img alt="React" src="https://img.shields.io/badge/React-19-61DAFB?logo=react&amp;logoColor=black">
-  <img alt="License" src="https://img.shields.io/badge/data-NASA%20Rotor%2037-orange">
+  <img alt="License" src="https://img.shields.io/badge/License-MIT-22d3ee">
+  <img alt="data" src="https://img.shields.io/badge/data-NASA%20Rotor%2037-orange">
 </p>
 
 ---
@@ -261,7 +262,7 @@ Predict          Explore           不确定性量化      100 Pareto 解
 ### 1. 后端 Backend
 
 ```bash
-git clone https://github.com/suncchengze/turbine-blade-ai-platform.git
+git clone https://github.com/sunccchengze/turbine-blade-ai-platform.git
 cd turbine-blade-ai-platform
 python -m venv .venv && source .venv/bin/activate    # Windows: .venv\Scripts\activate
 pip install -r backend/requirements.txt              # 注意 scikit-learn 必须 ==1.7.2
