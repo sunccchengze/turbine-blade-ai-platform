@@ -14,6 +14,7 @@ const OptimizePage = lazy(() => import('./pages/OptimizePage'))
 const UQPage       = lazy(() => import('./pages/UQPage'))
 const AboutPage    = lazy(() => import('./pages/AboutPage'))
 const MethodologyPage = lazy(() => import('./pages/MethodologyPage'))
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
 
 // 懒加载占位屏：与站点暗色风格一致的轻量转圈
 function PageLoading() {
@@ -100,6 +101,7 @@ export default function App() {
             <Route path="/uq"       element={<UQPage />}      />
             <Route path="/about"    element={<AboutPage />}   />
             <Route path="/methodology" element={<MethodologyPage />} />
+            <Route path="*"           element={<NotFoundPage />}  />
           </Routes>
         </Suspense>
       </div>
