@@ -21,7 +21,7 @@ npm run dev        # http://localhost:5173（端口被占会自动顺延，后�
 
 ```bash
 npm run build      # 产物在 dist/（Cloudflare Pages 构建命令）
-npm run lint       # oxlint；当前基线 16 warnings / 0 errors
+npm run lint       # oxlint；当前 0 warnings / 0 errors（2026-07-31 终审清零）
 ```
 
 ## 页面 Pages

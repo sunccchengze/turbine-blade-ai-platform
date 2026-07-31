@@ -66,6 +66,6 @@
 ## 5. 本轮验收数据（可直接引用）
 
 - 前端 build：**444.68 kB / gzip 145.28 kB**（首屏，与 D18 基线一致）
-- lint：**16 warnings / 0 errors**（既有基线，无新增）
+- lint：**0 warnings / 0 errors**（2026-07-31 终审清零，此前基线 16；终审为走查表 v1.2 补充）
 - 双语扫描：五页 + About 全部成对，仅 1 处术语标注（判定正常）
 - PredictPage 独立 chunk：16.62 kB（含新增 Tooltip，懒加载不进首屏）
