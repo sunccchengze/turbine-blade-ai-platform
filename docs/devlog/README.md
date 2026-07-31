@@ -1,0 +1,233 @@
+# 🗓️ 开发日志 Devlog（Day 1 – Day 19）
+
+> 本文件记录「AI 赋能的叶轮机械多学科设计优化平台」从立项到上线的完整开发过程。
+> 每条记录都对应仓库中的真实提交（SHA 可点开查看），所有数字均可在本仓库复现
+> （复现方法见 [README § 快速复现](../../README.md)）。
+>
+> This devlog mirrors the real commit history of this repository. Every entry links to
+> an actual commit, and every number is reproducible from this repo (see README § Reproduce).
+
+**周期**：2026-07-30（Day 1）→ 2026-07-31（Day 19，当前）
+**提交数**：37 个（截至 Day 19，`1839aa5`）
+**作者**：孙承泽 · 本科二年级 · 独立完成（Sun Chengze · Undergraduate (Year 2) · Independent Project）
+
+---
+
+## Day 01 — 项目初始化
+
+- `eb7c1dc` Day 01: Initialize project repository and README
+- `38d6a77` Day 01: Setup project structure and conda environment
+- `1f1ea25` Day 01: Add .gitkeep to track empty directories
+
+**产出**：仓库骨架（backend / frontend / notebooks / models / docs / data）、README 初稿、conda 环境规划。
+**想法**：用「Day N」命名提交，让整个开发过程在 Git 历史里可读 —— 这在后期成了最有价值的门面资产。
+
+---
+
+## Day 02 — 数据获取
+
+- `177cc97` Day 02: Download PLAID Rotor37 dataset, extract 1000 samples to CSV
+
+**产出**：从 Hugging Face `PLAID-datasets/Rotor37` 下载 NASA Rotor 37 公开基准数据集，
+解析为 `1000 组 CFD 样本 × 29,773 表面节点` 的结构化 CSV。
+**为什么选它**：公开、可复现、是叶轮机械领域的经典验证基准（NASA TP-1337 原始报告）。
+
+---
+
+## Day 03 — 探索性数据分析 EDA
+
+- `e58f9aa` Day 03: EDA complete, visualize blade geometry and pressure
+
+**产出**：叶片几何与压力场可视化（`docs/fig01`–`fig04`）、输入-输出关系初探。
+**关键发现**：原始表面场量（29,773 节点 × 9 物理量）维度巨大，直接建模会维度灾难 —— 为 Day 4 的特征工程埋下伏笔。
+
+---
+
+## Day 04 — 特征工程
+
+- `f5f38d3` Day 04: Feature engineering complete, 74-dim feature matrix extracted
+
+**产出**：29,773 × 9 原始场量 → **74 维统计特征**（9 组物理量 × 8 个统计量 + 转速 Omega + 背压 P），
+样本级特征矩阵 `1000 × 74`。
+**设计取舍**：统计特征化丢失空间分布信息，但在 1,000 样本量级换来训练稳定性
+（这一取舍在 README「局限与未来工作」中有诚实披露）。
+
+---
+
+## Day 05 — 基线模型
+
+- `6e6f87d` Day 05: Baseline MLP trained, first R2 scores obtained
+
+**产出**：首个基线 MLP，拿到第一批 R² 分数，建立评估基准
+（最终基线 MLP 在留出测试集上的对照：π 0.9664 / η 0.9132 / ṁ 0.9492，见 README）。
+**意义**：有对照才有说服力 —— 后续残差网络的提升全部相对这个基线量化。
+
+---
+
+## Day 06 — 残差代理模型（主力模型）
+
+- `e0ab6fb` Day 06: Residual network R2 all >0.95, physics constraints working
+
+**产出**：**残差网络 + 物理约束损失**（多任务加权 MSE + `ReLU(·)²` 边界惩罚），
+三个输出 R² 全部 > 0.95；物理约束生效（η≤1.0、η≥0.5、π≥1.0、ṁ≥0）。
+**架构**：74 → 256 → 残差块×3 → 128 → 残差块×2 → 3（523,011 参数），
+详见 `notebooks/04_residual_physics_model.ipynb` 与 README「模型架构」。
+
+---
+
+## Day 07 — 不确定性量化 UQ
+
+- `3a4e7d8` Day 07: MC Dropout UQ implemented, confidence intervals generated
+
+**产出**：MC Dropout（推理时保持 Dropout，100 次采样，±1.96σ 置信区间）。
+**诚实披露**：后来实测发现名义 95% 区间实际覆盖率仅 65–89%（低估不确定性），
+已在 README 中如实说明 —— 它的定位是相对置信度指示器，不是严格的统计保证。
+
+---
+
+## Day 08 — 多目标优化
+
+- `1d34040` Day 08: NSGA-II optimization complete, Pareto front generated
+
+**产出**：NSGA-II（pymoo，种群 100、200 代），约束 π≥1.8、η≥0.84，得到 **100 个 Pareto 非支配解**。
+**结果**：最优 η = 0.9211（+5.84% vs 训练集均值），最大 ṁ = 21.64 kg/s（+10.93%）。
+
+---
+
+## Day 09 — 后端 API
+
+- `a198ea7` Day 09: FastAPI backend running, all endpoints verified
+
+**产出**：FastAPI 后端跑通，核心端点验证完成（单点预测 / 模型信息 / 优化结果 / UQ 结果）。
+
+---
+
+## Day 10 — 前端骨架
+
+- `7547c30` Day 10: React frontend complete, homepage styled and fixed
+
+**产出**：React（Vite）前端骨架 + 首页，深蓝科技风视觉体系成形。
+
+---
+
+## Day 11 — 核心页面
+
+- `0e68e80` Day 11: PredictPage with real-time API integration and UQ toggle
+- `90fe66c` Day 11: All four pages complete - Predict, Optimize, UQ, Home
+
+**产出**：实时预测页（74 维输入 → 三项性能，可切换 UQ）、优化页、UQ 页、首页四页齐全。
+
+---
+
+## Day 12 — 3D 叶片查看器
+
+- `7a17a42` Day 12: Three.js 3D blade viewer working with physics-based geometry
+
+**产出**：Three.js 3D 叶片查看器，基于物理参数化几何生成叶型（`BladeViewer3D`）。
+
+---
+
+## Day 13 — 生产化与部署 🚀（单日 10 个提交）
+
+- `e3fa1fc` Day 13: Add Railway deployment config
+- `7a15f24` Day 13: Use CPU-only torch for Render deployment
+- `b3412da` Day 13: Switch to ONNX Runtime, remove PyTorch dependency
+- `5218b6a` Day 13: Add Dockerfile for SnapDeploy deployment
+- `21cc290` Fix model path for Docker deployment
+- `5c3438b` Day 13: Update API URL for production deployment
+- `208a0ea` Fix CORS and ensure data files included in deployment
+- `998eef8` Fix data file paths for Docker container
+- `fd7ac66` Fix optimize router paths for Docker
+- `b45aa62` Day 13: Add engineering note, fix all paths, ready for final deploy
+
+**产出**：完整生产化链路 —— PyTorch → **ONNX**（2.11 MB，523,011 参数，推理 0.13–0.37 ms），
+移除 torch 运行时依赖；Dockerfile / Procfile 部署配置；CORS、模型路径、数据路径、路由路径全部按容器环境修正。
+**单日连踩五个部署坑**（平台切换、模型序列化、容器内路径、CORS、路由前缀），最终 SnapDeploy 容器上线。
+**教训**：容器部署的坑集中在「路径」与「依赖版本」两处 —— 后来专门在代码里加了工程注记。
+
+---
+
+## Day 14 — 冷启动与容错
+
+- `43fc599` Day 14: Add WakeUpBanner for cold start, improve error handling
+
+**产出**：WakeUpBanner（后端冷启动提示）+ 全站错误兜底。
+**背景**：容器平台冷启动需要数秒，用户在首次访问时可能撞上「服务未就绪」—— 需要可解释的提示而非白屏。
+
+---
+
+## Day 15 — 设计空间探索器（第 5 页，主秀场）
+
+- `e48e1f8` Day 15: Add Design Space Explorer (Page 5)
+
+**产出**：`POST /api/predict/sweep` 批量推理端点 + ExplorePage 响应面热力图：
+任选两维参数（转速 Ω / 背压 P / 9 组表面量统计）→ 一次推理生成整张网格 → 点击任意点读数对比基准。
+**性能实测**：25×25 = 625 点 **23.7 ms**；40×40 = 1,600 点 **45.4 ms**；
+网格值与单点预测**逐位一致**（批量推理与单点推理的数值完全对齐）。
+
+---
+
+## Day 16 — 可靠性收尾
+
+- `01728b9` Day 16: Fix chart resize, remove debug endpoint, align sklearn, code-split
+
+**产出**：五个隐患清零 —— ① 图表 resize 修复（Plotly `useResizeHandler`）② 删除 debug 端点
+（`/api/optimize/debug-path`，也是线上镜像新旧的最快探针）③ scikit-learn 对齐 **1.7.2**
+（与 scaler 导出版本一致）④ `arginTop` 笔误修复 ⑤ React.lazy 代码分割，首屏 **6.0 MB → 440 kB**。
+
+---
+
+## Day 17 — 全站中英双语（分 3 部分）
+
+- `fe2c839` Day 17 (part 1): CORS any-port fix + Chinese-English UI pass (Home/Nav/Banner)
+- `acb9205` HomePage typography: enlarge KIT card text, tighten Engineering Note
+- `3aff43f` Day 17 (part 2): full bilingual CN-EN pass on Predict/Optimize/UQ pages
+- `b05c087` Day 17 (part 3): unify dual-language format on Home + Explore, adopt official site title
+
+**产出**：全站**逐句中英双语**（中文在前，英文次级样式紧随，学术海报式）；定稿站名
+「AI 赋能的叶轮机械多学科设计优化平台」；CORS 改为放行任意本地端口
+（Vite 端口被占顺延 5173→5174 不再假死）；KIT 叙事理顺（行业引子，载体明说 Rotor 37）。
+**范例规范**：双语格式规范进入后续所有页面（README 与 About 页沿用同一套）。
+
+---
+
+## Day 18 — 线上部署总验收
+
+- `e23b769` Day 18: update README status line to Day 18 (bilingual UI complete)
+
+**产出**：代码侧总验收全绿（10 个端点齐全、debug 端点 404、sweep 性能达标、
+网格-单点逐位一致、物理越界 422、CORS any-port、前端 build 443.74 kB / gzip 144.93 kB、
+lint 16 warnings 0 errors）；线上部分由作者在**移动端 + 电脑端**双端验证通过
+（`/explore` 热力图正常渲染，即线上后端已带 `/sweep`）。
+
+---
+
+## Day 19 — README 中英双语重制 + R² 口径修正
+
+- `1839aa5` Day 19: bilingual README rewrite + correct R2 figures to reproducible values
+
+**产出**：README 全文重写为**中英双语门面版**（研究背景 → 管线图 → 实测性能 → 模型架构 →
+平台功能 → 技术栈 → API 参考 → 快速复现 → 数据说明 → 局限与未来工作 → 开发进度 → 参考文献 → 署名）。
+**R² 口径修正**：网站/API 长期显示的 0.9861/0.9588/0.9845 经复现核对不对应任何数据划分，
+统一修正为**留出测试集（n=100, random_state=42）实测**的 **0.9844 / 0.9561 / 0.9827**，
+并在 README 附一键复现脚本、API 新增 `r2_evaluated_on` 字段说明评估口径。
+**为什么重要**：评估口径（训练集/测试集）是评审第一问 —— 答不出口径比数字低一点致命得多。
+
+---
+
+## 里程碑一览
+
+| 里程碑 | Day | 提交 |
+|---|---|---|
+| 数据就绪（1000×74 特征矩阵） | 04 | `f5f38d3` |
+| 主力模型达标（R² 全 >0.95） | 06 | `e0ab6fb` |
+| 模型全家桶（UQ + NSGA-II） | 07–08 | `3a4e7d8` `1d34040` |
+| 全栈平台成形（后端 + 前端 + 3D） | 09–12 | `a198ea7` … `7a17a42` |
+| 生产化上线（ONNX + Docker + SnapDeploy） | 13 | `b45aa62` |
+| 探索器主秀场上线 | 15 | `e48e1f8` |
+| 可靠性清零 + 性能优化 | 16 | `01728b9` |
+| 全站双语 + 定稿站名 | 17 | `b05c087` |
+| 线上总验收 | 18 | `e23b769` |
+| 门面 README + 数字口径修正 | 19 | `1839aa5` |
+
+> 后续进度在此文档持续追加（Day 20+）。

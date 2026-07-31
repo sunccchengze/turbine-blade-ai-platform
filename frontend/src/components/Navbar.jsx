@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Activity, Compass, Cpu, TrendingUp, BarChart3, Home, Menu, X } from 'lucide-react'
+import { Activity, Compass, Cpu, TrendingUp, BarChart3, Home, Menu, X, User } from 'lucide-react'
 
 const navItems = [
   { path: '/',         label: '概览',     icon: Home      },
@@ -9,6 +9,7 @@ const navItems = [
   { path: '/explore',  label: '空间探索', icon: Compass   },
   { path: '/optimize', label: '优化',     icon: TrendingUp},
   { path: '/uq',       label: '不确定性', icon: BarChart3 },
+  { path: '/about',    label: '关于',     icon: User      },
 ]
 
 export default function Navbar() {
