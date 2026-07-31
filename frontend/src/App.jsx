@@ -1,5 +1,5 @@
-import { lazy, Suspense } from 'react'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { lazy, Suspense, useEffect } from 'react'
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { Zap, Loader2 } from 'lucide-react'
 import Navbar from './components/Navbar'
 import WakeUpBanner from './components/WakeUpBanner'
@@ -59,9 +59,30 @@ function NewsBanner() {
   )
 }
 
+// 每页浏览器标签标题（SPA 内随路由切换）
+const PAGE_TITLES = {
+  '/':            'AI 赋能的叶轮机械多学科设计优化平台',
+  '/predict':     '实时预测 Predict · 叶轮机械 AI 平台',
+  '/explore':     '设计空间探索 Explorer · 叶轮机械 AI 平台',
+  '/optimize':    '多目标优化 Optimize · 叶轮机械 AI 平台',
+  '/uq':          '不确定性 UQ · 叶轮机械 AI 平台',
+  '/methodology': '方法论 Methodology · 叶轮机械 AI 平台',
+  '/about':       '关于 About · 叶轮机械 AI 平台',
+}
+
+function RouteTitles() {
+  const location = useLocation()
+  useEffect(() => {
+    document.title = PAGE_TITLES[location.pathname]
+      || 'AI 赋能的叶轮机械多学科设计优化平台'
+  }, [location.pathname])
+  return null
+}
+
 export default function App() {
   return (
     <BrowserRouter>
+      <RouteTitles />
       {/* 全局背景光球 */}
       <div style={{
         position: 'fixed', inset: 0,
