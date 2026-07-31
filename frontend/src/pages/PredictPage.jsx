@@ -584,7 +584,7 @@ export default function PredictPage() {
               </div>
               <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
                 {[
-                  { label: 'Ω', value: features.Omega?.toFixed(0), unit: 'rpm', color: '#818cf8' },
+                  { label: 'Ω', value: features.Omega?.toFixed(0), unit: 'rad/s', color: '#818cf8' },
                   { label: 'P', value: features.P?.toFixed(0),     unit: 'Pa',  color: '#22d3ee' },
                   { label: 'P_mean', value: features.Pressure_mean?.toFixed(0), unit: 'Pa', color: '#fb923c' },
                   { label: 'T_mean', value: features.Temperature_mean?.toFixed(1), unit: 'K', color: '#fbbf24' },
