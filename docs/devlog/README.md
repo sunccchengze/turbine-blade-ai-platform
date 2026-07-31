@@ -7,8 +7,8 @@
 > This devlog mirrors the real commit history of this repository. Every entry links to
 > an actual commit, and every number is reproducible from this repo (see README § Reproduce).
 
-**周期**：2026-07-30（Day 1）→ 2026-07-31（Day 37 文档预演，当前）
-**提交数**：57 个（截至 Day 37 文档，`f9e1556`）
+**周期**：2026-07-30（Day 1）→ 2026-07-31（Day 33 冲刺收尾，当前）
+**提交数**：59 个（截至 Day 33，`24927c4`）
 **作者**：孙承泽 · 本科二年级 · 独立完成（Sun Chengze · Undergraduate (Year 2) · Independent Project）
 
 ---
@@ -345,7 +345,19 @@ Q&A 20 问标准答法（数据模型/精度验证/优化/工程部署/项目个
 
 ---
 
+## Day 33 — 全站数字清理（文案终稿第一轮）
+
+- `24927c4` Day 32/33: purge stale NSGA-II numbers site-wide (0.9211->0.9173, 21.64->21.74), precise deltas
+
+**产出**：双语完整性审计（7 页 + 组件，27 条扫描全部核对）+ 清除生产代码中残留的旧 NSGA-II 数字
+（HomePage 三处：η 0.9211→0.9173、ṁ 21.64→21.74、+5.83%/+10.95%→+5.40%/+11.43%）；
+百分比统一为精确计算值（+11.4288% → +11.43%）。3D 查看器操作提示补双语。
+**意义**：首页是宋老师最先看的页面，任何残留旧数字都会毁掉「可复现」的可信度。
+
+---
+
 ## 里程碑一览
+
 
 
 | 里程碑 | Day | 提交 |
