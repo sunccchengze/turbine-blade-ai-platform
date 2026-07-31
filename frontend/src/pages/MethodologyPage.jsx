@@ -393,7 +393,7 @@ export default function MethodologyPage() {
             }}>
               {[
                 { label: '最高效率 η', value: '0.9173', sub: '+5.40% vs 均值' },
-                { label: '最大流量 ṁ', value: '21.74 kg/s', sub: '+11.42% vs 均值' },
+                { label: '最大流量 ṁ', value: '21.74 kg/s', sub: '+11.43% vs 均值' },
                 { label: '最高压比 π', value: '2.1073', sub: '均值 1.9839' },
               ].map(x => (
                 <div key={x.label} style={{

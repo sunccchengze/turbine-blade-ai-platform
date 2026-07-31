@@ -259,7 +259,7 @@ export default function BladeViewer3D({
           {pressureRatio !== null && <div className="blade-stat-chip">π = {pressureRatio.toFixed(4)}</div>}
           {massflow      !== null && <div className="blade-stat-chip">ṁ = {massflow.toFixed(3)}</div>}
         </div>
-        <div className="blade-viewer-hint">drag to rotate · scroll to zoom</div>
+        <div className="blade-viewer-hint">拖拽旋转 · 滚轮缩放 — drag to rotate · scroll to zoom</div>
       </div>
     </div>
   )

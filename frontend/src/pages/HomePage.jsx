@@ -406,8 +406,8 @@ export default function HomePage() {
                         icon: Target, color: '#fbbf24',
                         bg: 'rgba(251,191,36,0.08)',
                         label: 'NSGA-II Optimization',
-                        desc: <>100 个 Pareto 最优设计 · 效率 +5.83%<br />
-                          <span style={{ color: '#475569' }}>100 Pareto-optimal designs · +5.83% efficiency</span></>,
+                        desc: <>100 个 Pareto 最优设计 · 效率 +5.40%（可复现，见 README）<br />
+                          <span style={{ color: '#475569' }}>100 Pareto-optimal designs · +5.40% efficiency (reproducible, see README)</span></>,
                       },
                     ].map(({ icon: Icon, color, bg, label, desc }) => (
                       <div
@@ -470,7 +470,7 @@ export default function HomePage() {
                   icon: Award,       color: '#818cf8',
                   bg: 'rgba(99,102,241,0.06)', border: 'rgba(99,102,241,0.15)',
                   title: '最高效率设计',
-                  metric: 'η = 0.9211', delta: '+5.83%',
+                  metric: 'η = 0.9173', delta: '+5.40%',
                   sub: '相对训练集均值 vs avg',
                   desc: <>Pareto 前沿中等熵效率最高的设计<br />
                     <span style={{ color: '#475569' }}>Highest isentropic efficiency on the Pareto front</span></>,
@@ -480,7 +480,7 @@ export default function HomePage() {
                   icon: TrendingUp,  color: '#34d399',
                   bg: 'rgba(52,211,153,0.06)', border: 'rgba(52,211,153,0.15)',
                   title: '最大通流设计',
-                  metric: 'ṁ = 21.64 kg/s', delta: '+10.95%',
+                  metric: 'ṁ = 21.74 kg/s', delta: '+11.43%',
                   sub: '相对训练集均值 vs avg',
                   desc: <>约束边界之内质量流量最大的设计<br />
                     <span style={{ color: '#475569' }}>Maximum mass flow within constraint bounds</span></>,
