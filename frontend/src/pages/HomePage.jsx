@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react'
+import { useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, useInView } from 'framer-motion'
 import {
@@ -7,7 +7,6 @@ import {
   Activity, Shield, BarChart3,
   Calendar, MapPin, AlertTriangle, Zap
 } from 'lucide-react'
-import { getModelInfo, getTrainingStats } from '../utils/api'
 import StatusBadge from '../components/StatusBadge'
 
 const fadeUp = (delay = 0) => ({
@@ -77,14 +76,6 @@ function SectionHeader({ tag, title, subtitle }) {
 }
 
 export default function HomePage() {
-  const [modelInfo,     setModelInfo]     = useState(null)
-  const [trainingStats, setTrainingStats] = useState(null)
-
-  useEffect(() => {
-    getModelInfo().then(setModelInfo).catch(console.error)
-    getTrainingStats().then(setTrainingStats).catch(console.error)
-  }, [])
-
   return (
     <div style={{ background: '#0f172a', minHeight: '100vh' }}>
 
