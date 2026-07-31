@@ -118,9 +118,9 @@ export default function HomePage() {
               marginBottom: '20px',
             }}
           >
-            AI-Driven Turbine Blade
+            AI 驱动的涡轮叶片
             <br />
-            <span className="gradient-text">Design Optimization</span>
+            <span className="gradient-text">智能设计优化</span>
           </motion.h1>
 
           {/* 副标题 */}
@@ -133,12 +133,12 @@ export default function HomePage() {
               lineHeight: 1.8, marginBottom: '36px',
             }}
           >
-            Trained on{' '}
+            基于{' '}
             <span style={{ color: '#818cf8', fontWeight: 500 }}>NASA Rotor 37</span>
-            {' '}benchmark CFD data — predicts blade aerodynamic performance in{' '}
-            <span style={{ color: '#34d399', fontWeight: 500 }}>milliseconds</span>
-            , enabling NSGA-II optimization at{' '}
-            <span style={{ color: '#fbbf24', fontWeight: 500 }}>~100,000× CFD speed</span>.
+            {' '}基准 CFD 数据训练，以{' '}
+            <span style={{ color: '#34d399', fontWeight: 500 }}>毫秒级</span>
+            {' '}速度预测叶片气动性能，让 NSGA-II 优化比 CFD 快{' '}
+            <span style={{ color: '#fbbf24', fontWeight: 500 }}>约 100,000 倍</span>。
           </motion.p>
 
           {/* CTA 按钮 */}
@@ -171,7 +171,7 @@ export default function HomePage() {
                 e.currentTarget.style.boxShadow = '0 4px 20px rgba(79,70,229,0.35)'
               }}
             >
-              Live Prediction
+              实时预测
               <ChevronRight size={14} />
             </Link>
 
@@ -195,7 +195,7 @@ export default function HomePage() {
                 e.currentTarget.style.borderColor = 'rgba(99,102,241,0.25)'
               }}
             >
-              View Pareto Front
+              查看 Pareto 前沿
               <TrendingUp size={14} />
             </Link>
           </motion.div>
@@ -216,8 +216,8 @@ export default function HomePage() {
           <ScrollSection>
             <SectionHeader
               tag="Model Performance"
-              title="Surrogate Model Accuracy"
-              subtitle="Residual neural network with physics constraints, trained on 1,000 CFD samples"
+              title="代理模型精度"
+              subtitle="带物理约束的残差代理模型（Residual Surrogate），基于 1,000 组 CFD 样本训练"
             />
             <div style={{
               display: 'grid',
@@ -225,10 +225,10 @@ export default function HomePage() {
               gap: '14px',
             }}>
               {[
-                { label: 'Pressure Ratio R²', value: '0.9861', color: 'primary' },
-                { label: 'Efficiency R²',     value: '0.9588', color: 'cyan'    },
-                { label: 'Mass Flow R²',      value: '0.9845', color: 'green'   },
-                { label: 'CFD Speedup',       value: '~100K×', color: 'amber'   },
+                { label: '总压比 R²',   value: '0.9861', color: 'primary' },
+                { label: '效率 R²',     value: '0.9588', color: 'cyan'    },
+                { label: '质量流量 R²', value: '0.9845', color: 'green'   },
+                { label: 'CFD 加速比',  value: '~100K×', color: 'amber'   },
               ].map((item, i) => (
                 <motion.div key={item.label} variants={fadeUp(i * 0.08)}>
                   <StatusBadge {...item} />
@@ -252,8 +252,8 @@ export default function HomePage() {
           <ScrollSection>
             <SectionHeader
               tag="Research Context"
-              title="Why This Matters Now"
-              subtitle="The KIT breakthrough fundamentally changes the turbine blade design equation"
+              title="为什么是现在"
+              subtitle="KIT 的突破从根本上改写了涡轮叶片的设计命题"
             />
 
             <div style={{
@@ -301,18 +301,18 @@ export default function HomePage() {
 
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '13px', color: '#94a3b8', lineHeight: 1.8 }}>
                     <p>
-                      KIT demonstrated a compressorless gas turbine running for{' '}
-                      <span style={{ color: '#fbbf24', fontWeight: 600 }}>303 seconds</span>
-                      , breaking NASA's previous record. Traditional gas turbines consume nearly{' '}
-                      <span style={{ color: '#f87171', fontWeight: 600 }}>50% of output power</span>
-                      {' '}to drive the compressor stage.
+                      KIT 实现无压气机燃气轮机连续运行{' '}
+                      <span style={{ color: '#fbbf24', fontWeight: 600 }}>303 秒</span>
+                      ，打破 NASA 此前的纪录。传统燃气轮机将近{' '}
+                      <span style={{ color: '#f87171', fontWeight: 600 }}>50% 的输出功率</span>
+                      {' '}要用于驱动压气机级。
                     </p>
                     <p>
-                      Eliminating the compressor shifts the performance bottleneck onto{' '}
+                      取消压气机之后，性能瓶颈被转移到{' '}
                       <span style={{ color: '#818cf8', fontWeight: 600 }}>
-                        turbine blade aerodynamic efficiency
+                        涡轮叶片气动效率
                       </span>
-                      {' '}— making AI-accelerated blade optimization more critical than ever.
+                      {' '}上——AI 加速的叶片优化因此比以往任何时候都更加关键。
                     </p>
                   </div>
 
@@ -324,7 +324,7 @@ export default function HomePage() {
                   }}>
                     <AlertTriangle size={13} color="#f87171" style={{ flexShrink: 0 }} />
                     <span style={{ fontSize: '12px', color: '#94a3b8' }}>
-                      Compressor power eliminated:
+                      被省去的压气机功耗：
                     </span>
                     <span className="num" style={{ fontSize: '14px', fontWeight: 700, color: '#f87171' }}>
                       ~50%
@@ -357,10 +357,10 @@ export default function HomePage() {
                     </div>
                     <div>
                       <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#f1f5f9' }}>
-                        Our AI Pipeline
+                        AI 技术管线
                       </h3>
                       <p style={{ fontSize: '11px', color: '#64748b', marginTop: '2px' }}>
-                        End-to-end MDO framework
+                        端到端 MDO 框架
                       </p>
                     </div>
                   </div>
@@ -371,25 +371,25 @@ export default function HomePage() {
                         icon: Database, color: '#818cf8',
                         bg: 'rgba(99,102,241,0.08)',
                         label: 'NASA Rotor 37 Data',
-                        desc: '1,000 CFD samples · 29,773 surface nodes each',
+                        desc: '1,000 组 CFD 样本 · 每个样本 29,773 个表面节点',
                       },
                       {
                         icon: Brain, color: '#a78bfa',
                         bg: 'rgba(167,139,250,0.08)',
                         label: 'Residual Surrogate Model',
-                        desc: 'Physics-constrained · R² > 0.95 on all outputs',
+                        desc: '物理约束 · 全部输出 R² > 0.95',
                       },
                       {
                         icon: Shield, color: '#34d399',
                         bg: 'rgba(52,211,153,0.08)',
                         label: 'MC Dropout UQ',
-                        desc: '100-sample inference · 95% confidence intervals',
+                        desc: '100 次采样推理 · 95% 置信区间',
                       },
                       {
                         icon: Target, color: '#fbbf24',
                         bg: 'rgba(251,191,36,0.08)',
                         label: 'NSGA-II Optimization',
-                        desc: '100 Pareto-optimal designs · +5.83% efficiency',
+                        desc: '100 个 Pareto 最优设计 · 效率 +5.83%',
                       },
                     ].map(({ icon: Icon, color, bg, label, desc }) => (
                       <div
@@ -438,8 +438,8 @@ export default function HomePage() {
           <ScrollSection>
             <SectionHeader
               tag="Optimization Results"
-              title="AI-Found Optimal Designs"
-              subtitle="NSGA-II discovered designs that surpass all 1,000 CFD training samples"
+              title="AI 找到的最优设计"
+              subtitle="NSGA-II 找到的设计方案超越了全部 1,000 个 CFD 训练样本"
             />
 
             <div style={{
@@ -451,29 +451,29 @@ export default function HomePage() {
                 {
                   icon: Award,       color: '#818cf8',
                   bg: 'rgba(99,102,241,0.06)', border: 'rgba(99,102,241,0.15)',
-                  title: 'Max Efficiency Design',
+                  title: '最高效率设计',
                   metric: 'η = 0.9211', delta: '+5.83%',
-                  sub: 'vs. training avg',
-                  desc: 'Highest isentropic efficiency in the Pareto front',
-                  tag: 'Efficiency-optimal',
+                  sub: '相对训练集均值',
+                  desc: 'Pareto 前沿中等熵效率最高的设计',
+                  tag: '效率最优',
                 },
                 {
                   icon: TrendingUp,  color: '#34d399',
                   bg: 'rgba(52,211,153,0.06)', border: 'rgba(52,211,153,0.15)',
-                  title: 'Max Throughput Design',
+                  title: '最大通流设计',
                   metric: 'ṁ = 21.64 kg/s', delta: '+10.95%',
-                  sub: 'vs. training avg',
-                  desc: 'Maximum mass flow rate within constraint bounds',
-                  tag: 'Throughput-optimal',
+                  sub: '相对训练集均值',
+                  desc: '约束边界之内质量流量最大的设计',
+                  tag: '通流最优',
                 },
                 {
                   icon: BarChart3,   color: '#22d3ee',
                   bg: 'rgba(34,211,238,0.06)', border: 'rgba(34,211,238,0.15)',
-                  title: 'Pareto Front Size',
-                  metric: '100 designs', delta: 'all satisfying',
+                  title: 'Pareto 前沿规模',
+                  metric: '100 个设计', delta: '全部满足',
                   sub: 'π ≥ 1.8, η ≥ 0.84',
-                  desc: 'Non-dominated solutions for engineer selection',
-                  tag: 'Multi-objective',
+                  desc: '供工程师抉择的非支配解集',
+                  tag: '多目标优化',
                 },
               ].map(({ icon: Icon, color, bg, border, title, metric, delta, sub, desc, tag }, i) => (
                 <motion.div
@@ -558,7 +558,7 @@ export default function HomePage() {
                 }}>
                   <Activity size={14} color="#818cf8" />
                   <span style={{ fontSize: '12px', fontWeight: 600, color: '#818cf8' }}>
-                    Key Takeaway
+                    核心结论 Key Takeaway
                   </span>
                 </div>
 
@@ -567,10 +567,10 @@ export default function HomePage() {
                   fontWeight: 700, color: '#f1f5f9', lineHeight: 1.4,
                   marginBottom: '14px',
                 }}>
-                  From weeks of CFD simulation to seconds of AI inference —
+                  从以周计的 CFD 仿真，到秒级的 AI 推理——
                   <br />
                   <span className="gradient-text">
-                    the same physics, a hundred thousand times faster.
+                    同样的物理，快十万倍。
                   </span>
                 </h2>
 
@@ -578,8 +578,7 @@ export default function HomePage() {
                   fontSize: '13px', color: '#64748b',
                   lineHeight: 1.8, marginBottom: '28px',
                 }}>
-                  Full MDO pipeline: data → surrogate model →
-                  uncertainty quantification → Pareto optimization
+                  完整 MDO 管线：数据 → 代理模型 → 不确定性量化 → Pareto 优化
                 </p>
 
                 <div style={{
@@ -597,7 +596,7 @@ export default function HomePage() {
                       boxShadow: '0 4px 14px rgba(79,70,229,0.3)',
                     }}
                   >
-                    Start Predicting <ChevronRight size={14} />
+                    开始预测 <ChevronRight size={14} />
                   </Link>
                   <Link
                     to="/uq"
@@ -609,7 +608,7 @@ export default function HomePage() {
                       border: '1px solid rgba(255,255,255,0.08)',
                     }}
                   >
-                    Explore Uncertainty <BarChart3 size={14} />
+                    探索不确定性 <BarChart3 size={14} />
                   </Link>
                 </div>
               </div>
@@ -648,7 +647,7 @@ export default function HomePage() {
                   color: '#fbbf24', marginBottom: '10px',
                   fontFamily: 'Poppins, sans-serif',
                 }}>
-                  Engineering Note — Backend Architecture
+                  工程说明 Engineering Note — 后端架构
                 </h4>
                 <div style={{
                   fontSize: '13px', color: '#94a3b8',
@@ -656,43 +655,39 @@ export default function HomePage() {
                   flexDirection: 'column', gap: '8px',
                 }}>
                   <p>
-                    A complete{' '}
+                    开发阶段完整实现了基于{' '}
                     <span style={{ color: '#e2e8f0', fontWeight: 500 }}>
-                      FastAPI backend with PyTorch inference
+                      PyTorch 推理的 FastAPI 后端
                     </span>
-                    {' '}was fully implemented during development,
-                    covering real-time prediction, MC Dropout uncertainty
-                    quantification, and NSGA-II optimization APIs.
+                    {' '}，覆盖实时预测、MC Dropout 不确定性量化与
+                    NSGA-II 优化 API。
                   </p>
                   <p>
-                    For production deployment, the PyTorch model was exported to{' '}
+                    生产部署时，PyTorch 模型被导出为{' '}
                     <span style={{ color: '#fbbf24', fontWeight: 600 }}>
-                      ONNX format
+                      ONNX 格式
                     </span>
-                    {' '}— the industry-standard model interchange format used by
-                    Microsoft, Google, Meta, and NVIDIA for deploying ML models
-                    at scale. This reduced the model runtime footprint from
-                    ~500 MB to{' '}
+                    {' '}——Microsoft、Google、Meta、NVIDIA 等公司大规模部署
+                    ML 模型所用的工业标准交换格式。运行体积从 ~500 MB 降至{' '}
                     <span style={{ color: '#34d399', fontWeight: 600 }}>2 MB</span>
-                    , with{' '}
+                    ，推理提速{' '}
                     <span style={{ color: '#34d399', fontWeight: 600 }}>
-                      5× faster inference (0.37 ms/query)
+                      5 倍（0.37 ms/次）
                     </span>
-                    {' '}and zero accuracy loss (R² preserved to 6 decimal places).
+                    ，且精度零损失（R² 六位小数内完全一致）。
                   </p>
                   <p>
-                    The complete PyTorch training pipeline, residual network
-                    architecture, physics-constrained loss function, and MC Dropout
-                    UQ implementation are available in the{' '}
+                    完整的 PyTorch 训练管线、残差网络结构、物理约束损失函数与
+                    MC Dropout UQ 实现见{' '}
                     <a
                       href="https://github.com/sunccchengze/turbine-blade-ai-platform"
                       target="_blank"
                       rel="noopener noreferrer"
                       style={{ color: '#818cf8', textDecoration: 'underline' }}
                     >
-                      GitHub repository
+                      GitHub 仓库
                     </a>
-                    {' '}(notebooks 03–06).
+                    {' '}（notebooks 03–06）。
                   </p>
                 </div>
               </div>
@@ -710,7 +705,7 @@ export default function HomePage() {
           NASA Rotor 37 · PyTorch ResidualSurrogateModel · NSGA-II · MC Dropout UQ
         </p>
         <p style={{ fontSize: '11px', color: '#1e293b', marginTop: '4px' }}>
-          Inspired by KIT's compressorless gas turbine breakthrough · Feb 2026
+          灵感源自 KIT 无压气机燃气轮机突破（Feb 2026）
         </p>
       </footer>
 
