@@ -2,8 +2,10 @@
 
 > **写给下一会话的 AI agent（和孙承泽本人）**：读完本文件，你应该能 100% 接手本项目，不丢任何上下文、不重复劳动、不踩已知的坑。
 >
-> **最后更新**：2026-07-31（Day 37 文档预演完成）· **v5**
+> **最后更新**：2026-08-01（Day 38 交接准备完成）· **v6**
 > **维护规则**：每次会话结束前，由当时的 AI agent 更新本文件的「当前状态快照」和「悬而未决清单」。
+>
+> ⚠️ v6 更正：本文件**实际已被 git 跟踪**（header 旧说法已过时），克隆仓库即含本文件；但内容含内部信息，如不想让评审看到可考虑后续移除跟踪（`git rm --cached HANDOFF.md` + 加 .gitignore）。
 >
 > ⚠️ 本文件含内部作战信息，已在 `.gitignore` 中屏蔽，**不要提交、不要推到 GitHub**。
 
@@ -24,7 +26,7 @@
 
 1. **保存本文件**：下载/复制 `HANDOFF.md`（连同更新内容一起）。
 2. **新会话第一步**：在 Arena 开新会话，连接仓库 `sunccchengze/turbine-blade-ai-platform`，上传/粘贴 `HANDOFF.md`。
-3. **新会话第二步**：发送：「读我上传的 HANDOFF.md。先按 §0 对齐 git 状态；PR #4 保持开启，若远程通道已关则按 §0.1 处理；然后从 §7 作战表继续（下一步 = D25–26 方法论页打磨 / D29 移动端真机 / Q29 审美双方案）。遵守五条铁律。」
+3. **新会话第二步**：发送「§12 开场白模板」（本会话任务 = 脱胎换骨升级冲刺 + 设计优化课题）。提示：PR #4 已由承泽合并（HEAD=70f5e6c），无需再保 PR；新会话分支名以系统提示为准。
 
 > ⚠️ 附件可能不落盘（真实发生过）。AI 说找不到 HANDOFF.md → 直接把全文粘贴进对话框。
 
@@ -116,8 +118,9 @@ ca61c0f  ← Day 20 About + devlog
 16821b4  ← origin/main（PR #3 合并）
 ```
 
-- **PR #4 开启中**（10 个提交：D19–D24、D27、D28、D30、D31、D32、D34/36/37 文档）。⚠️ 铁律 2：别合，除非作为会话最后动作。
-- 历史已 unshallow，devlog 可回溯。
+- ✅ **PR #4 已合并**（HEAD=70f5e6c，即 main 最新）。本会话分支 `arena/019fb861-turbine-blade-ai-platform` 从该提交分出；新会话分支以系统提示为准，勿自创。
+  ⚠️ PR #4 含后端改动（`optimize.py` + 2 个 CSV）→ 承泽需在 SnapDeploy **手动 Redeploy**，否则线上 /optimize 演化动画显示占位、3D 联动回退默认叶型。
+- 仓库为 **shallow（depth=1）** → 新会话先 `git fetch --unshallow origin` 再回溯 devlog。
 
 ### 3.2 线上部署拓扑
 
@@ -178,7 +181,7 @@ ca61c0f  ← Day 20 About + devlog
 
 ## 6. 悬而未决 / 待用户验证
 
-1. 🔴 **PR #4 合入 main**（10 个提交，保持开启；合并 = 会话最后动作 or 承泽网页操作）→ 合后**后端必须 Redeploy**。
+1. 🔴 **后端 Redeploy（承泽本人操作）**：PR #4 已合并（70f5e6c），SnapDeploy 需手动 Redeploy，否则线上 /optimize 演化动画显示占位。
 2. 🔴 **预热 workflow 安装**：承泽按 `docs/preheat-workflow.md` 在 GitHub Actions 页 30 秒安装（AI 无 workflows 权限）。
 3. **Q29 审美双方案 A/B 预览**：未做，排 D23 后/下次会话。
 4. **D29 移动端真机走查**：代码级已修（D28），真机未走。
@@ -202,6 +205,7 @@ ca61c0f  ← Day 20 About + devlog
 | D35 | 按反馈修 + 演示视频终版 | ⬜ 未做 |
 | D36 | 终版验收 | 🔵 清单已备，待执行 |
 | D37 | 汇报一页纸 + Q&A 20 问 | ✅ 文档完成 |
+| **D38+** | **脱胎换骨升级冲刺（研究型）**：任务书见 §12 | 🔵 待执行 |
 
 > 铁不动摇项已完成（D18/D19/D20/D23）。剩余均为打磨/验收类。
 
@@ -214,6 +218,7 @@ ca61c0f  ← Day 20 About + devlog
 - 前端：五页 + About + Methodology；`App.jsx` 懒加载路由；`utils/api.js`（BASE_URL 线上默认，`.env.local` 本地覆盖）；CORS any-port regex（`backend/app/main.py`）。
 - 图素材 `docs/fig01–16`；fig09/fig10 已复制进 `frontend/public/figures/`（随站打包）。
 - `docs/`：devlog/、D23-walkthrough-v1.md、pressure-test-D31.md、terminology.md、final-acceptance-D36.md、report-one-pager-D37.md、preheat-workflow.md。
+- `docs/knowledge-boost-2026-07.md`（Day 38 新增）：2026 上半年国际前沿（KIT 303s / CFM RISE PDR / CJ-1000A / AEP100 / 空客×MTU / RDE / scramjet 等）+ AI×叶轮机械文献弹药库（5 篇代理优化真实工作）+ 数字锚表 + 自测题。**升级冲刺的主要素材库。**
 - `backend/scripts/generate_pareto_evolution.py`：一键复现 NSGA-II（3 秒）→ 生成 pareto_evolution.csv + 覆盖 pareto_front_solutions.csv（同源）。
 
 ## 9. 沙盒坑与教训（血泪汇总）
@@ -260,6 +265,69 @@ curl -s -o /dev/null -w "%{http_code}\n" localhost:8000/api/optimize/debug-path 
 cd frontend && npm install --no-audit --no-fund && npm run build && npm run lint  # 基线 16w/0e
 ```
 
+## 12. 下一会话任务书：脱胎换骨升级冲刺 + 设计优化课题（v6 新增）
+
+### 12.1 任务背景（一句话）
+
+承泽已向郭老师汇报完毕（2026-08-01 前后）；项目进入「研究型升级」阶段：疯狂检索国际前沿 → 找出所有能升级的点 → 给平台一次脱胎换骨的变化 → 产出一份《设计优化课题申报书》（大创/挑战杯/课程课题级别）。
+
+### 12.2 任务产出物（按顺序交付）
+
+1. **《升级点全清单》**：疯狂检索（Web + arXiv + ASME Turbo Expo / AIAA / NeurIPS 等）后，逐条列出升级点：现状 → 痛点 → 新方法 → 预期收益 → 实现难度 → 与现有代码的接口。方向至少包括：
+   - 物理信息神经网络（PINN）/ 守恒律 / 嵌入 N-S 残差的代理模型（升级现有「边界裁剪级」物理约束——README 已披露的 future work）
+   - UQ 升级：Deep Ensembles / 异方差输出头（μ+σ）/ Conformal Prediction 校准（升级 MC Dropout 名义 95% 实际只覆盖 65–89% 的问题）
+   - 几何深度学习：PointNet / GNN 直接吃 29,773 节点点云，取代统计特征化（当前最大短板，README「局限」第 1 条已点明）
+   - 生成式设计：扩散模型 / VAE 生成叶片几何
+   - 多保真度建模（multi-fidelity）/ 迁移学习 / 叶轮机械基础模型
+   - 优化算法对比：贝叶斯优化、进化算法新变体 vs 现有 NSGA-II
+   - 数字孪生、LLM 辅助设计等交叉方向
+2. **落地实现 3–5 条**：从清单中选高价值且本仓库可落地的升级，直接实现 + 训练/推理验证 + 数字口径对齐。⚠️ 铁律 4：任何新数字必须仓库内可复现；R² / NSGA-II 口径沿用现有规范（先讲口径再报数字）。
+3. **《设计优化课题申报书》**（最终交付物）：按大创/挑战杯/课程课题标准格式：题目、背景与意义、国内外研究现状、研究内容、技术路线、创新点、预期成果、进度安排、可行性分析。把升级点写进课题，让「AI 赋能的叶轮机械设计优化」成为一门有头有尾的研究课题。
+4. **汇报材料更新**：docs/report-one-pager-D37.md 升级版（或新文档）。
+5. **HANDOFF.md 更新到 v7**：状态快照、悬而未决、交付物登记进 §8。
+
+### 12.3 铁律与约束（必须遵守）
+
+- 五条铁律（§0.-1）：推送优先 / 绝不主动合并 PR / 推不上去导 patch 如实上报 / 引用数字先复现 / 权限问题直说。
+- 新会话分支以系统提示为准；不推 main；PR #4 已合，无需再保。
+- 仓库 shallow → 先 `git fetch --unshallow origin`。
+- `.github/workflows` 改动只做 docs 模板（无 workflows 权限）。
+- 全站叙事统一「叶轮机械」；中英双语规范见 docs/terminology.md；JSX 中 `>` 写 `&gt;`。
+- 新数字（如 GNN 模型 R²）一律标注口径并附复现脚本；诚实披露新旧对比。
+
+### 12.4 给下一会话的开场白模板（承泽直接复制发送）
+
+```
+你好，我上传了 HANDOFF.md（若未落盘，把全文贴给你）。这是一个「AI 赋能的叶轮机械
+多学科设计优化平台」项目的交接，本次会话是一次研究型升级冲刺。
+
+【第一步 · 对齐环境】
+1. 连接仓库 sunccchengze/turbine-blade-ai-platform，按系统提示的分支工作（勿切分支）。
+2. 按 HANDOFF.md §0 开场清单：git fetch、git status、浅仓库检查（shallow 则 fetch --unshallow）、
+   UTF-8 体检（8 个文件）、cd frontend && npm install。
+3. 读背景：README.md → HANDOFF.md（§1 全景 / §3 状态快照 / §8 技术知识库）→
+   docs/report-one-pager-D37.md → docs/pressure-test-D31.md →
+   docs/knowledge-boost-2026-07.md（Day 38 检索整理的 2026 上半年国际前沿 + AI×叶轮机械
+   文献弹药库，升级主要素材）→ notebooks/01–06（训练管线）。
+4. 遵守五条铁律（HANDOFF §0.-1）。
+
+【第二步 · 本会话任务 = 脱胎换骨升级 + 设计优化课题】（详见 HANDOFF §12）
+1. 疯狂检索（Web + arXiv + ASME Turbo Expo / AIAA / NeurIPS），至少覆盖：PINN/N-S 残差物理约束、
+   UQ 升级（Deep Ensembles / 异方差 / Conformal）、几何深度学习（PointNet/GNN 吃点云取代统计特征化）、
+   生成式设计（扩散模型）、多保真度/迁移学习/基础模型、优化算法对比（BO vs NSGA-II）、数字孪生/LLM 等。
+2. 产出《升级点全清单》：现状 → 痛点 → 新方法 → 预期收益 → 难度 → 代码接口。
+3. 选 3–5 条落地实现 + 复现验证 + 数字口径对齐（铁律 4）。
+4. 最终交付《设计优化课题申报书》（大创/挑战杯格式：题目/背景意义/国内外现状/研究内容/
+   技术路线/创新点/预期成果/进度/可行性）。
+5. 更新汇报材料；HANDOFF.md 升到 v7；每完成一个可交付单元 commit + push。
+6. 结束时告诉我：做了什么、哪些数字可信可复现、哪些还未验证。
+
+【约束】不合并 PR、不推 main；.github/workflows 只做 docs 模板；全站叙事统一「叶轮机械」；
+新数字先讲口径再报数字。
+```
+
+---
+
 ## 附录 A：全新工作区自救指南
 
 1. 克隆、切到系统指定分支（读系统提示，别自创分支）。
@@ -272,10 +340,11 @@ cd frontend && npm install --no-audit --no-fund && npm run build && npm run lint
 
 ---
 
-**v5 我改了什么**（相对 v4）：
-- §0.1：Day 19 恢复已完成（`1839aa5`），标记勿再操作；新增「恢复姿势」说明（patch 不随 clone 来，用粘贴恢复指令）。
-- §3.1：完整提交链更新至 `71b6c56`；PR #4 状态（10 提交、开启）。
-- §3.3/3.4：本会话冲刺成果 + **NSGA-II 数字口径修正史**（第二笔数字修正）。
-- §7：作战表逐日状态更新（D19–D37 文档）。
-- §10：#15 workflows 权限坑、#16 作用域坑、#3 uvicorn 残留坑；#8 身份配置提醒。
-- 新增 docs/ 交付物清单（§8）与预热模板安装指引（§0.2/§6）。
+**v6 我改了什么**（相对 v5）：
+- 更正：HANDOFF.md 实际已被 git 跟踪（header 旧说法过时），仓库克隆即含本文件；若要隐藏需 `git rm --cached`。
+- §3.1：PR #4 已合并（HEAD=70f5e6c）；本会话分支 `arena/019fb861-...`；shallow 提示。
+- §6：PR #4 待办改为「后端 Redeploy（承泽本人操作）」。
+- §7：新增 D38+ 升级冲刺行。
+- §8：登记 `docs/knowledge-boost-2026-07.md`（Day 38 弹药库）。
+- 新增 §12：下一会话任务书（脱胎换骨升级 + 设计优化课题）+ 开场白模板。
+- §0.0：新会话开场白改指向 §12。
