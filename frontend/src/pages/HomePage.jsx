@@ -222,8 +222,10 @@ export default function HomePage() {
             <SectionHeader
               tag="Model Performance"
               title="代理模型精度"
-              subtitle={<>带物理约束的残差代理模型（Residual Surrogate），基于 1,000 组 CFD 样本训练<br />
-                <span style={{ fontSize: '12px', color: '#475569' }}>Physics-constrained residual surrogate model, trained on 1,000 CFD samples.</span></>}
+              subtitle={<>带物理约束的残差代理模型（Residual Surrogate），基于 1,000 组 CFD 样本训练；
+                R² 在留出测试集（n=100，训练时未见）上实测<br />
+                <span style={{ fontSize: '12px', color: '#475569' }}>Physics-constrained residual surrogate model, trained on 1,000 CFD samples.
+                R² measured on a held-out test set (n=100, unseen during training).</span></>}
             />
             <div style={{
               display: 'grid',
@@ -231,9 +233,9 @@ export default function HomePage() {
               gap: '14px',
             }}>
               {[
-                { label: '总压比 R²',   value: '0.9861', color: 'primary' },
-                { label: '效率 R²',     value: '0.9588', color: 'cyan'    },
-                { label: '质量流量 R²', value: '0.9845', color: 'green'   },
+                { label: '总压比 R²',   value: '0.9844', color: 'primary' },
+                { label: '效率 R²',     value: '0.9561', color: 'cyan'    },
+                { label: '质量流量 R²', value: '0.9827', color: 'green'   },
                 { label: 'CFD 加速比',  value: '~100K×', color: 'amber'   },
               ].map((item, i) => (
                 <motion.div key={item.label} variants={fadeUp(i * 0.08)}>
