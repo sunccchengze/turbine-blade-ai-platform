@@ -292,6 +292,65 @@ export default function MethodologyPage() {
         </ScrollSection>
       </section>
 
+      {/* 4.5 精度验证（D27） */}
+      <section style={{ padding: '32px 0 0' }}>
+        <ScrollSection>
+          <SectionHeader
+            tag="Step 4.5 · Validation"
+            title="精度验证：预测 vs 真实"
+            subtitle="Validation: predicted vs true on the held-out test set."
+          />
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '16px' }}>
+            <motion.div
+              variants={fadeUp(0)}
+              style={{
+                padding: '16px', borderRadius: '14px',
+                background: 'rgba(30,41,59,0.4)',
+                border: '1px solid rgba(255,255,255,0.06)',
+              }}
+            >
+              <img
+                src="/figures/fig09_pred_vs_true.png"
+                alt="Baseline MLP predicted vs true values on test set"
+                style={{ width: '100%', borderRadius: '10px', display: 'block' }}
+                loading="lazy"
+              />
+              <div style={{ marginTop: '12px', fontSize: '13px', color: '#94a3b8', lineHeight: 1.7 }}>
+                <strong style={{ color: '#e2e8f0' }}>基线 MLP Baseline MLP</strong> —— 三个输出的预测 vs 真实散点
+                （测试集 n=100，红色虚线为完美预测 y=x）。
+                <br />
+                <span style={{ fontSize: '11px', color: '#475569' }}>
+                  Baseline MLP: predicted vs true scatter on the test set; dashed line = perfect prediction.
+                </span>
+              </div>
+            </motion.div>
+            <motion.div
+              variants={fadeUp(0.08)}
+              style={{
+                padding: '16px', borderRadius: '14px',
+                background: 'rgba(30,41,59,0.4)',
+                border: '1px solid rgba(255,255,255,0.06)',
+              }}
+            >
+              <img
+                src="/figures/fig10_residual_evaluation.png"
+                alt="Residual network predicted vs true and residual distributions"
+                style={{ width: '100%', borderRadius: '10px', display: 'block' }}
+                loading="lazy"
+              />
+              <div style={{ marginTop: '12px', fontSize: '13px', color: '#94a3b8', lineHeight: 1.7 }}>
+                <strong style={{ color: '#e2e8f0' }}>残差网络 Residual Network</strong> —— 上排预测 vs 真实，
+                下排残差分布（均值接近 0，说明无系统性偏差）。
+                <br />
+                <span style={{ fontSize: '11px', color: '#475569' }}>
+                  Residual network: predicted vs true (top) and residual histograms (bottom) — means near zero, no systematic bias.
+                </span>
+              </div>
+            </motion.div>
+          </div>
+        </ScrollSection>
+      </section>
+
       {/* 5. UQ */}
       <section style={{ padding: '32px 0 0' }}>
         <ScrollSection>
