@@ -429,6 +429,7 @@ export default function OptimizePage() {
                   <button
                     key={key}
                     onClick={() => setColorBy(key)}
+                    aria-pressed={colorBy === key}
                     style={{
                       padding: '4px 10px', borderRadius: '6px',
                       fontSize: '11px', fontWeight: 500, cursor: 'pointer',
@@ -462,7 +463,7 @@ export default function OptimizePage() {
               <p style={{ fontSize: '11px', color: '#475569', marginBottom: '10px' }}>
                 200 代优化过程中每 10 代的前沿快照 · 播放观看非支配前沿如何逐步铺开
                 <br />
-                <span style={{ fontSize: '10px', color: '#334155' }}>
+                <span style={{ fontSize: '10px', color: '#475569' }}>
                   Front snapshots every 10 generations during the 200-generation NSGA-II run.
                 </span>
               </p>
@@ -558,7 +559,7 @@ export default function OptimizePage() {
                 </div>
               ) : (
                 <div style={{
-                  textAlign: 'center', padding: '20px 0', color: '#334155', fontSize: '13px',
+                  textAlign: 'center', padding: '20px 0', color: '#475569', fontSize: '13px',
                 }}>
                   点击 Pareto 前沿上的任意点，查看该设计方案的气动性能参数
                 </div>
@@ -610,13 +611,13 @@ export default function OptimizePage() {
                     ))}
                   </div>
                   <div style={{
-                    fontSize: '10px', color: '#334155', marginTop: '10px', lineHeight: 1.6,
+                    fontSize: '10px', color: '#475569', marginTop: '10px', lineHeight: 1.6,
                   }}>
                     注：叶型为基于几何参数的示意重建，非 CFD 网格。Note: schematic geometry reconstruction from parameters, not CFD mesh.
                   </div>
                 </>
               ) : (
-                <div style={{ textAlign: 'center', padding: '16px 0', color: '#334155', fontSize: '12px' }}>
+                <div style={{ textAlign: 'center', padding: '16px 0', color: '#475569', fontSize: '12px' }}>
                   选择一个 Pareto 解后在此预览对应叶型
                 </div>
               )}
@@ -712,7 +713,7 @@ export default function OptimizePage() {
               <span style={{ color: '#f87171' }}>⭐ 红星</span>
               {' '}为训练集均值——所有 Pareto 解至少在一个目标上严格优于它。色条默认展示第三个目标：总压比 π。
               <br />
-              <span style={{ fontSize: '11px', color: '#334155' }}>
+              <span style={{ fontSize: '11px', color: '#475569' }}>
                 Each point is a blade design that cannot be improved on both objectives simultaneously (non-dominated).
                 Moving right increases mass flow but may reduce efficiency. The red star marks the training-data
                 average — all Pareto solutions beat it in at least one objective. The colorbar shows the third

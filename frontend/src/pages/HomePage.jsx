@@ -748,10 +748,10 @@ export default function HomePage() {
         <p style={{ fontSize: '11px', color: '#475569', marginTop: '4px' }}>
           Sun Chengze · Undergraduate (Year 2) · Independent Project
         </p>
-        <p style={{ fontSize: '12px', color: '#334155', marginTop: '14px' }}>
+        <p style={{ fontSize: '12px', color: '#475569', marginTop: '14px' }}>
           NASA Rotor 37 · PyTorch ResidualSurrogateModel · NSGA-II · MC Dropout UQ
         </p>
-        <p style={{ fontSize: '11px', color: '#1e293b', marginTop: '4px' }}>
+        <p style={{ fontSize: '11px', color: '#475569', marginTop: '4px' }}>
           灵感源自 KIT 无压气机燃气轮机突破 · Inspired by KIT's compressorless gas turbine breakthrough (Feb 2026)
         </p>
         <Link

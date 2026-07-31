@@ -186,8 +186,8 @@ function ParamSlider({ label, value, min, max, step, onChange, unit, color = '#8
 
       {/* min/max 标注 */}
       <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '4px' }}>
-        <span style={{ fontSize: '10px', color: '#334155' }}>{min.toLocaleString()}</span>
-        <span style={{ fontSize: '10px', color: '#334155' }}>{max.toLocaleString()}</span>
+        <span style={{ fontSize: '10px', color: '#475569' }}>{min.toLocaleString()}</span>
+        <span style={{ fontSize: '10px', color: '#475569' }}>{max.toLocaleString()}</span>
       </div>
     </div>
   )
@@ -483,6 +483,9 @@ export default function PredictPage() {
                 </div>
                 <button
                   onClick={() => setWithUQ(!withUQ)}
+                  role="switch"
+                  aria-checked={withUQ}
+                  aria-label="切换不确定性量化 Toggle uncertainty quantification"
                   style={{
                     width: '40px', height: '22px', borderRadius: '11px',
                     background: withUQ ? '#4f46e5' : 'rgba(255,255,255,0.1)',
@@ -593,7 +596,7 @@ export default function PredictPage() {
                     <span className="num" style={{ fontSize: '13px', fontWeight: 700, color }}>
                       {value}
                     </span>
-                    <span style={{ fontSize: '10px', color: '#334155', marginLeft: '2px' }}>{unit}</span>
+                    <span style={{ fontSize: '10px', color: '#475569', marginLeft: '2px' }}>{unit}</span>
                   </div>
                 ))}
               </div>

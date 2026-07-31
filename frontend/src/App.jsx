@@ -1,6 +1,6 @@
-import { lazy, Suspense, useEffect } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
-import { Zap, Loader2 } from 'lucide-react'
+import { Zap, Loader2, ArrowUp } from 'lucide-react'
 import Navbar from './components/Navbar'
 import WakeUpBanner from './components/WakeUpBanner'
 import HomePage from './pages/HomePage'
@@ -90,11 +90,44 @@ function ScrollToTop() {
   return null
 }
 
+// 回到顶部悬浮按钮：长页面（首页/方法论/关于）滚动超过一屏后出现
+function BackToTop() {
+  const [visible, setVisible] = useState(false)
+  useEffect(() => {
+    const onScroll = () => setVisible(window.scrollY > 480)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    onScroll()
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+  if (!visible) return null
+  return (
+    <button
+      onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+      aria-label="回到顶部 Back to top"
+      title="回到顶部 Back to top"
+      style={{
+        position: 'fixed', right: '22px', bottom: '22px', zIndex: 60,
+        width: '42px', height: '42px', borderRadius: '12px',
+        background: 'rgba(30,41,59,0.85)', backdropFilter: 'blur(12px)',
+        border: '1px solid rgba(99,102,241,0.35)', cursor: 'pointer',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        color: '#a5b4fc', boxShadow: '0 6px 20px rgba(0,0,0,0.4)',
+        transition: 'all 0.2s',
+      }}
+      onMouseEnter={e => { e.currentTarget.style.background = 'rgba(79,70,229,0.35)'; e.currentTarget.style.color = '#e0e7ff' }}
+      onMouseLeave={e => { e.currentTarget.style.background = 'rgba(30,41,59,0.85)'; e.currentTarget.style.color = '#a5b4fc' }}
+    >
+      <ArrowUp size={18} />
+    </button>
+  )
+}
+
 export default function App() {
   return (
     <BrowserRouter>
       <RouteTitles />
       <ScrollToTop />
+      <BackToTop />
       {/* 全局背景光球 */}
       <div style={{
         position: 'fixed', inset: 0,

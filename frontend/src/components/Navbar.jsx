@@ -153,6 +153,7 @@ export default function Navbar() {
           {isMobile && (
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
+              aria-label={mobileOpen ? '关闭菜单 Close menu' : '打开菜单 Open menu'}
               style={{
                 padding: '6px', color: '#94a3b8',
                 background: 'none', border: 'none', cursor: 'pointer',
