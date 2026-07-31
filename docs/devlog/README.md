@@ -7,8 +7,8 @@
 > This devlog mirrors the real commit history of this repository. Every entry links to
 > an actual commit, and every number is reproducible from this repo (see README § Reproduce).
 
-**周期**：2026-07-30（Day 1）→ 2026-07-31（Day 30 部分，当前）
-**提交数**：48 个（截至 Day 30 部分，`06c1d0f`）
+**周期**：2026-07-30（Day 1）→ 2026-07-31（Day 32，当前）
+**提交数**：54 个（截至 Day 32，`4c1c8c5`）
 **作者**：孙承泽 · 本科二年级 · 独立完成（Sun Chengze · Undergraduate (Year 2) · Independent Project）
 
 ---
@@ -301,6 +301,27 @@ OptimizePage 点选 Pareto 解 → `BladeViewer3D` 实时渲染对应叶型 + �
 UQPage（2fr 1fr）；Navbar 胶囊断点 768→1024（7 个导航项不再在平板宽度溢出）。
 **过程教训**：UQPage 初版把状态加在主组件、却在子组件里使用，lint 抓到「declared but never used」——
 改为 prop 传递后复核通过。移动端真机全面走查仍在 D29。
+
+---
+
+## Day 31 — 质疑点压力测试问答稿
+
+- `fb25138` Day 31: pressure-test Q&A prep (5 challenges + R2 story)
+
+**产出**：`docs/pressure-test-D31.md` —— 评审最可能问的 5 个质疑点逐条演答（样本量/未跑 CFD/物理约束弱/
+提交历史太干净/压气机数据讲涡轮故事），外加 R² 口径修正的如实回应与汇报当天操作清单。
+
+---
+
+## Day 32 — 术语与单位统一
+
+- `718dd76` Day 32: fix unit labels (Omega rad/s, coordinates m) — factual correctness
+- `4c1c8c5` Day 32: terminology/units table + fix history card unit
+
+**产出**：`docs/terminology.md` 术语统一表（站名/术语/输出变量/单位/双语格式/数字口径）。
+**发现并修正显示错误**：Ω 单位曾标 rpm（实际 rad/s，Rotor 37 设计转速 16,188 rpm ≈ 1,695 rad/s，
+数据范围 1620–1800 rad/s；rpm 量级差 4–5 倍）；坐标均值单位曾标 mm（实际 m）。
+落点：ExplorePage UNITS 表、PredictPage 滑块/历史条目。
 
 ---
 
