@@ -9,7 +9,7 @@ from app.routers import predict, optimize
 
 # ── 创建 FastAPI 应用 ──────────────────────────────────────
 app = FastAPI(
-    title="Turbine Blade AI Platform API",
+    title="Turbomachinery AI Platform API",
     description="""
 ## 叶轮机械叶片气动性能 AI 代理模型 API
 
@@ -64,7 +64,7 @@ app.include_router(optimize.router)
 @app.get("/")
 async def root():
     return {
-        "message":     "Turbine Blade AI Platform API",
+        "message":     "Turbomachinery AI Platform API",
         "version":     "2.0.0",
         "docs":        "/docs",
         "status":      "running",
