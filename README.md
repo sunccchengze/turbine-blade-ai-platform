@@ -316,6 +316,18 @@ EOF
 | `05_uncertainty_quantification.ipynb` | MC Dropout UQ |
 | `06_multiobjective_optimization.ipynb` | NSGA-II 多目标优化 |
 
+### 5. 复现 NSGA-II 优化结果（约 3 秒）
+
+```bash
+python backend/scripts/generate_pareto_evolution.py
+# 输出：backend/data/processed/pareto_evolution.csv（演化轨迹，21 帧）
+#       backend/data/processed/pareto_front_solutions.csv（最终 Pareto 前沿，100 解）
+# 期望：max η = 0.9173 · max ṁ = 21.74 kg/s · max π = 2.1073
+```
+
+与 notebook 06 同源（seed 42、同算法配置），评估使用部署中的生产 ONNX 模型。
+网站 /optimize 的演化动画数据即由该脚本生成。
+
 ---
 
 ## 🧬 数据说明 Dataset
