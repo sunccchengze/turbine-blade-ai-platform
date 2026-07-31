@@ -15,10 +15,11 @@ const OUTPUTS = [
 ]
 
 // 单位提示（统计量无物理单位的留空）
+// Omega 为角速度 (rad/s)：Rotor 37 设计转速 16,188 rpm ≈ 1,695 rad/s，数据范围 1620–1800 rad/s
 const UNITS = {
-  Omega: 'rpm', P: 'Pa', Pressure_mean: 'Pa', Density_mean: 'kg/m³',
-  Temperature_mean: 'K', CoordinateX_mean: 'mm', CoordinateY_mean: 'mm',
-  CoordinateZ_mean: 'mm',
+  Omega: 'rad/s', P: 'Pa', Pressure_mean: 'Pa', Density_mean: 'kg/m³',
+  Temperature_mean: 'K', CoordinateX_mean: 'm', CoordinateY_mean: 'm',
+  CoordinateZ_mean: 'm',
 }
 
 // 特征分组（中文组名 + 前缀匹配）
@@ -299,7 +300,23 @@ export default function ExplorePage() {
           <ParamSelect value={paramX} onChange={n => switchAxis('x', n)}
                        names={baseline.feature_names} />
           <div style={{ height: '12px' }} />
-          <FieldLabel>X 轴扫描范围 X Sweep Range</FieldLabel>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <FieldLabel>X 轴扫描范围 X Sweep Range</FieldLabel>
+            <button
+              onClick={() => setXRange([baseline.stats[paramX].min, baseline.stats[paramX].max])}
+              title="恢复满量程 Reset to full training range"
+              aria-label="恢复 X 轴满量程 Reset X to full range"
+              style={{
+                background: 'none', border: 'none', cursor: 'pointer',
+                color: '#64748b', fontSize: '10px', padding: '2px 6px',
+                borderRadius: '6px', transition: 'color 0.2s',
+              }}
+              onMouseEnter={e => e.currentTarget.style.color = '#a5b4fc'}
+              onMouseLeave={e => e.currentTarget.style.color = '#64748b'}
+            >
+              ↺ 满量程 Full
+            </button>
+          </div>
           <RangeInputs lo={xRange[0]} hi={xRange[1]}
                        statLo={baseline.stats[paramX].min} statHi={baseline.stats[paramX].max}
                        onChange={r => setXRange(r)} />
@@ -311,7 +328,23 @@ export default function ExplorePage() {
           <ParamSelect value={paramY} onChange={n => switchAxis('y', n)}
                        names={baseline.feature_names} />
           <div style={{ height: '12px' }} />
-          <FieldLabel>Y 轴扫描范围 Y Sweep Range</FieldLabel>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <FieldLabel>Y 轴扫描范围 Y Sweep Range</FieldLabel>
+            <button
+              onClick={() => setYRange([baseline.stats[paramY].min, baseline.stats[paramY].max])}
+              title="恢复满量程 Reset to full training range"
+              aria-label="恢复 Y 轴满量程 Reset Y to full range"
+              style={{
+                background: 'none', border: 'none', cursor: 'pointer',
+                color: '#64748b', fontSize: '10px', padding: '2px 6px',
+                borderRadius: '6px', transition: 'color 0.2s',
+              }}
+              onMouseEnter={e => e.currentTarget.style.color = '#a5b4fc'}
+              onMouseLeave={e => e.currentTarget.style.color = '#64748b'}
+            >
+              ↺ 满量程 Full
+            </button>
+          </div>
           <RangeInputs lo={yRange[0]} hi={yRange[1]}
                        statLo={baseline.stats[paramY].min} statHi={baseline.stats[paramY].max}
                        onChange={r => setYRange(r)} />

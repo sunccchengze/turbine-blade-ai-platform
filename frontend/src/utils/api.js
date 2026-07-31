@@ -64,6 +64,12 @@ export const getParetoFront = async () => {
   return response.data
 }
 
+// NSGA-II 演化轨迹（每 10 代一帧非支配前沿，演化动画数据源）
+export const getParetoEvolution = async () => {
+  const response = await api.get('/api/optimize/pareto-evolution')
+  return response.data
+}
+
 export const getTrainingStats = async () => {
   const response = await api.get('/api/optimize/training-data-stats')
   return response.data

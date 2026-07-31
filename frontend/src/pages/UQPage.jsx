@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import Plot from 'react-plotly.js'
 import {
-  BarChart3, RefreshCw, AlertCircle,
+  RefreshCw, AlertCircle,
   Shield, Info, TrendingUp, Gauge, Wind
 } from 'lucide-react'
 import { getUQResults } from '../utils/api'
@@ -26,7 +26,7 @@ function CoverageBadge({ value }) {
 
 // ── 单指标 UQ 分析面板 ─────────────────────────────────────
 function UQPanel({ label, trueKey, predKey, sigmaKey, lowerKey, upperKey,
-                   color, icon: Icon, data }) {
+                   color, icon: Icon, data, isNarrow }) {
   if (!data?.length) return null
 
   const trueVals  = data.map(d => d[trueKey])
@@ -44,7 +44,7 @@ function UQPanel({ label, trueKey, predKey, sigmaKey, lowerKey, upperKey,
   const upperSorted = sortIdx.map(i => upperVals[i])
 
   // 覆盖率
-  const covered  = data.filter((d, i) =>
+  const covered  = data.filter((d) =>
     d[trueKey] >= d[lowerKey] && d[trueKey] <= d[upperKey]
   ).length
   const coverage = (covered / data.length) * 100
@@ -195,7 +195,7 @@ function UQPanel({ label, trueKey, predKey, sigmaKey, lowerKey, upperKey,
       </div>
 
       {/* 图表区域：左 CI 带图 + 右 sigma 分布 */}
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '12px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: isNarrow ? '1fr' : '2fr 1fr', gap: '12px' }}>
         <Plot
           data={[ciTrace, trueTrace, predTrace]}
           layout={layout}
@@ -220,6 +220,14 @@ export default function UQPage() {
   const [uqData,  setUqData]  = useState(null)
   const [loading, setLoading] = useState(true)
   const [error,   setError]   = useState(null)
+  // 窄屏（<900px）时 CI 带图与 σ 分布图改单列
+  const [isNarrow, setIsNarrow] = useState(() => window.innerWidth < 900)
+
+  useEffect(() => {
+    const onResize = () => setIsNarrow(window.innerWidth < 900)
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
 
   useEffect(() => {
     getUQResults()
@@ -277,13 +285,14 @@ export default function UQPage() {
             </h1>
           </div>
           <p style={{ fontSize: '14px', color: '#64748b', maxWidth: '700px', lineHeight: 1.7 }}>
-            每次预测执行{' '}
+            训练/验证阶段每次预测执行{' '}
             <span style={{ color: '#a78bfa', fontWeight: 500 }}>100 次 MC Dropout 随机前向传播</span>
-            ，阴影带为 95% 置信区间。可靠的不确定性量化（UQ）意味着真实值稳定落在置信带内——这是代理模型工程可信度的直接证据。
+            ，阴影带为 95% 置信区间（生产 API 的 UQ 模式使用预计算 σ 统计量，见 README）。
+            可靠的不确定性量化（UQ）意味着真实值稳定落在置信带内——这是代理模型工程可信度的直接证据。
             <br />
             <span style={{ fontSize: '12px', color: '#475569' }}>
-              100 stochastic forward passes per prediction; the shaded band is the 95% confidence interval.
-              Trustworthy UQ keeps true values consistently inside the band.
+              100 stochastic forward passes per prediction during training/validation; the shaded band is the 95%
+              confidence interval. (The production API's UQ mode uses precomputed σ statistics — see README.)
             </span>
           </p>
         </motion.div>
@@ -331,6 +340,7 @@ export default function UQPage() {
             color="#818cf8"
             icon={TrendingUp}
             data={uqData}
+            isNarrow={isNarrow}
           />
           <UQPanel
             label="总压比 Total Pressure Ratio π"
@@ -342,6 +352,7 @@ export default function UQPage() {
             color="#22d3ee"
             icon={Gauge}
             data={uqData}
+            isNarrow={isNarrow}
           />
           <UQPanel
             label="质量流量 Mass Flow ṁ (kg/s)"
@@ -353,6 +364,7 @@ export default function UQPage() {
             color="#34d399"
             icon={Wind}
             data={uqData}
+            isNarrow={isNarrow}
           />
         </div>
 

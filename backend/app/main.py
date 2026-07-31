@@ -9,7 +9,7 @@ from app.routers import predict, optimize
 
 # ── 创建 FastAPI 应用 ──────────────────────────────────────
 app = FastAPI(
-    title="Turbine Blade AI Platform API",
+    title="Turbomachinery AI Platform API",
     description="""
 ## 叶轮机械叶片气动性能 AI 代理模型 API
 
@@ -17,8 +17,8 @@ app = FastAPI(
 实现叶片气动性能的毫秒级预测和多目标设计优化。
 
 ### 背景
-2026年2月，KIT（卡尔斯鲁厄理工学院）实现无压缩机燃气轮机
-303秒连续运行，打破NASA纪录。这使涡轮叶片气动效率的优化
+2026 年 2 月，KIT（卡尔斯鲁厄理工学院）实现无压缩机燃气轮机
+303 秒连续运行，打破 NASA 纪录。这使涡轮叶片气动效率的优化
 比以往任何时候都更加关键。
 
 ### 核心能力
@@ -27,11 +27,12 @@ app = FastAPI(
 - **多目标优化**：NSGA-II Pareto 前沿（100个最优设计方案）
 
 ### 模型性能
+留出测试集（n=100, random_state=42，训练时未见）实测：
 | 指标 | R² |
 |------|-----|
-| 压比 | 0.9861 |
-| 效率 | 0.9588 |
-| 质量流量 | 0.9845 |
+| 压比 | 0.9844 |
+| 效率 | 0.9561 |
+| 质量流量 | 0.9827 |
     """,
     version="2.0.0",
     docs_url="/docs",
@@ -63,18 +64,20 @@ app.include_router(optimize.router)
 @app.get("/")
 async def root():
     return {
-        "message":     "Turbine Blade AI Platform API",
+        "message":     "Turbomachinery AI Platform API",
         "version":     "2.0.0",
         "docs":        "/docs",
         "status":      "running",
         "endpoints": {
-            "predict":          "/api/predict/",
-            "predict_health":   "/api/predict/health",
-            "model_info":       "/api/predict/model-info",
-            "design_sweep":     "/api/predict/sweep",
-            "pareto_front":     "/api/optimize/pareto",
-            "training_stats":   "/api/optimize/training-data-stats",
-            "uq_results":       "/api/optimize/uq-results",
+            "predict":            "/api/predict/",
+            "predict_health":     "/api/predict/health",
+            "model_info":         "/api/predict/model-info",
+            "baseline_features":  "/api/predict/baseline-features",
+            "design_sweep":       "/api/predict/sweep",
+            "pareto_front":       "/api/optimize/pareto",
+            "pareto_evolution":   "/api/optimize/pareto-evolution",
+            "training_stats":     "/api/optimize/training-data-stats",
+            "uq_results":         "/api/optimize/uq-results",
         }
     }
 

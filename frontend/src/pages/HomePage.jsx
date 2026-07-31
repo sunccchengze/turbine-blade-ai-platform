@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react'
+import { useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, useInView } from 'framer-motion'
 import {
@@ -7,7 +7,6 @@ import {
   Activity, Shield, BarChart3,
   Calendar, MapPin, AlertTriangle, Zap
 } from 'lucide-react'
-import { getModelInfo, getTrainingStats } from '../utils/api'
 import StatusBadge from '../components/StatusBadge'
 
 const fadeUp = (delay = 0) => ({
@@ -77,14 +76,6 @@ function SectionHeader({ tag, title, subtitle }) {
 }
 
 export default function HomePage() {
-  const [modelInfo,     setModelInfo]     = useState(null)
-  const [trainingStats, setTrainingStats] = useState(null)
-
-  useEffect(() => {
-    getModelInfo().then(setModelInfo).catch(console.error)
-    getTrainingStats().then(setTrainingStats).catch(console.error)
-  }, [])
-
   return (
     <div style={{ background: '#0f172a', minHeight: '100vh' }}>
 
@@ -222,8 +213,10 @@ export default function HomePage() {
             <SectionHeader
               tag="Model Performance"
               title="代理模型精度"
-              subtitle={<>带物理约束的残差代理模型（Residual Surrogate），基于 1,000 组 CFD 样本训练<br />
-                <span style={{ fontSize: '12px', color: '#475569' }}>Physics-constrained residual surrogate model, trained on 1,000 CFD samples.</span></>}
+              subtitle={<>带物理约束的残差代理模型（Residual Surrogate），基于 1,000 组 CFD 样本训练；
+                R² 在留出测试集（n=100，训练时未见）上实测<br />
+                <span style={{ fontSize: '12px', color: '#475569' }}>Physics-constrained residual surrogate model, trained on 1,000 CFD samples.
+                R² measured on a held-out test set (n=100, unseen during training).</span></>}
             />
             <div style={{
               display: 'grid',
@@ -231,9 +224,9 @@ export default function HomePage() {
               gap: '14px',
             }}>
               {[
-                { label: '总压比 R²',   value: '0.9861', color: 'primary' },
-                { label: '效率 R²',     value: '0.9588', color: 'cyan'    },
-                { label: '质量流量 R²', value: '0.9845', color: 'green'   },
+                { label: '总压比 R²',   value: '0.9844', color: 'primary' },
+                { label: '效率 R²',     value: '0.9561', color: 'cyan'    },
+                { label: '质量流量 R²', value: '0.9827', color: 'green'   },
                 { label: 'CFD 加速比',  value: '~100K×', color: 'amber'   },
               ].map((item, i) => (
                 <motion.div key={item.label} variants={fadeUp(i * 0.08)}>
@@ -397,15 +390,15 @@ export default function HomePage() {
                         icon: Shield, color: '#34d399',
                         bg: 'rgba(52,211,153,0.08)',
                         label: 'MC Dropout UQ',
-                        desc: <>100 次采样推理 · 95% 置信区间<br />
-                          <span style={{ color: '#475569' }}>100-sample inference · 95% confidence intervals</span></>,
+                        desc: <>σ 统计量（训练期 100 次采样）· 95% 置信区间<br />
+                          <span style={{ color: '#475569' }}>σ statistics (100 samples during training) · 95% confidence intervals</span></>,
                       },
                       {
                         icon: Target, color: '#fbbf24',
                         bg: 'rgba(251,191,36,0.08)',
                         label: 'NSGA-II Optimization',
-                        desc: <>100 个 Pareto 最优设计 · 效率 +5.83%<br />
-                          <span style={{ color: '#475569' }}>100 Pareto-optimal designs · +5.83% efficiency</span></>,
+                        desc: <>100 个 Pareto 最优设计 · 效率 +5.40%（可复现，见 README）<br />
+                          <span style={{ color: '#475569' }}>100 Pareto-optimal designs · +5.40% efficiency (reproducible, see README)</span></>,
                       },
                     ].map(({ icon: Icon, color, bg, label, desc }) => (
                       <div
@@ -468,7 +461,7 @@ export default function HomePage() {
                   icon: Award,       color: '#818cf8',
                   bg: 'rgba(99,102,241,0.06)', border: 'rgba(99,102,241,0.15)',
                   title: '最高效率设计',
-                  metric: 'η = 0.9211', delta: '+5.83%',
+                  metric: 'η = 0.9173', delta: '+5.40%',
                   sub: '相对训练集均值 vs avg',
                   desc: <>Pareto 前沿中等熵效率最高的设计<br />
                     <span style={{ color: '#475569' }}>Highest isentropic efficiency on the Pareto front</span></>,
@@ -478,7 +471,7 @@ export default function HomePage() {
                   icon: TrendingUp,  color: '#34d399',
                   bg: 'rgba(52,211,153,0.06)', border: 'rgba(52,211,153,0.15)',
                   title: '最大通流设计',
-                  metric: 'ṁ = 21.64 kg/s', delta: '+10.95%',
+                  metric: 'ṁ = 21.74 kg/s', delta: '+11.43%',
                   sub: '相对训练集均值 vs avg',
                   desc: <>约束边界之内质量流量最大的设计<br />
                     <span style={{ color: '#475569' }}>Maximum mass flow within constraint bounds</span></>,
@@ -749,12 +742,28 @@ export default function HomePage() {
         padding: '28px 24px', textAlign: 'center',
         borderTop: '1px solid rgba(255,255,255,0.04)',
       }}>
-        <p style={{ fontSize: '12px', color: '#334155' }}>
+        <p style={{ fontSize: '14px', fontWeight: 600, color: '#cbd5e1' }}>
+          孙承泽 · 本科二年级 · 独立完成
+        </p>
+        <p style={{ fontSize: '11px', color: '#475569', marginTop: '4px' }}>
+          Sun Chengze · Undergraduate (Year 2) · Independent Project
+        </p>
+        <p style={{ fontSize: '12px', color: '#475569', marginTop: '14px' }}>
           NASA Rotor 37 · PyTorch ResidualSurrogateModel · NSGA-II · MC Dropout UQ
         </p>
-        <p style={{ fontSize: '11px', color: '#1e293b', marginTop: '4px' }}>
+        <p style={{ fontSize: '11px', color: '#475569', marginTop: '4px' }}>
           灵感源自 KIT 无压气机燃气轮机突破 · Inspired by KIT's compressorless gas turbine breakthrough (Feb 2026)
         </p>
+        <Link
+          to="/about"
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: '4px',
+            marginTop: '12px', color: '#818cf8', fontSize: '12px',
+            textDecoration: 'none', borderBottom: '1px dashed rgba(129,140,248,0.4)',
+          }}
+        >
+          关于与开发日志 About & Devlog
+        </Link>
       </footer>
 
     </div>

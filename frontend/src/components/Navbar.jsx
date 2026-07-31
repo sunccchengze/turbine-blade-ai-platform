@@ -1,31 +1,52 @@
 import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Activity, Compass, Cpu, TrendingUp, BarChart3, Home, Menu, X } from 'lucide-react'
+import { Activity, Compass, Cpu, TrendingUp, BarChart3, Home, Menu, X, User, BookOpen } from 'lucide-react'
+import { checkHealth } from '../utils/api'
 
 const navItems = [
-  { path: '/',         label: '概览',     icon: Home      },
-  { path: '/predict',  label: '实时预测', icon: Cpu       },
-  { path: '/explore',  label: '空间探索', icon: Compass   },
-  { path: '/optimize', label: '优化',     icon: TrendingUp},
-  { path: '/uq',       label: '不确定性', icon: BarChart3 },
+  { path: '/',            label: '概览',     icon: Home       },
+  { path: '/predict',     label: '实时预测', icon: Cpu        },
+  { path: '/explore',     label: '空间探索', icon: Compass    },
+  { path: '/optimize',    label: '优化',     icon: TrendingUp },
+  { path: '/uq',          label: '不确定性', icon: BarChart3  },
+  { path: '/methodology', label: '方法论',   icon: BookOpen   },
+  { path: '/about',       label: '关于',     icon: User       },
 ]
 
 export default function Navbar() {
   const location                      = useLocation()
   const [scrolled,    setScrolled]    = useState(false)
   const [mobileOpen,  setMobileOpen]  = useState(false)
-  const [isMobile,    setIsMobile]    = useState(window.innerWidth < 768)
+  const [isMobile,    setIsMobile]    = useState(window.innerWidth < 1024)
+  // API 真实健康状态（冷启动/挂掉时不再显示假的"API Live"）
+  const [apiStatus,   setApiStatus]   = useState('checking')   // checking | live | down
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20)
-    const onResize = () => setIsMobile(window.innerWidth < 768)
+    const onResize = () => setIsMobile(window.innerWidth < 1024)
     window.addEventListener('scroll', onScroll)
     window.addEventListener('resize', onResize)
     return () => {
       window.removeEventListener('scroll', onScroll)
       window.removeEventListener('resize', onResize)
     }
+  }, [])
+
+  // 健康检查：启动即查一次，之后每 30 秒刷新（容器冷启动数秒内可恢复）
+  useEffect(() => {
+    let alive = true
+    const ping = async () => {
+      try {
+        await checkHealth()
+        if (alive) setApiStatus('live')
+      } catch {
+        if (alive) setApiStatus('down')
+      }
+    }
+    ping()
+    const timer = setInterval(ping, 30000)
+    return () => { alive = false; clearInterval(timer) }
   }, [])
 
   return (
@@ -108,25 +129,31 @@ export default function Navbar() {
           </div>
         )}
 
-        {/* 右侧：API状态 + 移动端按钮 */}
+        {/* 右侧：API真实状态 + 移动端按钮 */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <span style={{
             display: 'inline-flex', alignItems: 'center', gap: '5px',
             padding: '4px 10px', borderRadius: '9999px',
-            background: 'rgba(52,211,153,0.08)',
-            border: '1px solid rgba(52,211,153,0.18)',
-            fontSize: '11px', fontWeight: 600, color: '#34d399',
+            background: apiStatus === 'live' ? 'rgba(52,211,153,0.08)'
+              : apiStatus === 'down' ? 'rgba(248,113,113,0.08)' : 'rgba(148,163,184,0.08)',
+            border: apiStatus === 'live' ? '1px solid rgba(52,211,153,0.18)'
+              : apiStatus === 'down' ? '1px solid rgba(248,113,113,0.18)' : '1px solid rgba(148,163,184,0.18)',
+            fontSize: '11px', fontWeight: 600,
+            color: apiStatus === 'live' ? '#34d399' : apiStatus === 'down' ? '#f87171' : '#94a3b8',
           }}>
             <div style={{
               width: '5px', height: '5px', borderRadius: '50%',
-              background: '#34d399', flexShrink: 0,
+              background: apiStatus === 'live' ? '#34d399' : apiStatus === 'down' ? '#f87171' : '#94a3b8',
+              flexShrink: 0,
             }} />
-            API Live
+            {apiStatus === 'live' ? 'API Live'
+              : apiStatus === 'down' ? 'API Offline' : 'Checking…'}
           </span>
 
           {isMobile && (
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
+              aria-label={mobileOpen ? '关闭菜单 Close menu' : '打开菜单 Open menu'}
               style={{
                 padding: '6px', color: '#94a3b8',
                 background: 'none', border: 'none', cursor: 'pointer',

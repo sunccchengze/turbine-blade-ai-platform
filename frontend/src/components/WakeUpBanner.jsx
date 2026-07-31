@@ -69,8 +69,8 @@ export default function WakeUpBanner() {
               color: status === 'checking' ? '#818cf8' : '#fbbf24',
             }}>
               {status === 'checking'
-                ? `正在连接推理服务器${dots}`
-                : `服务器正在从休眠中唤醒${dots}（首次加载约需 30 秒）`
+                ? `正在连接推理服务器${dots} · Connecting to inference server${dots}`
+                : `服务器正在从休眠中唤醒${dots}（首次加载约需 30 秒） · Waking the server${dots} (first load ~30s)`
               }
             </span>
           </div>

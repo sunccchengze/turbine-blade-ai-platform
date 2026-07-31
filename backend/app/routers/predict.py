@@ -50,14 +50,6 @@ class UncertaintyOutput(BaseModel):
     upper_95: float
 
 
-class PredictResponse(BaseModel):
-    """预测响应"""
-    Compression_ratio: dict
-    Efficiency:        dict
-    Massflow:          dict
-    model_version:     str = "ResidualSurrogate-v2"
-
-
 # ── 端点定义 ───────────────────────────────────────────────
 @router.post("/", response_model=dict)
 async def predict(request: PredictRequest):
@@ -112,11 +104,14 @@ async def model_info():
         "input_dim":     74,
         "output_dim":    3,
         "outputs":       ["Compression_ratio", "Efficiency", "Massflow"],
+        # 留出测试集 (n=100, random_state=42) 上由本 ONNX 模型实测，
+        # 可用 README「快速复现 §3」重跑验证。
         "r2_scores": {
-            "Compression_ratio": 0.9861,
-            "Efficiency":        0.9588,
-            "Massflow":          0.9845,
+            "Compression_ratio": 0.9844,
+            "Efficiency":        0.9561,
+            "Massflow":          0.9827,
         },
+        "r2_evaluated_on": "held-out test set (n=100, random_state=42)",
         "physics_constraints": [
             "Efficiency ≤ 1.0",
             "Efficiency ≥ 0.5",
