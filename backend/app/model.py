@@ -35,6 +35,14 @@ INPUT_COLS  = [c for c in df_features.columns
                             'Efficiency', 'Massflow']]
 OUTPUT_COLS = ['Compression_ratio', 'Efficiency', 'Massflow']
 
+# 每个特征在训练数据中的取值范围 (min, max)
+# 用于 /sweep 端点的越界保护：代理模型只在训练分布内可靠，
+# 外推（extrapolation）区域的预测在物理上不可信，应直接拒绝。
+FEATURE_STATS = {
+    c: (float(df_features[c].min()), float(df_features[c].max()))
+    for c in INPUT_COLS
+}
+
 print("✅ ONNX Runtime 模型加载成功")
 print(f"   模型路径：{onnx_path}")
 print(f"   输入维度：{len(INPUT_COLS)}")

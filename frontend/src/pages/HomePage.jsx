@@ -692,7 +692,7 @@ export default function HomePage() {
                     >
                       GitHub repository
                     </a>
-                    {' '}(notebooks 03–07).
+                    {' '}(notebooks 03–06).
                   </p>
                 </div>
               </div>

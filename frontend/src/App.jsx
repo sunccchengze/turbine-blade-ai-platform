@@ -4,6 +4,7 @@ import Navbar from './components/Navbar'
 import WakeUpBanner from './components/WakeUpBanner'
 import HomePage from './pages/HomePage'
 import PredictPage from './pages/PredictPage'
+import ExplorePage from './pages/ExplorePage'
 import OptimizePage from './pages/OptimizePage'
 import UQPage from './pages/UQPage'
 
@@ -73,6 +74,7 @@ export default function App() {
         <Routes>
           <Route path="/"         element={<HomePage />}    />
           <Route path="/predict"  element={<PredictPage />} />
+          <Route path="/explore"  element={<ExplorePage />} />
           <Route path="/optimize" element={<OptimizePage />}/>
           <Route path="/uq"       element={<UQPage />}      />
         </Routes>

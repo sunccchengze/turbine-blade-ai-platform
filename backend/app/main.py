@@ -68,6 +68,7 @@ async def root():
             "predict":          "/api/predict/",
             "predict_health":   "/api/predict/health",
             "model_info":       "/api/predict/model-info",
+            "design_sweep":     "/api/predict/sweep",
             "pareto_front":     "/api/optimize/pareto",
             "training_stats":   "/api/optimize/training-data-stats",
             "uq_results":       "/api/optimize/uq-results",

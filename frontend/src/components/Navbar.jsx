@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Activity, Cpu, TrendingUp, BarChart3, Home, Menu, X } from 'lucide-react'
+import { Activity, Compass, Cpu, TrendingUp, BarChart3, Home, Menu, X } from 'lucide-react'
 
 const navItems = [
   { path: '/',         label: 'Overview',    icon: Home      },
   { path: '/predict',  label: 'Predict',     icon: Cpu       },
+  { path: '/explore',  label: 'Explore',     icon: Compass   },
   { path: '/optimize', label: 'Optimize',    icon: TrendingUp},
   { path: '/uq',       label: 'Uncertainty', icon: BarChart3 },
 ]

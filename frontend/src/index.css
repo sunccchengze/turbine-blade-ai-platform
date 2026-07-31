@@ -155,3 +155,11 @@
     font-weight: 500;
   }
 }
+/* ── 旋转加载动画（ExplorePage 等复用）───────────────────── */
+@keyframes turbine-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+.spin {
+  animation: turbine-spin 1s linear infinite;
+}
