@@ -255,6 +255,8 @@ def main():
     ap.add_argument("--batch_size", type=int, default=32)
     ap.add_argument("--lr", type=float, default=1e-3)
     ap.add_argument("--lam_field", type=float, default=0.5)
+    ap.add_argument("--n_points", type=int, default=None,
+                    help="训练时随机降采样到该点数（如 512/1024）加速；默认用数据全点数")
     args = ap.parse_args()
 
     set_seed()
@@ -272,6 +274,12 @@ def main():
         X, conds, y, _ = load_data(path)
         print(f"数据集：{X.shape[0]} 样本 × {X.shape[1]} 点 × {X.shape[2]} 通道"
               f"{'（synthetic 占位）' if args.synthetic else ''}")
+        # 快速模式：随机降采样到 --n_points（大幅加速 CPU 训练）
+        if args.n_points and X.shape[1] > args.n_points:
+            rng = np.random.default_rng(SEED)
+            idx = rng.choice(X.shape[1], args.n_points, replace=False)
+            X = X[:, idx, :]
+            print(f"  已降采样到 {args.n_points} 点（快速模式）")
         data = train_val_split(X, conds, y)
 
     C = X.shape[2]
