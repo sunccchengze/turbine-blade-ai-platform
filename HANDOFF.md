@@ -376,3 +376,9 @@ cd frontend && npm install --no-audit --no-fund && npm run build && npm run lint
 - 承泽决策：全方案五层（P1–P4 + E5）／本地 GPU／真 SU2 闭环／交付物=平台升级（课题申报书→可选立项思路）。
 - §12 全面改写为五层任务书；新增 `docs/upgrade-blueprint-D38.md` 作战总纲（技术选型/引用/里程碑/口径/验收）。
 - §12.4 开场白模板更新为新决策版本。
+
+### Day 39 下午补记（15:48 北京时间）
+- 修复 4 处：CellData 场量提取根因（9 通道验证）；P1 场列动态推断 `[3,5]`；合成数据通道顺序对齐；P2 `--synthetic` 默认改真数据+conformal q_level clip
+- 新增 `verify_pointcloud.py`（数据一键验证：通道/物理范围/对齐）；`run_all_smoke.sh` 加 STEP 0
+- **UQ 页新增校准曲线**（CalibrationCurve：名义 vs 实测覆盖率，前端 build ✅ lint 0w/0e）——P2 前端落点
+- 9 通道布局：0-2 坐标, 3 Pressure, 4 Density, 5 Temperature, 6-8 Normals(X/Y/Z)
