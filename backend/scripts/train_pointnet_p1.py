@@ -143,10 +143,11 @@ def train(model, data, args):
     y_tr_s = (y_tr - ym) / ys
     y_te_s = (y_te - ym) / ys
 
-    # 场目标标准化（压力/温度列，若存在）
-    field_cols = [3, 4]  # X_pc 通道顺序：0-2 坐标, 3 压力, 4 温度
+    # 场目标列：按 build_pointcloud_dataset.py 的通道顺序动态推断
+    # 通道布局：0-2 坐标, 3 Pressure, 4 Density, 5 Temperature, 6-8 Normals(X/Y/Z)
+    # 场预测目标 = [Pressure(3), Temperature(5)]（与前端 3D 热力图对应）
     C = X_tr.shape[-1]
-    field_cols = [c for c in field_cols if c < C]
+    field_cols = [c for c in [3, 5] if c < C]   # 3 通道（仅坐标）时为空 → 只训标量
     fm, fs = X_tr[:, :, field_cols].mean(), X_tr[:, :, field_cols].std() + 1e-6
 
     device = next(model.parameters()).device
