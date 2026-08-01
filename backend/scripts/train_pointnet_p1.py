@@ -35,6 +35,7 @@ import torch.nn as nn
 
 ROOT = Path(__file__).resolve().parents[2]
 DATA_PC = ROOT / "data" / "processed" / "pointcloud" / "rotor37_pc.npz"
+DATA_PC_SYNTH = ROOT / "data" / "processed" / "pointcloud" / "rotor37_pc_synthetic.npz"
 RUNS_DIR = ROOT / "data" / "processed" / "p1" / "runs"
 
 SEED = 42
@@ -232,6 +233,8 @@ def build_smoke_data(n=12, n_points=256, seed=42):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--smoke", action="store_true")
+    ap.add_argument("--synthetic", action="store_true",
+                    help="使用合成点云数据集（占位，等待真实数据回传）")
     ap.add_argument("--epochs", type=int, default=60)
     ap.add_argument("--batch_size", type=int, default=32)
     ap.add_argument("--lr", type=float, default=1e-3)
@@ -246,11 +249,13 @@ def main():
         X, conds, y = build_smoke_data()
         data = train_val_split(X, conds, y)
     else:
-        if not DATA_PC.exists():
-            raise SystemExit(f"❌ 未找到 {DATA_PC}。请先在能访问 HF 的环境运行 "
-                             f"build_pointcloud_dataset.py 生成数据集。")
-        X, conds, y, _ = load_data(DATA_PC)
-        print(f"数据集：{X.shape[0]} 样本 × {X.shape[1]} 点 × {X.shape[2]} 通道")
+        path = DATA_PC_SYNTH if args.synthetic else DATA_PC
+        if not path.exists():
+            raise SystemExit(f"❌ 未找到 {path}。请先运行 build_pointcloud_dataset.py "
+                             f"（真实数据）或 make_synthetic_pc.py（合成占位）。")
+        X, conds, y, _ = load_data(path)
+        print(f"数据集：{X.shape[0]} 样本 × {X.shape[1]} 点 × {X.shape[2]} 通道"
+              f"{'（synthetic 占位）' if args.synthetic else ''}")
         data = train_val_split(X, conds, y)
 
     C = X.shape[2]
