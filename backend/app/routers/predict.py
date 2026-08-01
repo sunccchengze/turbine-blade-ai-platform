@@ -292,4 +292,19 @@ async def predict_fused_route(payload: dict):
     if X_pc.ndim != 3 or X_pc.shape[2] != 9:
         raise HTTPException(status_code=422, detail="X_pc 需为 (1, n_points, 9) 点云")
     result = _pf(X_pc, stats[None, :], conds[None, :])
+    # 反标准化：读 fused_stats.json（若存在），把 scaled 输出还原为真实量纲
+    from pathlib import Path as _Path
+    _stats_path = _Path(__file__).resolve().parent.parent.parent / "models" / "fused_stats.json"
+    if _stats_path.exists():
+        import json as _json
+        with open(_stats_path, "r", encoding="utf-8") as _f:
+            _st = _json.load(_f)
+        y_mu = np.array(_st["y_mu"], dtype=np.float32)
+        y_sd = np.array(_st["y_sd"], dtype=np.float32)
+        y_real = (np.array(result["predictions_scaled"], dtype=np.float32) * y_sd + y_mu).tolist()
+        return {"status": "success",
+                "predictions": {"Compression_ratio": y_real[0][0],
+                                "Efficiency": y_real[0][1],
+                                "Massflow": y_real[0][2]},
+                "note": "fused ONNX 已反标准化"}
     return {"status": "success", **result}
