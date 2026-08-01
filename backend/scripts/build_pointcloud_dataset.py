@@ -131,12 +131,22 @@ def extract_points_from_sample(sample_dict, n_points):
         cols = [cx.reshape(-1, 1), cy.reshape(-1, 1), cz.reshape(-1, 1)]
         for field, keyword in FIELD_KEYS.items():
             hits = find_arrays_by_key(arrays, keyword)
-            if hits:
-                arr = hits[0][1]
+            # 关键修复：CellData 与 PointData 都存在时，字母序会让 CellData 排前，
+            # 但坐标是 PointData(29773) 长度；必须优先选与坐标 n 同长的数组。
+            chosen = None
+            for p, arr in hits:
                 if arr.ndim == 1 and len(arr) == n:
-                    cols.append(arr.reshape(-1, 1))
-                elif arr.ndim == 2 and arr.shape[0] == n and arr.shape[1] >= 1:
-                    cols.append(arr.reshape(-1, arr.shape[1]))
+                    chosen = arr
+                    break
+                if arr.ndim == 2 and arr.shape[0] == n and arr.shape[1] >= 1:
+                    chosen = arr
+                    break
+            if chosen is None:
+                continue
+            if chosen.ndim == 1:
+                cols.append(chosen.reshape(-1, 1))
+            else:
+                cols.append(chosen.reshape(-1, chosen.shape[1]))
 
         X = np.hstack(cols).astype(np.float32)  # (N, C)
         # ── 下采样：最远点采样 FPS（保留形状覆盖）────────
