@@ -2,6 +2,7 @@
 
 > 版本：v1（2026-08-01）· 依据：`upgrade-blueprint-D38.md` + AI 内阁五视角审议
 > 主席裁决：**五层全上，但 P1 双头融合、P4 抽查验证模块、P3 2D 先行**；每 Phase 一个 Gate，Fail 即按降级路径走。
+> **Day 39 冲刺状态（11:49 北京时间）**：五层沙盒侧代码全部完成并通过一键冒烟（`backend/scripts/run_all_smoke.sh`，合成数据占位）；待真实点云数据回传后替换重跑（见下方「待替换」标注）。
 
 ---
 
@@ -121,3 +122,18 @@
 
 ---
 *依据：upgrade-blueprint-D38.md §2 各层引用文献（FNO/GNN/扩散/Conformal/SU2/LLM-copilot）。所有新数字先讲口径再报数字，附复现脚本。*
+
+---
+
+## 六、Day 39 冲刺完成度（2026-08-01 11:49 北京时间）
+
+| 层 | 沙盒侧代码 | 状态 | 待真实数据替换 |
+|---|---|---|---|
+| P1 场级代理 | `make_synthetic_pc.py` + `train_pointnet_p1.py --synthetic` + `model.py:predict_surface_field` | ✅ 全链路跑通 | 真点云 → build_pointcloud_dataset.py → 重训 |
+| P2 校准 UQ | `calibrate_uq_p2.py` | ✅ 跑通（Efficiency 覆盖 0.963 vs 旧 0.65） | 真数据重训集成 + 重算覆盖 |
+| P3 生成 | `generate_design_p3.py`（条件 VAE，扩散接口预留） | ✅ 有效性 10/10 | 真翼型库 → 上扩散模型 |
+| P4 SU2 验证 | `run_su2_validation_p4.py --dry-run` | ✅ 骨架 | 本地装 SU2 + Rotor37 网格 → 真实 RANS |
+| E5 LLM 助手 | `assistant.py` + `DesignAssistant.jsx` | ✅ API 实测 + 前端 build 过 | 无需数据（可直接升级 LLM function calling） |
+
+**一键复验**：`bash backend/scripts/run_all_smoke.sh`（合成数据，约 70 秒全绿）
+**数字纪律**：以上全部标注 synthetic 占位；真实数据回传后按铁律 4 重跑并替换 README/报告数字。
