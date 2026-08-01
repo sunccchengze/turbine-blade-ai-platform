@@ -39,9 +39,9 @@ FIELD_KEYS = {
     "Pressure":      "Pressure",
     "Density":       "Density",
     "Temperature":   "Temperature",
-    "NormalX":       "NormalX",
-    "NormalY":       "NormalY",
-    "NormalZ":       "NormalZ",
+    "NormalsX":      "NormalsX",
+    "NormalsY":      "NormalsY",
+    "NormalsZ":      "NormalsZ",
 }
 
 
@@ -235,7 +235,7 @@ def build(args):
         y_list.append(y)
         sid_list.append(sid)
         if len(X_list) % 100 == 0:
-            print(f"  进度：{len(X_list)}/{len(align_ids)} 样本点云提取完成")
+            print(f"  进度：{len(X_list)}/{len(align_ids)} 样本点云提取完成（通道数 {X_norm.shape[1]}）")
 
     if not X_list:
         print("❌ 没有任何样本成功提取。", file=sys.stderr)
