@@ -386,3 +386,9 @@ cd frontend && npm install --no-audit --no-fund && npm run build && npm run lint
 ### Day 39 傍晚补记（16:50 北京时间）
 - **verify 放宽 Pressure/Density 期望区间**（匹配真实数据：Pressure 1.3e4–2.7e5, Density 0.12–2.4）
 - **P1 训练加输入场量标准化**（Pressure ~1e5 量纲失衡 → 网络输入 3-8 列 per-channel 标准化；loss 从数万降至 6 量级，合成数据验证通过）⚠️ **Codespaces 跑真训练前必须先 git pull**
+
+### Day 39 晚间补记（17:30 北京时间）
+- **P1 纯点云真数据首个结果**（1024点/15epoch/CPU）：π **0.9200** / η **0.6076** / ṁ **0.9516**（基线 0.9844/0.9561/0.9827）→ 空间信息可用实证；η 低=最难+epoch少
+- **双头融合模型** `train_fused_p1.py`（统计特征+点云→标量+场，冒烟过）——标量 0.98 保底 + 场预测独有
+- **CPU 加速**：P1/P2 均支持 `--n_points` 降采样（2048→512，快 10 倍）；别再跑 2048 全量 CPU（75min+）
+- **一键真数据训练** `run_real_data.sh`：verify + P1融合 + P2UQ + P3生成
