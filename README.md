@@ -353,6 +353,23 @@ python backend/scripts/generate_pareto_evolution.py
 
 ---
 
+## 🚀 升级路线 Roadmap（Day 39 启动）
+
+从「代理筛选器」升级为「**生成式闭环设计引擎**」，五层（代码已完成，真实数据回传后替换占位数字）：
+
+| 层 | 升级内容 | 状态 |
+|---|---|---|
+| **P1 场级代理** | PointNet 直接消费表面点云，输出全表面压力/温度场 + 标量（取代 74 维统计特征） | 🟡 代码完成，待真实点云训练 |
+| **P2 校准 UQ** | Deep Ensembles + Conformal 校准，修复 MC Dropout 名义 95% 实际覆盖 65–89% 的问题 | 🟡 代码完成，待真实数据 |
+| **P3 生成式设计** | 条件扩散模型：目标性能 → 叶片几何（反设计），NSGA-II 降级为校验器 | 🟡 代码完成，待真实数据 |
+| **P4 CFD 闭环** | SU2 开源 RANS 抽查验证 top-k，结果回灌重训（AI+CFD 数据飞轮） | 🟡 骨架完成，待 SU2 环境 |
+| **E5 设计助手** | 自然语言 → 自动调参 → 预测 + 权衡解释（当前 rule-based MVP） | ✅ 已上线 `/api/assistant/design` |
+
+一键冒烟：`bash backend/scripts/run_all_smoke.sh`（合成数据，约 70 秒）。
+真实数据替换操作：见 `docs/replace-real-data-guide.md`。
+
+---
+
 ## ⚠️ 局限与未来工作 Limitations & Future Work
 
 本项目对自身边界的诚实认识：
