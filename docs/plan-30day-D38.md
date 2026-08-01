@@ -137,3 +137,17 @@
 
 **一键复验**：`bash backend/scripts/run_all_smoke.sh`（合成数据，约 70 秒全绿）
 **数字纪律**：以上全部标注 synthetic 占位；真实数据回传后按铁律 4 重跑并替换 README/报告数字。
+
+### Day 39 下午补记（15:45 北京时间）
+
+**今日新增修复（防再踩坑）**：
+1. `build_pointcloud_dataset.py`：CellData 字母序在前导致场量长度不匹配被跳过 → 修复为优先选与坐标同长数组（**真实结构含 CellData 复现验证 9 通道**）
+2. `train_pointnet_p1.py`：场目标列 `[3,4]` 写死 → 动态推断 `[3,5]`（9 通道温度在索引 5）
+3. `make_synthetic_pc.py`：通道顺序对齐真实布局（坐标+Pressure/Density/Temperature+Normals）
+4. `calibrate_uq_p2.py`：`--synthetic` 默认改优先真数据+回退合成；conformal q_level clip 到 1（防小样本崩溃）
+
+**新增工具**：
+- `verify_pointcloud.py`：数据一键验证（通道完整性/物理范围/与CSV对齐）——数据回来先跑它
+- `run_all_smoke.sh` 增加 STEP 0 数据验证
+
+**9 通道布局**：0-2 坐标, 3 Pressure, 4 Density, 5 Temperature, 6-8 Normals(X/Y/Z)
