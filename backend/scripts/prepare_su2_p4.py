@@ -41,7 +41,6 @@ MONITOR_OUTPUT= RESTART
 WRT_SOL_FREQ= 3000
 SCREEN_OUTPUT= (RMS_PRESSURE, RMS_DENSITY, LIFT, DRAG)
 OUTPUT_FILES= (RESTART_ASCII, SURFACE_CSV)
-# Note: real Rotor37 needs multi-row grid + mixing-plane (turbo mode); simplified template here
 """, encoding="utf-8")
     return cfg
 
