@@ -184,7 +184,17 @@ def main():
     run_dir.mkdir(parents=True, exist_ok=True)
 
     print("生成 2D 翼型库（合成占位）...")
-    geoms, perf = sample_airfoil_dataset(args.n_airfoils)
+    # 优先用真实翼型（extract_airfoils_p3.py 生成）；否则合成
+    real_path = ROOT / "data" / "processed" / "p3" / "airfoils.npz"
+    if real_path.exists():
+        d = np.load(real_path)
+        geoms, perf = d["airfoils"].astype(np.float32), d["perf"].astype(np.float32)
+        if len(geoms) > args.n_airfoils:
+            idx = np.random.default_rng(SEED).choice(len(geoms), args.n_airfoils, replace=False)
+            geoms, perf = geoms[idx], perf[idx]
+        print(f"  使用真实翼型 {len(geoms)} 个（来自 extract_airfoils_p3.py）")
+    else:
+        geoms, perf = sample_airfoil_dataset(args.n_airfoils)
     geoms = geoms.reshape(geoms.shape[0], -1)   # (N, n_points*2) 展平
     print(f"  翼型 {geoms.shape[0]} 个 × {geoms.shape[1]} 维；有效性检查（首5个）："
           f"{[check_valid(g.reshape(-1, 2)) for g in geoms[:5]]}")
