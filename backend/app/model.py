@@ -120,3 +120,28 @@ def predict_with_uncertainty(features: np.ndarray,
             'upper_95': mean + 1.96 * sigma,
         }
     return result
+
+# ── P1 场级预测端点支持（Day 39 新增，骨架）───────────────
+# 真实点云模型训练完成后，将 ONNX 路径 / 预处理挂到这里。
+# 当前为占位实现：返回与输入等长的合成场（待 P1 真实模型接入）。
+FIELD_ONNX_PATH = MODELS_DIR / "p1_field_model.onnx"  # 未来真实场模型
+
+
+def predict_surface_field(X_pc: np.ndarray, conds: np.ndarray) -> dict:
+    """
+    场级预测：输入表面点云 (N, C) + 工况 (2,) → 表面压力/温度场 + 标量。
+    当前占位：标量走现有代理，场返回合成梯度（真实 P1 模型训练后替换）。
+    """
+    n = len(X_pc)
+    t = np.linspace(0, 1, n)
+    pressure = 1.05e5 + 8e4 * (1 - t) + 5e3 * X_pc[:, 1]  # 占位梯度
+    temperature = 320 + 40 * t
+    return {
+        "scalars": {"placeholder": True},  # P1 真实模型接入后返回 (π, η, ṁ)
+        "field": {
+            "pressure": pressure.astype(np.float32).tolist(),
+            "temperature": temperature.astype(np.float32).tolist(),
+            "coords": X_pc[:, :3].astype(np.float32).tolist(),
+        },
+        "mode": "placeholder (P1 真实模型待接入)",
+    }
