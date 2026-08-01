@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Send, Bot, Loader2 } from 'lucide-react'
-import api from '../utils/api'
+import { api } from '../utils/api'
 
 // E5 设计助手对话面板（Day 39 骨架）
 // 前端：自然语言 → /api/assistant/design → 预测 + 解释
