@@ -83,12 +83,27 @@ def make_fused_model(n_stats, n_pc_channels, n_cond=2, n_scalar=3,
                 nn.Linear(fused_hidden, fused_hidden), nn.ReLU(),
             )
             self.scalar_head = nn.Linear(fused_hidden, n_scalar)
+            # 场头（可选）：点云逐点特征 + 全局 → 表面场
+            self.point_proj = nn.Sequential(
+                nn.Linear(n_pc_channels, 64), nn.ReLU(),
+            )
+            self.field_head = nn.Sequential(
+                nn.Linear(256 + 64, 128), nn.ReLU(),
+                nn.Linear(128, n_field),
+            )
 
-        def forward(self, x_pc, stats, conds):
+        def forward(self, x_pc, stats, conds, need_field=False):
+            B, N, C = x_pc.shape
             g = self.pc_encoder(x_pc)                 # (B, 256)
             s = self.stats_head(stats)                # (B, 64)
             feat = self.fuse(torch.cat([g, s, conds], dim=-1))
-            return self.scalar_head(feat)
+            scalar = self.scalar_head(feat)
+            if not need_field:
+                return scalar
+            pp = self.point_proj(x_pc.reshape(-1, C)).reshape(B, N, 64)
+            g_exp = g.unsqueeze(1).expand(-1, N, -1)
+            field = self.field_head(torch.cat([g_exp, pp], dim=-1))
+            return scalar, field
 
     return FusedSurrogate
 
@@ -118,6 +133,21 @@ def train_fused(model, data, args):
     device = next(model.parameters()).device
     opt = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=1e-4)
     w = torch.tensor([1.0, 3.0, 1.5], device=device)
+    # 场目标列（Pressure/Temperature，9 通道下为 3,5）
+    C = Xp.shape[2]
+    field_cols = [c for c in [3, 5] if c < C]
+    use_field = len(field_cols) > 0 and hasattr(model, 'field_head')
+    if use_field:
+        # 输入场量标准化（与 train_pointnet_p1 一致）
+        in_mu = Xp_tr[:, :, 3:9].mean(axis=(0, 1), keepdims=True)
+        in_sd = Xp_tr[:, :, 3:9].std(axis=(0, 1), keepdims=True) + 1e-6
+        Xp_tr_n = Xp_tr.copy(); Xp_tr_n[:, :, 3:9] = (Xp_tr[:, :, 3:9] - in_mu) / in_sd
+        Xp_te_n = Xp_te.copy(); Xp_te_n[:, :, 3:9] = (Xp_te[:, :, 3:9] - in_mu) / in_sd
+        fm, fs = Xp_tr_n[:, :, field_cols].mean(), Xp_tr_n[:, :, field_cols].std() + 1e-6
+        masks = (np.abs(Xp_tr[:, :, :3]).sum(-1) > 1e-6).astype(np.float32)
+    else:
+        Xp_tr_n, Xp_te_n = Xp_tr, Xp_te
+        masks = None
     n = len(ys_tr)
     for ep in range(args.epochs):
         model.train()
@@ -125,13 +155,21 @@ def train_fused(model, data, args):
         tot = 0.0
         for i in range(0, n, args.batch_size):
             idx = perm[i:i + args.batch_size]
-            xp = torch.tensor(Xp_tr[idx], device=device)
+            xp = torch.tensor(Xp_tr_n[idx], device=device)
             st = torch.tensor(Xs_tr_s[idx], device=device)
             c = torch.tensor(cs_tr_s[idx], device=device)
             yb = torch.tensor(ys_tr_s[idx], device=device)
             opt.zero_grad()
-            pred = model(xp, st, c)
-            loss = (((pred - yb) ** 2).mean(0) * w).sum()
+            if use_field:
+                pred, f_pred = model(xp, st, c, need_field=True)
+                f_target = (torch.tensor(Xp_tr_n[idx][:, :, field_cols], device=device) - fm) / fs
+                mb = torch.tensor(masks[idx], device=device)
+                l_f = ((f_pred - f_target) ** 2).mean(dim=-1) * mb
+                l_f = l_f.sum() / (mb.sum().clamp(min=1))
+            else:
+                pred = model(xp, st, c)
+                l_f = torch.zeros((), device=device)
+            loss = (((pred - yb) ** 2).mean(0) * w).sum() + 0.5 * l_f
             loss.backward()
             nn.utils.clip_grad_norm_(model.parameters(), 1.0)
             opt.step()
@@ -142,7 +180,7 @@ def train_fused(model, data, args):
     # 测试
     model.eval()
     with torch.no_grad():
-        xp = torch.tensor(Xp_te, device=device)
+        xp = torch.tensor(Xp_te_n, device=device)
         st = torch.tensor(Xs_te_s, device=device)
         c = torch.tensor(cs_te_s, device=device)
         pred = model(xp, st, c).cpu().numpy() * ys_ + ym
