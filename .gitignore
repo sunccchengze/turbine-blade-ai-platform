@@ -25,3 +25,6 @@ build/
 *.egg-info/
 .venv/
 venv/
+
+# P1 点云数据集（大文件不进 git，由 build_pointcloud_dataset.py 生成）
+data/processed/pointcloud/
