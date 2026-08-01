@@ -84,3 +84,10 @@ docker pull su2code/su2
 python backend/scripts/prepare_su2_p4.py   # 生成 6 算例配置 + 批跑脚本 + 说明
 # 按 data/processed/p4/SU2_P4_README.txt 操作
 ```
+
+## 10. ONNX 部署反标准化（待办）
+fused ONNX 输出是**标准化值**（训练时 y 标准化 ym/ys）。部署时需：
+- 训练脚本 train_fused_p1.py 里的 ym, ys（y 的 mean/std）
+- 存成 `backend/models/fused_y_stats.json`，predict_fused 反标准化：
+  `y_real = y_scaled * ys + ym`
+- ⚠️ 当前 /api/predict/fused 返回 scaled 值 + note 标注，反标准化待接上
