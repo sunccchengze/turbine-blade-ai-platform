@@ -366,6 +366,7 @@ python backend/scripts/generate_pareto_evolution.py
 | **E5 设计助手** | 自然语言 → 自动调参 → 预测 + 权衡解释（当前 rule-based MVP） | ✅ 已上线 `/api/assistant/design` |
 
 一键冒烟：`bash backend/scripts/run_all_smoke.sh`（合成数据，约 70 秒）。
+真数据训练（9 通道点云就绪后）：`bash backend/scripts/run_real_data.sh`（P1 融合 + P2 UQ + P3 生成）。
 真实数据替换操作：见 `docs/replace-real-data-guide.md`。
 
 ---
