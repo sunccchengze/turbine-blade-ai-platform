@@ -392,3 +392,9 @@ cd frontend && npm install --no-audit --no-fund && npm run build && npm run lint
 - **双头融合模型** `train_fused_p1.py`（统计特征+点云→标量+场，冒烟过）——标量 0.98 保底 + 场预测独有
 - **CPU 加速**：P1/P2 均支持 `--n_points` 降采样（2048→512，快 10 倍）；别再跑 2048 全量 CPU（75min+）
 - **一键真数据训练** `run_real_data.sh`：verify + P1融合 + P2UQ + P3生成
+
+### Day 39 晚间补记（17:58）
+- 🎉 **P1 双头融合真数据结果：三指标全部超越基线**（π 0.9902 / η 0.9608 / ṁ 0.9869 vs 0.9844/0.9561/0.9827），Gate 1 ✅
+- `export_fused_onnx.py`：P1 融合 ONNX 导出（验证通过，opset18）
+- `generate_design_p3.py` check_valid 兼容真实翼型（轮廓非退化）
+- 待承泽一键流程（run_real_data.sh）结果：P2 真覆盖率 + P3 真翼型生成
