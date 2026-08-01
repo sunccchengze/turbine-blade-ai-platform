@@ -148,7 +148,22 @@ def train(model, data, args):
     # 场预测目标 = [Pressure(3), Temperature(5)]（与前端 3D 热力图对应）
     C = X_tr.shape[-1]
     field_cols = [c for c in [3, 5] if c < C]   # 3 通道（仅坐标）时为空 → 只训标量
-    fm, fs = X_tr[:, :, field_cols].mean(), X_tr[:, :, field_cols].std() + 1e-6
+
+    # 输入标准化：场量列（Pressure ~1e5, Density ~1, Temperature ~350）量纲差异大，
+    # 若不做标准化，网络输入尺度失衡会拖慢收敛/影响精度。
+    # 对 3-8 列（Pressure/Density/Temperature/Normals）做 per-channel 标准化。
+    if C >= 6:
+        in_mu = X_tr[:, :, 3:9].mean(axis=(0, 1), keepdims=True)
+        in_sd = X_tr[:, :, 3:9].std(axis=(0, 1), keepdims=True) + 1e-6
+        X_tr_n = X_tr.copy()
+        X_tr_n[:, :, 3:9] = (X_tr[:, :, 3:9] - in_mu) / in_sd
+        X_te_n = X_te.copy()
+        X_te_n[:, :, 3:9] = (X_te[:, :, 3:9] - in_mu) / in_sd
+    else:
+        X_tr_n, X_te_n = X_tr, X_te
+
+    # 场目标标准化（用标准化后的输入场量，与 X_tr_n 匹配）
+    fm, fs = X_tr_n[:, :, field_cols].mean(), X_tr_n[:, :, field_cols].std() + 1e-6
 
     device = next(model.parameters()).device
     opt = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=1e-4)
@@ -162,7 +177,7 @@ def train(model, data, args):
         tot = 0.0
         for i in range(0, n, args.batch_size):
             idx = perm[i:i + args.batch_size]
-            xb = torch.tensor(X_tr[idx], device=device)
+            xb = torch.tensor(X_tr_n[idx], device=device)
             cb = torch.tensor(c_tr[idx], device=device)
             yb = torch.tensor(y_tr_s[idx], device=device)
             mb = torch.tensor(m_tr[idx], device=device)
@@ -173,7 +188,7 @@ def train(model, data, args):
             l_s = l_s.sum()
             # 场损失（masked）
             if field_cols:
-                f_target = (torch.tensor(X_tr[idx][:, :, field_cols], device=device) - fm) / fs
+                f_target = (torch.tensor(X_tr_n[idx][:, :, field_cols], device=device) - fm) / fs
                 l_f = ((f_pred - f_target) ** 2).mean(dim=-1) * mb.float()
                 l_f = l_f.sum() / (mb.sum().clamp(min=1))
             else:
@@ -192,7 +207,7 @@ def train(model, data, args):
     # ── 测试集评估 ──────────────────────────────────────
     model.eval()
     with torch.no_grad():
-        xte = torch.tensor(X_te, device=device)
+        xte = torch.tensor(X_te_n, device=device)
         cte = torch.tensor(c_te, device=device)
         s_pred, f_pred = model(xte, cte)
         s_pred_orig = s_pred.cpu().numpy() * ys + ym
