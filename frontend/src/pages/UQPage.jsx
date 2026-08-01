@@ -400,8 +400,10 @@ export default function UQPage() {
 }
 
 // ── 校准曲线组件（Day 39 新增）──────────────────────────
+const NOMINAL_LEVELS = [0.80, 0.90, 0.95, 0.99]
+
 function CalibrationCurve({ data }) {
-  const nominal = [0.80, 0.90, 0.95, 0.99]
+  const nominal = NOMINAL_LEVELS
   const empirical = useMemo(() => {
     if (!data?.length) return []
     return nominal.map(level => {
