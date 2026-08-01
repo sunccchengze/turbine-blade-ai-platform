@@ -41,6 +41,23 @@ class AssistantRequest(BaseModel):
 
 
 def _parse_intent(text: str):
+    """优先 LLM 解析（若配置 API key），否则 rule-based MVP。"""
+    try:
+        from app.services.llm_design import llm_available, parse_intent_with_llm
+        if llm_available():
+            parsed = parse_intent_with_llm(text)
+            targets = parsed.get("targets", {})
+            targets = {k: float(v) for k, v in targets.items()
+                       if k in ("Efficiency", "Massflow", "Compression_ratio")}
+            if targets:
+                return {"targets": targets, "llm": True,
+                        "notes": parsed.get("notes", "")}
+    except Exception:
+        pass  # 回退 rule-based
+    return _parse_intent_rule(text)
+
+
+def _parse_intent_rule(text: str):
     """rule-based 意图解析（MVP）：识别 效率/流量/压比 + 目标值或方向。"""
     intent = {"targets": {}}
     patterns = {
