@@ -169,7 +169,7 @@ def train_fused(model, data, args):
             else:
                 pred = model(xp, st, c)
                 l_f = torch.zeros((), device=device)
-            loss = (((pred - yb) ** 2).mean(0) * w).sum() + 0.5 * l_f
+            loss = (((pred - yb) ** 2).mean(0) * w).sum() + args.lam_field * l_f
             loss.backward()
             nn.utils.clip_grad_norm_(model.parameters(), 1.0)
             opt.step()
@@ -177,17 +177,31 @@ def train_fused(model, data, args):
         if (ep + 1) % max(1, args.epochs // 5) == 0 or ep == 0:
             print(f"  epoch {ep+1:>3}/{args.epochs} loss={tot/max(n,1):.4f}")
 
-    # 测试
+    # 测试（标量 + 场）
     model.eval()
     with torch.no_grad():
         xp = torch.tensor(Xp_te_n, device=device)
         st = torch.tensor(Xs_te_s, device=device)
         c = torch.tensor(cs_te_s, device=device)
-        pred = model(xp, st, c).cpu().numpy() * ys_ + ym
+        if use_field:
+            pred, f_pred = model(xp, st, c, need_field=True)
+            f_pred_np = f_pred.cpu().numpy() * fs + fm   # 还原到标准化前
+            f_true_np = Xp_te_n[:, :, field_cols] * fs + fm
+        else:
+            pred = model(xp, st, c)
+        pred = pred.cpu().numpy() * ys_ + ym
     from sklearn.metrics import r2_score
     names = ["Compression_ratio", "Efficiency", "Massflow"]
     r2 = {names[i]: float(r2_score(ys_te[:, i], pred[:, i])) for i in range(3)}
-    return r2
+    field_metrics = {}
+    if use_field:
+        m_te = (np.abs(Xp_te[:, :, :3]).sum(-1) > 1e-6)
+        rel_l2 = float(np.linalg.norm((f_pred_np - f_true_np)[m_te])
+                       / max(np.linalg.norm(f_true_np[m_te]), 1e-8))
+        mae = float(np.abs((f_pred_np - f_true_np)[m_te]).mean())
+        field_metrics = {"rel_l2": rel_l2, "mae": mae}
+        print(f"  场指标: rel_l2={rel_l2:.4f} mae={mae:.4f} (Pressure/Temperature 原始量纲)")
+    return r2, field_metrics
 
 
 def main():
@@ -197,6 +211,8 @@ def main():
     ap.add_argument("--batch_size", type=int, default=32)
     ap.add_argument("--lr", type=float, default=1e-3)
     ap.add_argument("--n_points", type=int, default=None)
+    ap.add_argument("--lam_field", type=float, default=0.5,
+                    help="场损失权重（越大场预测越准，可能略损标量）")
     args = ap.parse_args()
 
     import torch
@@ -230,12 +246,14 @@ def main():
     print(f"模型参数量：{n_params:,}")
 
     t0 = time.time()
-    r2 = train_fused(model, (Xs, Xp, cs, ys), args)
+    r2, field_metrics = train_fused(model, (Xs, Xp, cs, ys), args)
     elapsed = time.time() - t0
 
     print("\n===== 双头融合 测试集 R²（口径：留出 10%, random_state=42）=====")
     for k, v in r2.items():
         print(f"  {k:18s} R² = {v:.4f}")
+    if field_metrics:
+        print(f"  场指标: {field_metrics}")
     print(f"  训练耗时：{elapsed:.1f}s")
 
     ts = time.strftime("%Y%m%d-%H%M%S")
@@ -243,8 +261,9 @@ def main():
     run_dir.mkdir(parents=True, exist_ok=True)
     torch.save(model.state_dict(), run_dir / "fused_best.pt")
     with open(run_dir / "metrics.json", "w", encoding="utf-8") as f:
-        json.dump({"r2": r2, "n_params": n_params, "elapsed_s": elapsed,
-                   "note": "双头融合（统计特征+点云）"}, f, ensure_ascii=False, indent=2)
+        json.dump({"r2": r2, "field": field_metrics, "n_params": n_params,
+                   "elapsed_s": elapsed, "note": "双头融合（统计特征+点云）"},
+                  f, ensure_ascii=False, indent=2)
     print(f"✅ 已保存：{run_dir}")
 
 
