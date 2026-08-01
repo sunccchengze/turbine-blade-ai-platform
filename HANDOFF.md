@@ -404,3 +404,12 @@ cd frontend && npm install --no-audit --no-fund && npm run build && npm run lint
 - **P2 校准 UQ**：覆盖率 93.5–96.5%（η 65%→93.5%）→ **Gate 2 ✅**
 - **P3 真实翼型生成**：3000 真实翼型 → 条件 VAE 收敛 → 10/10 有效 → **Gate 3 ✅**
 - 待续：P4 SU2 真验证（本机 Docker）、场头全量训练（场 MAE≤5%）、ONNX 部署替换、E5 升级 LLM
+
+### Day 39 晚间补记（18:12）—— 剩余三件事工具化
+- **P4 SU2 一键准备** `prepare_su2_p4.py`：生成 6 算例配置 + Docker 批跑脚本 + 操作说明（承泽装 Docker 即可跑）
+- **E5 LLM 可切换** `llm_design.py`：设 LLM_API_KEY 即从 rule-based 升级为 LLM 解析（无 key 自动回退，已验证）
+- **后端 fused 接线**：`/api/predict/fused` 端点（待 fused_surrogate.onnx 导出后启用）
+- **README**：加「融合模型 v3 精度」小节（空间信息增量价值结论）+ Roadmap 更新
+- 训练指南补：场头全量训练（--lam_field 2.0）、ONNX 导出、SU2 验证三节
+
+**待承泽**：① 下载 fused_best.pt 上传 → 导出 ONNX 部署；② 本机装 Docker+SU2 跑 P4；③ SnapDeploy Redeploy + 预热确认
