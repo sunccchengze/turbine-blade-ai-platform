@@ -40,12 +40,16 @@ def load_pc_data(synthetic=True):
     sys.path.insert(0, str(ROOT))
     sys.path.insert(0, str(ROOT / "backend"))
     from scripts.train_pointnet_p1 import load_data
+    real = ROOT / "data" / "processed" / "pointcloud" / "rotor37_pc.npz"
+    synth = ROOT / "data" / "processed" / "pointcloud" / "rotor37_pc_synthetic.npz"
     if synthetic:
-        path = ROOT / "data" / "processed" / "pointcloud" / "rotor37_pc_synthetic.npz"
+        path = synth
+    elif real.exists():
+        path = real
+    elif synth.exists():
+        path = synth   # 真数据未就绪时回退合成，保证可跑
     else:
-        path = ROOT / "data" / "processed" / "pointcloud" / "rotor37_pc.npz"
-    if not path.exists():
-        raise SystemExit(f"❌ 未找到 {path}。先运行 make_synthetic_pc.py 或 build_pointcloud_dataset.py")
+        raise SystemExit(f"❌ 未找到 {real} 或 {synth}。先运行 build_pointcloud_dataset.py 或 make_synthetic_pc.py")
     X, conds, y, sid = load_data(path)
     return X, conds, y, sid
 
@@ -119,7 +123,8 @@ def predict_ensemble(models, X, conds):
 def conformal_calibrate(scores_calib, alpha=ALPHA):
     """Split Conformal：返回校准分位数 q（对每个输出维）。"""
     n = len(scores_calib)
-    q_level = np.ceil((n + 1) * (1 - alpha)) / n
+    # 标准 finite-sample 修正：ceil((n+1)(1-α))/n，校准集小时可能 >1 → clip 到 1
+    q_level = min(np.ceil((n + 1) * (1 - alpha)) / n, 1.0)
     q = np.quantile(scores_calib, q_level, axis=0)   # (3,)
     return q
 
@@ -144,7 +149,8 @@ def evaluate(mu_te, sigma_te, q, y_te, alpha=ALPHA):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--synthetic", action="store_true", default=True)
+    ap.add_argument("--synthetic", action="store_true", default=False,
+                    help="强制用合成占位数据；默认优先用真实 npz（存在时）")
     ap.add_argument("--k_models", type=int, default=5)
     ap.add_argument("--epochs", type=int, default=15)
     ap.add_argument("--batch_size", type=int, default=16)
