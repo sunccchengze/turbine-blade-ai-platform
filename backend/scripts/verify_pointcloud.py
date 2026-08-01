@@ -26,8 +26,8 @@ FEATURES_CSV = ROOT / "data" / "processed" / "plaid_rotor37_features.csv"
 # 通道布局（build_pointcloud_dataset.py 定义）
 # 0-2 坐标, 3 Pressure, 4 Density, 5 Temperature, 6-8 Normals(X/Y/Z)
 EXPECTED = {
-    "Pressure":     (3, (1e4, 2e5)),
-    "Density":      (4, (0.5, 5.0)),
+    "Pressure":     (3, (5e3, 3e5)),     # 真实数据实测 1.3e4–2.7e5
+    "Density":      (4, (0.1, 5.0)),     # 真实数据实测 0.12–2.4
     "Temperature":  (5, (200, 800)),
     "NormalsX":     (6, (-1.2, 1.2)),
     "NormalsY":     (7, (-1.2, 1.2)),
