@@ -362,8 +362,8 @@ python backend/scripts/generate_pareto_evolution.py
 | **P1 场级代理** | PointNet 消费表面点云 + 统计特征融合：标量 R² **π 0.9902 / η 0.9608 / ṁ 0.9869（全部超越基线）** + 场预测 | ✅ 真数据验证（512点/CPU）；场头待全量训练 |
 | **P2 校准 UQ** | Deep Ensembles + Conformal 校准，修复 MC Dropout 名义 95% 实际覆盖 65–89% 的问题 | ✅ 真数据验证：覆盖率 **93.5–96.5%**（η 从 65%→93.5%）；校准曲线已上线 |
 | **P3 生成式设计** | 条件扩散模型：目标性能 → 叶片几何（反设计），NSGA-II 降级为校验器 | 🟡 代码完成；**/generate 生成式设计页已上线**；待真实数据训练 |
-| **P4 CFD 闭环** | SU2 开源 RANS 抽查验证 top-k，结果回灌重训（AI+CFD 数据飞轮） | 🟡 骨架完成，待 SU2 环境 |
-| **E5 设计助手** | 自然语言 → 自动调参 → 预测 + 权衡解释（当前 rule-based MVP） | ✅ 已上线 `/api/assistant/design` |
+| **P4 CFD 闭环** | SU2 开源 RANS 抽查验证 top-k，结果回灌重训（AI+CFD 数据飞轮） | 🟡 一键准备脚本已就绪（6 算例）；待本机 Docker 装 SU2 跑真 RANS |
+| **E5 设计助手** | 自然语言 → 自动调参 → 预测 + 权衡解释 | ✅ 已上线；**LLM 后端可切换**（设 LLM_API_KEY 即升级） |
 
 一键冒烟：`bash backend/scripts/run_all_smoke.sh`（合成数据，约 70 秒）。
 真数据训练（9 通道点云就绪后）：`bash backend/scripts/run_real_data.sh`（P1 融合 + P2 UQ + P3 生成）。
