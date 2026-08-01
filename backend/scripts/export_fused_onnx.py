@@ -46,6 +46,7 @@ def main():
         output_names=["scalars"],
         dynamic_axes={"X_pc": {0: "batch", 1: "n_points"}, "stats": {0: "batch"}, "conds": {0: "batch"}},
         opset_version=18,
+        save_as_external_data=False,   # 权重内嵌为单文件（否则产生 .onnx.data 易丢失）
     )
     print(f"✅ ONNX 已导出：{out_path}")
     print(f"   输入: X_pc (B,512,{args.n_pc}), stats (B,74), conds (B,2)")
