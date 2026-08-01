@@ -8,7 +8,6 @@ import {
   Calendar, MapPin, AlertTriangle, Zap
 } from 'lucide-react'
 import StatusBadge from '../components/StatusBadge'
-import DesignAssistant from '../components/DesignAssistant'
 
 const fadeUp = (delay = 0) => ({
   hidden:  { opacity: 0, y: 20 },
@@ -735,19 +734,6 @@ export default function HomePage() {
               </div>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* E5 设计助手（Day 39 新增） */}
-      <section style={{ padding: '48px 24px', textAlign: 'center' }}>
-        <h2 style={{ fontSize: '22px', fontWeight: 700, color: '#e2e8f0' }}>
-          设计助手 Design Assistant <span style={{ fontSize: '13px', color: '#475569', fontWeight: 400 }}>E5</span>
-        </h2>
-        <p style={{ fontSize: '13px', color: '#94a3b8', margin: '8px 0 24px' }}>
-          用自然语言描述你的设计目标，AI 帮你调参并解释权衡 · Describe your design goal in natural language
-        </p>
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <DesignAssistant />
         </div>
       </section>
 

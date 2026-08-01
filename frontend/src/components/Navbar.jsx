@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Activity, Compass, Cpu, TrendingUp, BarChart3, Home, Menu, X, User, BookOpen, Wand2 } from 'lucide-react'
+import { Activity, Compass, Cpu, TrendingUp, BarChart3, Home, Menu, X, User, BookOpen } from 'lucide-react'
 import { checkHealth } from '../utils/api'
 
 const navItems = [
@@ -9,7 +9,6 @@ const navItems = [
   { path: '/predict',     label: '实时预测', icon: Cpu        },
   { path: '/explore',     label: '空间探索', icon: Compass    },
   { path: '/optimize',    label: '优化',     icon: TrendingUp },
-  { path: '/generate',    label: '生成设计', icon: Wand2      },
   { path: '/uq',          label: '不确定性', icon: BarChart3  },
   { path: '/methodology', label: '方法论',   icon: BookOpen   },
   { path: '/about',       label: '关于',     icon: User       },

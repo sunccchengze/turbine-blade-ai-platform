@@ -3,7 +3,7 @@ import axios from 'axios'
 const BASE_URL = import.meta.env.VITE_API_URL ||
   'https://turbine-blade-api-c4f40.containers.snapdeploy.app'
 
-export const api = axios.create({
+const api = axios.create({
   baseURL: BASE_URL,
   timeout: 60000,  // 60秒超时，应对冷启动
   headers: { 'Content-Type': 'application/json' },

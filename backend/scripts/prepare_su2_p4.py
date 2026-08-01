@@ -41,7 +41,7 @@ MONITOR_OUTPUT= RESTART
 WRT_SOL_FREQ= 3000
 SCREEN_OUTPUT= (RMS_PRESSURE, RMS_DENSITY, LIFT, DRAG)
 OUTPUT_FILES= (RESTART_ASCII, SURFACE_CSV)
-# 注：真实 Rotor37 需多排网格+混平面（turbo 模式），此处为简化验证模板
+# Note: real Rotor37 needs multi-row grid + mixing-plane (turbo mode); simplified template here
 """, encoding="utf-8")
     return cfg
 
