@@ -76,12 +76,18 @@ def sample_airfoil_dataset(n_samples=500, seed=SEED):
 
 
 def check_valid(geom):
-    """几何有效性：中段厚度>0、不自交（合成占位版）。"""
-    upper = geom[:len(geom) // 2]
-    lower = geom[len(geom) // 2:]
-    thickness = upper[:, 1] - lower[::-1][:, 1]
-    mid = thickness[3:-3]  # 跳过首尾（NACA 前缘/后缘厚度为 0 属正常）
-    return bool(mid.min() > 1e-4) and bool((thickness > 0).mean() > 0.9)
+    """几何有效性：轮廓非退化（面积>0、无 NaN/无穷）。兼容合成 NACA 与真实抽取翼型。"""
+    g = np.asarray(geom, dtype=np.float32)
+    if not np.all(np.isfinite(g)):
+        return False
+    if len(g) < 8:
+        return False
+    # 轮廓面积（shoelace，粗略判非退化）
+    x, y = g[:, 0], g[:, 1]
+    area = abs(0.5 * np.sum(x[:-1] * y[1:] - x[1:] * y[:-1]))
+    # 展向范围（真实翼型 X 方向）或弦向范围不能塌缩成点
+    span = max(g[:, 0].max() - g[:, 0].min(), g[:, 1].max() - g[:, 1].min())
+    return bool(area > 1e-6 and span > 1e-6)
 
 
 # ── 条件 VAE（轻量，可 CPU）───────────────────────────────
