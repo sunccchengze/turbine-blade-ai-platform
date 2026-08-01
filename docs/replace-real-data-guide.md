@@ -7,9 +7,22 @@
 在 Codespaces 终端：
 ```bash
 cd /workspaces/turbine-blade-ai-platform
+git pull   # ⚠️ 必须先拉到最新（含 CellData 修复，通道 9）
 python backend/scripts/build_pointcloud_dataset.py --n_points 2048
 ```
 生成：`data/processed/pointcloud/rotor37_pc.npz`（100–300MB）
+
+**⚠️ 通道说明（Day 39 两个坑已修复）**：
+- 期望 `特征通道：9`（3 坐标 + Pressure + Density + Temperature + NormalsX/Y/Z）
+- 若为 3 → 用了旧脚本（CellData 长度不匹配 bug），`git pull` 后重跑
+- 若为 6 → 检查 Normals 是否提取（FIELD_KEYS 应为复数 NormalsX）
+
+**数据验证**（一键确认，推荐先跑）：
+```bash
+python backend/scripts/verify_pointcloud.py data/processed/pointcloud/rotor37_pc.npz
+```
+应显示 `✅ 完整 9 通道` + 各场量范围 ✅ + `✅ 完全对齐`。
+
 → 下载到本地 `C:\Users\45120\turbine-blade-ai-platform\data\processed\pointcloud\`
 
 ## 二、逐层替换

@@ -11,6 +11,14 @@ echo " 五层升级管线 · 一键冒烟验证（合成数据占位）"
 echo "════════════════════════════════════════════"
 
 echo ""
+echo "▌STEP 0/5 · 数据验证（有真实 npz 则验证，否则用合成）"
+if [ -f data/processed/pointcloud/rotor37_pc.npz ]; then
+  $PY backend/scripts/verify_pointcloud.py data/processed/pointcloud/rotor37_pc.npz
+else
+  echo "  未找到真实 npz，跳过（将使用合成数据）"
+fi
+
+echo ""
 echo "▌STEP 1/5 · P1 数据管线（合成占位）"
 $PY backend/scripts/make_synthetic_pc.py --n_points 2048 --n_samples 300
 
