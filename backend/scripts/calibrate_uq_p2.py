@@ -154,6 +154,8 @@ def main():
     ap.add_argument("--k_models", type=int, default=5)
     ap.add_argument("--epochs", type=int, default=15)
     ap.add_argument("--batch_size", type=int, default=16)
+    ap.add_argument("--n_points", type=int, default=None,
+                    help="点云降采样点数（加速 CPU 训练）")
     args = ap.parse_args()
 
     ts = time.strftime("%Y%m%d-%H%M%S")
@@ -162,6 +164,11 @@ def main():
 
     print(f"加载数据（{'synthetic 占位' if args.synthetic else '真实'}）...")
     X, conds, y, _ = load_pc_data(synthetic=args.synthetic)
+    if args.n_points and X.shape[1] > args.n_points:
+        rng = np.random.default_rng(SEED)
+        idx = rng.choice(X.shape[1], args.n_points, replace=False)
+        X = X[:, idx, :]
+        print(f"  降采样到 {args.n_points} 点")
     data = split3(X, conds, y)
 
     print(f"训练 Deep Ensemble（{args.k_models} 模型 × {args.epochs} epochs）...")
