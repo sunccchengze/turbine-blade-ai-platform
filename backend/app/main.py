@@ -49,7 +49,8 @@ app.add_middleware(
     ],
     # 本地开发兜底：Vite 在端口被占用时会自动顺延（5173→5174→…），
     # 放行所有 localhost / 127.0.0.1 端口，避免换端口后健康检查被浏览器拦截。
-    allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$",
+    # 预览域名：放行所有 Cloudflare Pages 分支预览（*.pages.dev），便于分支预览联调后端。
+    allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$|^https://([a-zA-Z0-9-]+\.)+pages\.dev$",
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
