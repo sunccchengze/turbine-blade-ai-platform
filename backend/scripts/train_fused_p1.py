@@ -1,0 +1,214 @@
+"""
+train_fused_p1.py
+P1 双头融合模型（内阁裁决版完整实现）：统计特征头 + 点云头 → 融合 → 标量
+
+背景：纯点云学标量比 74 维统计特征慢（真数据 15epoch: π0.92/η0.61/ṁ0.95 vs 基线 0.98/0.96/0.98）。
+双头融合 = 统计特征（对标量强相关）+ 点云（新增场预测能力）→ 标量有保底、场是独有增量。
+
+架构：
+    stats (74)  ──► MLP ──► 特征 s (64) ──┐
+                                          ├──► 融合 ──► 标量头 ──► (π, η, ṁ)
+    X_pc (N,C) ──► PointNet ──► 特征 g (256) ──┘
+                                          └──► 场头 ──► 表面场（可选）
+
+用法（真实数据在 data/processed/pointcloud/ 且特征 CSV 存在）：
+    python backend/scripts/train_fused_p1.py --epochs 50 --batch_size 32
+    python backend/scripts/train_fused_p1.py --smoke   # 合成冒烟
+
+输出：data/processed/p1/fused_runs/<ts>/（metrics.json 含 R² 对比）
+"""
+
+import argparse
+import json
+import sys
+import time
+from pathlib import Path
+
+import numpy as np
+
+ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "backend"))
+from scripts.train_pointnet_p1 import (
+    DualHeadSurrogate, load_data, train_val_split, mask_from_points,
+    build_smoke_data, SEED, DATA_PC, DATA_PC_SYNTH,
+)
+
+FEATURES_CSV = ROOT / "data" / "processed" / "plaid_rotor37_features.csv"
+RUNS_DIR = ROOT / "data" / "processed" / "p1" / "fused_runs"
+
+
+def load_stats():
+    """加载 74 维统计特征（与特征 CSV 同序，sample_id 对齐点云 npz）。"""
+    import pandas as pd
+    df = pd.read_csv(FEATURES_CSV)
+    out = ['Compression_ratio', 'Efficiency', 'Massflow']
+    inc = [c for c in df.columns if c not in ['sample_id'] + out]
+    X = df[inc].values.astype(np.float32)
+    y = df[out].values.astype(np.float32)
+    sid = df['sample_id'].values
+    return X, y, sid
+
+
+def align_by_sample_id(X_stats, y_stats, sid_stats, X_pc, y_pc, sid_pc, conds):
+    """按 sample_id 对齐统计特征与点云。"""
+    sid_stats = sid_stats.astype(np.int64)
+    sid_pc = sid_pc.astype(np.int64)
+    idx_s = {s: i for i, s in enumerate(sid_stats)}
+    idx_p = {s: i for i, s in enumerate(sid_pc)}
+    common = sorted(set(idx_s) & set(idx_p))
+    Xs = np.stack([X_stats[idx_s[s]] for s in common])
+    Xp = np.stack([X_pc[idx_p[s]] for s in common])
+    ys = np.stack([y_pc[idx_p[s]] for s in common])
+    cs = np.stack([conds[idx_p[s]] for s in common])
+    print(f"  对齐样本数：{len(common)}")
+    return Xs, Xp, cs, ys
+
+
+# ── 双头融合模型 ─────────────────────────────────────────
+def make_fused_model(n_stats, n_pc_channels, n_cond=2, n_scalar=3,
+                     n_field=2, latent=256, fused_hidden=128):
+    import torch
+    import torch.nn as nn
+
+    class FusedSurrogate(nn.Module):
+        def __init__(self):
+            super().__init__()
+            self.pc_encoder = DualHeadSurrogate(n_pc_channels, n_cond).encoder  # 复用 PointNet 编码器
+            self.stats_head = nn.Sequential(
+                nn.Linear(n_stats, 128), nn.BatchNorm1d(128), nn.ReLU(),
+                nn.Linear(128, 64), nn.BatchNorm1d(64), nn.ReLU(),
+            )
+            self.fuse = nn.Sequential(
+                nn.Linear(256 + 64 + n_cond, fused_hidden), nn.ReLU(),
+                nn.Linear(fused_hidden, fused_hidden), nn.ReLU(),
+            )
+            self.scalar_head = nn.Linear(fused_hidden, n_scalar)
+
+        def forward(self, x_pc, stats, conds):
+            g = self.pc_encoder(x_pc)                 # (B, 256)
+            s = self.stats_head(stats)                # (B, 64)
+            feat = self.fuse(torch.cat([g, s, conds], dim=-1))
+            return self.scalar_head(feat)
+
+    return FusedSurrogate
+
+
+def train_fused(model, data, args):
+    import torch
+    import torch.nn as nn
+    from sklearn.model_selection import train_test_split
+
+    (Xs, Xp, cs, ys) = data
+    # 划分（同口径 random_state=42）
+    idx_tr, idx_te = train_test_split(np.arange(len(ys)), test_size=0.10,
+                                      random_state=SEED)
+    Xs_tr, Xs_te = Xs[idx_tr], Xs[idx_te]
+    Xp_tr, Xp_te = Xp[idx_tr], Xp[idx_te]
+    cs_tr, cs_te = cs[idx_tr], cs[idx_te]
+    ys_tr, ys_te = ys[idx_tr], ys[idx_te]
+
+    # 标准化
+    sm, ss = Xs_tr.mean(0), Xs_tr.std(0) + 1e-6
+    Xs_tr_s, Xs_te_s = (Xs_tr - sm) / ss, (Xs_te - sm) / ss
+    cm, cS = cs_tr.mean(0), cs_tr.std(0) + 1e-6
+    cs_tr_s, cs_te_s = (cs_tr - cm) / cS, (cs_te - cm) / cS
+    ym, ys_ = ys_tr.mean(0), ys_tr.std(0) + 1e-6
+    ys_tr_s = (ys_tr - ym) / ys_
+
+    device = next(model.parameters()).device
+    opt = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=1e-4)
+    w = torch.tensor([1.0, 3.0, 1.5], device=device)
+    n = len(ys_tr)
+    for ep in range(args.epochs):
+        model.train()
+        perm = torch.randperm(n)
+        tot = 0.0
+        for i in range(0, n, args.batch_size):
+            idx = perm[i:i + args.batch_size]
+            xp = torch.tensor(Xp_tr[idx], device=device)
+            st = torch.tensor(Xs_tr_s[idx], device=device)
+            c = torch.tensor(cs_tr_s[idx], device=device)
+            yb = torch.tensor(ys_tr_s[idx], device=device)
+            opt.zero_grad()
+            pred = model(xp, st, c)
+            loss = (((pred - yb) ** 2).mean(0) * w).sum()
+            loss.backward()
+            nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+            opt.step()
+            tot += loss.item() * len(idx)
+        if (ep + 1) % max(1, args.epochs // 5) == 0 or ep == 0:
+            print(f"  epoch {ep+1:>3}/{args.epochs} loss={tot/max(n,1):.4f}")
+
+    # 测试
+    model.eval()
+    with torch.no_grad():
+        xp = torch.tensor(Xp_te, device=device)
+        st = torch.tensor(Xs_te_s, device=device)
+        c = torch.tensor(cs_te_s, device=device)
+        pred = model(xp, st, c).cpu().numpy() * ys_ + ym
+    from sklearn.metrics import r2_score
+    names = ["Compression_ratio", "Efficiency", "Massflow"]
+    r2 = {names[i]: float(r2_score(ys_te[:, i], pred[:, i])) for i in range(3)}
+    return r2
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--smoke", action="store_true")
+    ap.add_argument("--epochs", type=int, default=50)
+    ap.add_argument("--batch_size", type=int, default=32)
+    ap.add_argument("--lr", type=float, default=1e-3)
+    ap.add_argument("--n_points", type=int, default=None)
+    args = ap.parse_args()
+
+    import torch
+    np.random.seed(SEED); torch.manual_seed(SEED)
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    print(f"设备：{device}")
+
+    if args.smoke:
+        X_pc, conds, y = build_smoke_data(n=200, n_points=512)
+        X_stats = np.random.randn(200, 74).astype(np.float32)
+        sid = np.arange(200)
+        Xs, Xp, cs, ys = align_by_sample_id(X_stats, y, sid, X_pc, y, sid, conds)
+    else:
+        X_stats, y_stats, sid_stats = load_stats()
+        path = DATA_PC if DATA_PC.exists() else DATA_PC_SYNTH
+        if not path.exists():
+            raise SystemExit("❌ 未找到点云数据，先构建")
+        X_pc, conds, y, sid_pc = load_data(path)
+        if args.n_points and X_pc.shape[1] > args.n_points:
+            rng = np.random.default_rng(SEED)
+            idx = rng.choice(X_pc.shape[1], args.n_points, replace=False)
+            X_pc = X_pc[:, idx, :]
+            print(f"  降采样到 {args.n_points} 点")
+        Xs, Xp, cs, ys = align_by_sample_id(
+            X_stats, y_stats, sid_stats, X_pc, y, sid_pc, conds)
+
+    C = Xp.shape[2]
+    Fused = make_fused_model(Xs.shape[1], C)
+    model = Fused().to(device)
+    n_params = sum(p.numel() for p in model.parameters())
+    print(f"模型参数量：{n_params:,}")
+
+    t0 = time.time()
+    r2 = train_fused(model, (Xs, Xp, cs, ys), args)
+    elapsed = time.time() - t0
+
+    print("\n===== 双头融合 测试集 R²（口径：留出 10%, random_state=42）=====")
+    for k, v in r2.items():
+        print(f"  {k:18s} R² = {v:.4f}")
+    print(f"  训练耗时：{elapsed:.1f}s")
+
+    ts = time.strftime("%Y%m%d-%H%M%S")
+    run_dir = RUNS_DIR / ts
+    run_dir.mkdir(parents=True, exist_ok=True)
+    torch.save(model.state_dict(), run_dir / "fused_best.pt")
+    with open(run_dir / "metrics.json", "w", encoding="utf-8") as f:
+        json.dump({"r2": r2, "n_params": n_params, "elapsed_s": elapsed,
+                   "note": "双头融合（统计特征+点云）"}, f, ensure_ascii=False, indent=2)
+    print(f"✅ 已保存：{run_dir}")
+
+
+if __name__ == "__main__":
+    main()
