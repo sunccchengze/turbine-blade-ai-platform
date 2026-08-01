@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
 import Plot from 'react-plotly.js'
 import {
@@ -368,6 +368,25 @@ export default function UQPage() {
           />
         </div>
 
+        {/* 校准曲线（Day 39 新增：P2 Conformal 校准的覆盖率检查） */}
+        <div style={{ marginTop: '32px', background: '#1e293b', borderRadius: '16px', padding: '24px' }}>
+          <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#e2e8f0', marginBottom: '4px' }}>
+            校准曲线 Calibration Curve
+            <span style={{ fontSize: '11px', color: '#475569', fontWeight: 600, marginLeft: '8px' }}>
+              P2 · CONFORMAL
+            </span>
+          </h3>
+          <p style={{ fontSize: '12px', color: '#64748b', margin: '6px 0 16px' }}>
+            名义置信水平 vs 实测覆盖率。理想校准应贴近对角线；若实测远低于名义（如 MC Dropout 的
+            65–89%），说明区间低估不确定性，需 Conformal 校准（项目 Day 39 升级方向）。
+            <br />
+            <span style={{ color: '#475569' }}>
+              Nominal vs empirical coverage. Diagonal = perfectly calibrated; MC Dropout underestimates (65–89%).
+            </span>
+          </p>
+          <CalibrationCurve data={uqData} />
+        </div>
+
       </div>
 
       <style>{`
@@ -377,5 +396,49 @@ export default function UQPage() {
         }
       `}</style>
     </div>
+  )
+}
+
+// ── 校准曲线组件（Day 39 新增）──────────────────────────
+const NOMINAL_LEVELS = [0.80, 0.90, 0.95, 0.99]
+
+function CalibrationCurve({ data }) {
+  const nominal = NOMINAL_LEVELS
+  const empirical = useMemo(() => {
+    if (!data?.length) return []
+    return nominal.map(level => {
+      // 对三个输出分别算覆盖率
+      const outs = ['Compression_ratio', 'Efficiency', 'Massflow']
+      const covs = outs.map(key => {
+        const lo = data.filter(d => d[`${key}_true`] >= d[`${key}_lower`] && d[`${key}_true`] <= d[`${key}_upper`]).length
+        return data.length ? lo / data.length : 0
+      })
+      return { level, covs }
+    })
+  }, [data, nominal])
+
+  const traces = [
+    { x: nominal, y: nominal, name: '理想（对角线）', type: 'scatter', mode: 'lines', line: { dash: 'dot', color: '#475569' } },
+    ...['Compression_ratio', 'Efficiency', 'Massflow'].map((k, i) => ({
+      x: nominal, y: empirical.map(e => e.covs[i]), name: { Compression_ratio: '总压比 π', Efficiency: '效率 η', Massflow: '流量 ṁ' }[k],
+      type: 'scatter', mode: 'lines+markers',
+      line: { color: ['#818cf8', '#34d399', '#22d3ee'][i], width: 2 },
+    })),
+  ]
+
+  return (
+    <Plot
+      data={traces}
+      layout={{
+        height: 320, paper_bgcolor: '#1e293b', plot_bgcolor: '#1e293b',
+        font: { color: '#cbd5e1', size: 12 },
+        xaxis: { title: '名义置信水平 Nominal', range: [0.75, 1.0], gridcolor: '#334155' },
+        yaxis: { title: '实测覆盖率 Empirical', range: [0.75, 1.0], gridcolor: '#334155' },
+        legend: { orientation: 'h', y: -0.25 },
+        margin: { t: 20, b: 60, l: 50, r: 20 },
+      }}
+      style={{ width: '100%' }}
+      config={{ displayModeBar: false }}
+    />
   )
 }

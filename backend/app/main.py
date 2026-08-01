@@ -5,7 +5,7 @@ FastAPI 应用主入口
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import predict, optimize
+from app.routers import predict, optimize, assistant
 
 # ── 创建 FastAPI 应用 ──────────────────────────────────────
 app = FastAPI(
@@ -58,6 +58,7 @@ app.add_middleware(
 # ── 注册路由 ───────────────────────────────────────────────
 app.include_router(predict.router)
 app.include_router(optimize.router)
+app.include_router(assistant.router)
 
 
 # ── 根路由 ─────────────────────────────────────────────────
