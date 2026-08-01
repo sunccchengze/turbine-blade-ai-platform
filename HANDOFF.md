@@ -222,6 +222,13 @@ ca61c0f  ← Day 20 About + devlog
 - `docs/upgrade-blueprint-D38.md`（Day 38 新增）：**升级作战总纲**（P1 场级代理 / P2 校准UQ / P3 扩散生成 / P4 SU2 闭环 / E5 LLM 助手；技术选型、引用、里程碑、数字口径、验收清单）。升级会话先读它。
 - `docs/plan-30day-D38.md`（Day 38 新增）：**30 天逐日计划（AI 内阁评审定稿版）**：Day 1–30 每天任务、Phase Gate、降级路径、验收清单。本会话执行基线。
 - `backend/scripts/generate_pareto_evolution.py`：一键复现 NSGA-II（3 秒）→ 生成 pareto_evolution.csv + 覆盖 pareto_front_solutions.csv（同源）。
+- **Day 39 冲刺（11:45 北京时间，合成数据占位全链路跑通，待真数据替换）**：
+  - `backend/scripts/make_synthetic_pc.py`：合成叶片点云占位数据（400×2048×9，与真数据同构）
+  - `backend/scripts/train_pointnet_p1.py --synthetic`：P1 双头 PointNet 训练（loss 5351→1003 跑通）
+  - `backend/scripts/calibrate_uq_p2.py`：P2 Deep Ensembles + Split Conformal（Efficiency 覆盖率 0.963 vs 旧 0.65）
+  - `backend/scripts/generate_design_p3.py`：P3 2D 翼型条件 VAE 生成（有效性 10/10，扩散接口预留）
+  - `backend/app/routers/assistant.py` + main.py 挂载：E5 LLM 设计助手 API（rule-based MVP，实测通过）
+  - ⚠️ 以上数字均为 **synthetic 占位**，真实点云数据回传后重跑替换（铁律 4：标注口径）
 - `backend/scripts/build_pointcloud_dataset.py`（Day 38/39 新增）：**P1 点云管线**——PLAID 原始 pickle → 表面点云（CGNS 树提取坐标+场量）→ FPS 下采样 2048 点 → 去质心+缩放归一 → 存 `data/processed/pointcloud/rotor37_pc.npz`（与特征 CSV 同 sample_id 对齐）。**需能访问 Hugging Face（云 GPU 跑）**；`--smoke` 合成数据自检已过。
 
 ### 12.1b 算力通路（2026-08-01 承泽实况确认）
