@@ -63,3 +63,24 @@ bash backend/scripts/run_real_data.sh   # verify + P1融合 + P2UQ + P3生成
 - 所有 R² 统一口径：留出测试集 10%, random_state=42
 - 新旧对比表必须「同口径同数据」（基线 74 维 MLP vs 点云 vs 融合，同一测试集）
 - 结果存各 runs/ 目录的 metrics.json；README 更新时标注口径
+
+## 7. 场头全量训练（目标：场 MAE ≤5%）
+```bash
+# 提高场损失权重，让融合模型的场预测更准（标量可能略降，可接受）
+python backend/scripts/train_fused_p1.py --epochs 80 --batch_size 32 --n_points 512 --lam_field 2.0
+# 输出会报告场指标（原始量纲 rel_l2/mae）
+```
+
+## 8. ONNX 部署替换
+```bash
+# 导出融合模型 ONNX（需要 fused_best.pt，来自 train_fused_p1.py）
+python backend/scripts/export_fused_onnx.py --checkpoint <fused_best.pt路径>
+# 生成 backend/models/fused_surrogate.onnx 后，后端自动启用 /api/predict/fused
+```
+
+## 9. P4 SU2 真验证（本机 Docker）
+```bash
+docker pull su2code/su2
+python backend/scripts/prepare_su2_p4.py   # 生成 6 算例配置 + 批跑脚本 + 说明
+# 按 data/processed/p4/SU2_P4_README.txt 操作
+```
