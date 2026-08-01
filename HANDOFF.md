@@ -382,3 +382,7 @@ cd frontend && npm install --no-audit --no-fund && npm run build && npm run lint
 - 新增 `verify_pointcloud.py`（数据一键验证：通道/物理范围/对齐）；`run_all_smoke.sh` 加 STEP 0
 - **UQ 页新增校准曲线**（CalibrationCurve：名义 vs 实测覆盖率，前端 build ✅ lint 0w/0e）——P2 前端落点
 - 9 通道布局：0-2 坐标, 3 Pressure, 4 Density, 5 Temperature, 6-8 Normals(X/Y/Z)
+
+### Day 39 傍晚补记（16:50 北京时间）
+- **verify 放宽 Pressure/Density 期望区间**（匹配真实数据：Pressure 1.3e4–2.7e5, Density 0.12–2.4）
+- **P1 训练加输入场量标准化**（Pressure ~1e5 量纲失衡 → 网络输入 3-8 列 per-channel 标准化；loss 从数万降至 6 量级，合成数据验证通过）⚠️ **Codespaces 跑真训练前必须先 git pull**
