@@ -382,5 +382,9 @@ Q&A 20 问标准答法（数据模型/精度验证/优化/工程部署/项目个
 | 压力测试问答稿 | 31 | [fb25138](https://github.com/sunccchengze/turbine-blade-ai-platform/commit/fb25138) |
 | 术语/单位统一 + 数字清理 | 32/33 | [4c1c8c5](https://github.com/sunccchengze/turbine-blade-ai-platform/commit/4c1c8c5) [24927c4](https://github.com/sunccchengze/turbine-blade-ai-platform/commit/24927c4) |
 | 验收清单 / 汇报一页纸 | 34/36/37 | [f9e1556](https://github.com/sunccchengze/turbine-blade-ai-platform/commit/f9e1556) [ce4b37b](https://github.com/sunccchengze/turbine-blade-ai-platform/commit/ce4b37b) |
+| 升级蓝图 + 30 天计划（AI 内阁评审） | 38 | [7f94707](https://github.com/sunccchengze/turbine-blade-ai-platform/commit/7f94707) [42055ab](https://github.com/sunccchengze/turbine-blade-ai-platform/commit/42055ab) |
+| **五层升级冲刺**（P1 场级代理 / P2 校准UQ / P3 扩散生成 / P4 SU2验证 / E5 助手；合成数据全链路跑通） | 39 | [f2d9997](https://github.com/sunccchengze/turbine-blade-ai-platform/commit/f2d9997) … [5a1e81e](https://github.com/sunccchengze/turbine-blade-ai-platform/commit/5a1e81e) |
 
 > 后续进度在此文档持续追加。
+| **Day 39 下午：真数据前修复**（CellData场量提取根因 / P1场列动态推断 / 通道顺序对齐 / P2 conformal clip / verify脚本） | 39 | [bd711db](https://github.com/sunccchengze/turbine-blade-ai-platform/commit/bd711db) [11598f6](https://github.com/sunccchengze/turbine-blade-ai-platform/commit/11598f6) [556fb27](https://github.com/sunccchengze/turbine-blade-ai-platform/commit/556fb27) [5bee176](https://github.com/sunccchengze/turbine-blade-ai-platform/commit/5bee176) |
+| **Day 39 下午：前端三块上线**（UQ校准曲线 / /generate生成式设计页 / 导航入口） | 39 | [46e3b65](https://github.com/sunccchengze/turbine-blade-ai-platform/commit/46e3b65) [92aca46](https://github.com/sunccchengze/turbine-blade-ai-platform/commit/92aca46) [dff8904](https://github.com/sunccchengze/turbine-blade-ai-platform/commit/dff8904) [a1446c9](https://github.com/sunccchengze/turbine-blade-ai-platform/commit/a1446c9) |

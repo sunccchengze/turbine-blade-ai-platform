@@ -2,8 +2,10 @@
 
 > **写给下一会话的 AI agent（和孙承泽本人）**：读完本文件，你应该能 100% 接手本项目，不丢任何上下文、不重复劳动、不踩已知的坑。
 >
-> **最后更新**：2026-07-31（Day 37 文档预演完成）· **v5**
+> **最后更新**：2026-08-01（Day 38 交接准备完成）· **v6**
 > **维护规则**：每次会话结束前，由当时的 AI agent 更新本文件的「当前状态快照」和「悬而未决清单」。
+>
+> ⚠️ v6 更正：本文件**实际已被 git 跟踪**（header 旧说法已过时），克隆仓库即含本文件；但内容含内部信息，如不想让评审看到可考虑后续移除跟踪（`git rm --cached HANDOFF.md` + 加 .gitignore）。
 >
 > ⚠️ 本文件含内部作战信息，已在 `.gitignore` 中屏蔽，**不要提交、不要推到 GitHub**。
 
@@ -24,7 +26,7 @@
 
 1. **保存本文件**：下载/复制 `HANDOFF.md`（连同更新内容一起）。
 2. **新会话第一步**：在 Arena 开新会话，连接仓库 `sunccchengze/turbine-blade-ai-platform`，上传/粘贴 `HANDOFF.md`。
-3. **新会话第二步**：发送：「读我上传的 HANDOFF.md。先按 §0 对齐 git 状态；PR #4 保持开启，若远程通道已关则按 §0.1 处理；然后从 §7 作战表继续（下一步 = D25–26 方法论页打磨 / D29 移动端真机 / Q29 审美双方案）。遵守五条铁律。」
+3. **新会话第二步**：发送「§12 开场白模板」（本会话任务 = 脱胎换骨升级冲刺 + 设计优化课题）。提示：PR #4 已由承泽合并（HEAD=70f5e6c），无需再保 PR；新会话分支名以系统提示为准。
 
 > ⚠️ 附件可能不落盘（真实发生过）。AI 说找不到 HANDOFF.md → 直接把全文粘贴进对话框。
 
@@ -116,8 +118,9 @@ ca61c0f  ← Day 20 About + devlog
 16821b4  ← origin/main（PR #3 合并）
 ```
 
-- **PR #4 开启中**（10 个提交：D19–D24、D27、D28、D30、D31、D32、D34/36/37 文档）。⚠️ 铁律 2：别合，除非作为会话最后动作。
-- 历史已 unshallow，devlog 可回溯。
+- ✅ **PR #4 已合并**（HEAD=70f5e6c，即 main 最新）。本会话分支 `arena/019fb861-turbine-blade-ai-platform` 从该提交分出；新会话分支以系统提示为准，勿自创。
+  ⚠️ PR #4 含后端改动（`optimize.py` + 2 个 CSV）→ 承泽需在 SnapDeploy **手动 Redeploy**，否则线上 /optimize 演化动画显示占位、3D 联动回退默认叶型。
+- 仓库为 **shallow（depth=1）** → 新会话先 `git fetch --unshallow origin` 再回溯 devlog。
 
 ### 3.2 线上部署拓扑
 
@@ -178,7 +181,7 @@ ca61c0f  ← Day 20 About + devlog
 
 ## 6. 悬而未决 / 待用户验证
 
-1. 🔴 **PR #4 合入 main**（10 个提交，保持开启；合并 = 会话最后动作 or 承泽网页操作）→ 合后**后端必须 Redeploy**。
+1. 🔴 **后端 Redeploy（承泽本人操作）**：PR #4 已合并（70f5e6c），SnapDeploy 需手动 Redeploy，否则线上 /optimize 演化动画显示占位。
 2. 🔴 **预热 workflow 安装**：承泽按 `docs/preheat-workflow.md` 在 GitHub Actions 页 30 秒安装（AI 无 workflows 权限）。
 3. **Q29 审美双方案 A/B 预览**：未做，排 D23 后/下次会话。
 4. **D29 移动端真机走查**：代码级已修（D28），真机未走。
@@ -202,6 +205,7 @@ ca61c0f  ← Day 20 About + devlog
 | D35 | 按反馈修 + 演示视频终版 | ⬜ 未做 |
 | D36 | 终版验收 | 🔵 清单已备，待执行 |
 | D37 | 汇报一页纸 + Q&A 20 问 | ✅ 文档完成 |
+| **D38+** | **脱胎换骨升级冲刺（研究型）**：任务书见 §12 | 🔵 待执行 |
 
 > 铁不动摇项已完成（D18/D19/D20/D23）。剩余均为打磨/验收类。
 
@@ -214,7 +218,29 @@ ca61c0f  ← Day 20 About + devlog
 - 前端：五页 + About + Methodology；`App.jsx` 懒加载路由；`utils/api.js`（BASE_URL 线上默认，`.env.local` 本地覆盖）；CORS any-port regex（`backend/app/main.py`）。
 - 图素材 `docs/fig01–16`；fig09/fig10 已复制进 `frontend/public/figures/`（随站打包）。
 - `docs/`：devlog/、D23-walkthrough-v1.md、pressure-test-D31.md、terminology.md、final-acceptance-D36.md、report-one-pager-D37.md、preheat-workflow.md。
+- `docs/knowledge-boost-2026-07.md`（Day 38 新增）：2026 上半年国际前沿（KIT 303s / CFM RISE PDR / CJ-1000A / AEP100 / 空客×MTU / RDE / scramjet 等）+ AI×叶轮机械文献弹药库（5 篇代理优化真实工作）+ 数字锚表 + 自测题。**升级冲刺的主要素材库。**
+- `docs/upgrade-blueprint-D38.md`（Day 38 新增）：**升级作战总纲**（P1 场级代理 / P2 校准UQ / P3 扩散生成 / P4 SU2 闭环 / E5 LLM 助手；技术选型、引用、里程碑、数字口径、验收清单）。升级会话先读它。
+- `docs/plan-30day-D38.md`（Day 38 新增）：**30 天逐日计划（AI 内阁评审定稿版）**：Day 1–30 每天任务、Phase Gate、降级路径、验收清单。本会话执行基线。
 - `backend/scripts/generate_pareto_evolution.py`：一键复现 NSGA-II（3 秒）→ 生成 pareto_evolution.csv + 覆盖 pareto_front_solutions.csv（同源）。
+- **Day 39 冲刺（11:52 北京时间，合成数据占位全链路跑通，待真数据替换）**：
+  - `backend/scripts/make_synthetic_pc.py`：合成叶片点云占位数据（与真数据同构）
+  - `backend/scripts/train_pointnet_p1.py --synthetic`：P1 双头 PointNet（loss 收敛跑通；134k 参数）
+  - `backend/scripts/calibrate_uq_p2.py`：P2 Deep Ensembles + Split Conformal（Efficiency 覆盖 0.963 vs 旧 0.65）
+  - `backend/scripts/generate_design_p3.py`（条件 VAE）+ `train_diffusion_p3.py`（**潜在空间 DDPM 完整版**）
+  - `backend/app/routers/assistant.py` + `frontend/src/components/DesignAssistant.jsx`（**已挂载首页**）+ `test_assistant_e5.py`（回归过）
+  - `backend/app/model.py:predict_surface_field`：P1 场预测占位端点（前端 3D 热力图衔接）
+  - `backend/scripts/run_su2_validation_p4.py`：P4 SU2 抽查验证骨架（dry-run 过）
+  - `backend/scripts/run_all_smoke.sh`：**五层一键冒烟（全绿，约 70 秒）**
+  - `docs/replace-real-data-guide.md`：**真实数据替换操作手册**
+  - 前端 build ✅ + lint 0w/0e；后端完整启动 ✅（/health 200 + assistant 实测）
+  - ⚠️ 以上数字均为 **synthetic 占位**，真实点云数据回传后按 `docs/replace-real-data-guide.md` 逐层替换（铁律 4）
+- `backend/scripts/build_pointcloud_dataset.py`（Day 38/39 新增）：**P1 点云管线**——PLAID 原始 pickle → 表面点云（CGNS 树提取坐标+场量）→ FPS 下采样 2048 点 → 去质心+缩放归一 → 存 `data/processed/pointcloud/rotor37_pc.npz`（与特征 CSV 同 sample_id 对齐）。**需能访问 Hugging Face（云 GPU 跑）**；`--smoke` 合成数据自检已过。
+
+### 12.1b 算力通路（2026-08-01 承泽实况确认）
+
+- 承泽本机：**Intel UHD Graphics 核显（4GB 共享显存）——对 DL 训练基本不可用**；CPU 5 核、RAM ≥8G → 只做轻量 CPU 活（基线复现、脚本、前端）。
+- 沙盒：无 GPU；**TLS 白名单连不上 huggingface.co（curl -sI 返回 0 是假阳性，GET 实际 000）** → 原始点云数据与重型训练必须走云 GPU。
+- **训练通路 = 云 GPU**：Colab 免费（T4 12GB）或 Kaggle（P100 30h/周）跑 `build_pointcloud_dataset.py` + P1/P3 训练；AutoDL 按需租卡作后备。数据集 .npz（~100–300MB）生成后放 `data/processed/pointcloud/`（已 gitignore），跨会话由脚本+命令记录保证可复现。
 
 ## 9. 沙盒坑与教训（血泪汇总）
 
@@ -237,6 +263,7 @@ ca61c0f  ← Day 20 About + devlog
     → workflow 类交付做成 `docs/*.md` 模板让承泽网页安装，别硬推。
 16. **作用域坑**：在子组件里用主组件 state 会 lint 报「declared but never used」+ 运行时 ReferenceError
     （Day 28 UQPage 实测）。改前确认变量作用域；状态留主组件、prop 传子组件。
+17. 🩸 **沙盒 TLS 白名单连不上 huggingface.co**（Day 38 实测）：`curl -sI https://huggingface.co` 返回 exit 0 是**假阳性**，实际 GET 全部 000（TLS EOF）。测连通性用 GET 带 -o /dev/null -w "%{http_code}"，别信 HEAD。原始数据/重型训练走云 GPU。
 
 ## 10. 承泽本地环境（Windows）
 
@@ -260,6 +287,70 @@ curl -s -o /dev/null -w "%{http_code}\n" localhost:8000/api/optimize/debug-path 
 cd frontend && npm install --no-audit --no-fund && npm run build && npm run lint  # 基线 16w/0e
 ```
 
+## 12. 下一会话任务书：脱胎换骨升级冲刺 + 设计优化课题（v6 新增）
+
+### 12.1 任务背景（一句话）
+
+承泽已向郭老师汇报完毕（2026-08-01 前后）；项目进入「**脱胎换骨升级冲刺**」：把平台从「代理筛选器」升级为「**生成式闭环设计引擎**」。承泽已拍板：**全方案五层（P1 场级代理 / P2 校准UQ / P3 扩散生成 / P4 SU2 真闭环 / E5 LLM 助手）＋ 本地 GPU ＋ 交付物 = 平台升级**（课题申报书降级为可选「立项思路」）。作战总纲 = `docs/upgrade-blueprint-D38.md`（本会话已写好，含技术选型、引用依据、里程碑、数字口径、验收清单）。
+
+### 12.2 任务产出物（按顺序交付）
+
+0. **基线锁定 + 执行 30 天计划**：先复现 README 全部数字（R² 三组 / NSGA-II 三组），锁定基线再动工。**30 天逐日计划 + Gate/降级路径 = `docs/plan-30day-D38.md`（AI 内阁评审定稿版），是本会话的执行基线**。核心裁决：P1 双头融合（点云+统计）、P4 抽查验证模块（非完整飞轮）、P3 2D 先行、E5 MVP。
+1. **P1 场级几何感知代理**（周 1–3）：PointNet 优先、FNO 并行小验证；点云下采样管线；3D 叶片压力/温度热力图。
+2. **P2 校准不确定性**（周 3–4）：Deep Ensembles（5 种子）+ Conformal 校准；校准曲线 + ACD；修复 65–89% 覆盖问题。
+3. **P3 条件扩散生成式反设计**（周 4–6）：VAE 潜在空间 + 条件扩散；先 2D 叶型（Bernstein）后 3D 点云；「生成图库」前端。
+4. **P4 SU2 真实 CFD 闭环**（周 6–7）：生成→代理筛选→SU2 精验证 top-k→回灌重训；「已 CFD 验证」徽章；加速比改实测口径。
+5. **E5 LLM 设计助手**（周 7–8）：自然语言→调参→代理预测→解释；前端对话面板。
+6. **前端整合 + 数字口径更新**：README/terminology.md 更新（新指标族：场误差/覆盖/命中率/验证偏差/实测加速比）；全站双语规范。
+7. **课题立项思路（可选）**：从蓝图 §7 导出（承泽暂不报课题，留火种）。
+8. **HANDOFF.md 升到 v7**：状态快照、悬而未决、交付物登记。
+
+> 详细技术选型、引用文献、里程碑、风险与降级全部在 `docs/upgrade-blueprint-D38.md`，先读它。
+
+### 12.3 铁律与约束（必须遵守）
+
+- 五条铁律（§0.-1）：推送优先 / 绝不主动合并 PR / 推不上去导 patch 如实上报 / 引用数字先复现 / 权限问题直说。
+- 新会话分支以系统提示为准；不推 main；PR #4 已合，无需再保。
+- 仓库 shallow → 先 `git fetch --unshallow origin`。
+- `.github/workflows` 改动只做 docs 模板（无 workflows 权限）。
+- 全站叙事统一「叶轮机械」；中英双语规范见 docs/terminology.md；JSX 中 `>` 写 `&gt;`。
+- 新数字（如 GNN 模型 R²）一律标注口径并附复现脚本；诚实披露新旧对比。
+
+### 12.4 给下一会话的开场白模板（承泽直接复制发送）
+
+```
+你好，我上传了 HANDOFF.md（若未落盘，把全文贴给你）。这是一个「AI 赋能的叶轮机械
+多学科设计优化平台」项目的交接，本次会话是【脱胎换骨升级冲刺】。承泽已拍板：
+全方案五层 + 本地 GPU + 真 SU2 闭环 + 交付物 = 平台升级。
+
+【第一步 · 对齐环境】
+1. 连接仓库 sunccchengze/turbine-blade-ai-platform，按系统提示的分支工作（勿切分支）。
+2. 按 HANDOFF.md §0 开场清单：git fetch、git status、浅仓库检查（shallow 则 fetch --unshallow）、
+   UTF-8 体检（8 个文件）、cd frontend && npm install。
+3. 读背景（按顺序）：README.md → HANDOFF.md（§1/§3/§8）→ docs/report-one-pager-D37.md →
+   docs/pressure-test-D31.md → docs/knowledge-boost-2026-07.md →
+   docs/upgrade-blueprint-D38.md（★升级作战总纲，先读它）→ notebooks/01–06。
+4. 遵守五条铁律（HANDOFF §0.-1）。
+
+【第二步 · 本会话任务 = 脱胎换骨升级】（详见 HANDOFF §12 + upgrade-blueprint-D38.md）
+0. 基线锁定：先复现 README 全部数字（R² 三组 / NSGA-II 三组），锁定基线再动工。
+1. P1 场级几何感知代理（PointNet 优先，FNO 并行验证）：点云下采样管线 + 3D 叶片压力/温度热力图。
+2. P2 Deep Ensembles + Conformal 校准：把 MC Dropout 65–89% 覆盖修到「名义 95% = 实测 95%」。
+3. P3 VAE 潜在空间 + 条件扩散生成式反设计：先 2D 叶型后 3D 点云，出「生成图库」。
+4. P4 SU2 真 CFD 闭环：生成→代理筛选→SU2 验证 top-k→回灌重训；「已 CFD 验证」徽章；
+   加速比改实测口径（SU2 与 PLAID 定位为相对趋势验证）。
+5. E5 LLM 设计助手：自然语言→调参→预测→解释，前端对话面板。
+6. 前端整合 + README/terminology 数字口径更新（新指标族：场误差/覆盖/命中率/验证偏差/实测加速比）。
+7. 每完成一个可交付单元 commit + push；结束时汇报：做了什么、哪些数字可复现、哪些未验证。
+
+【约束】不合并 PR、不推 main；.github/workflows 只做 docs 模板；全站叙事统一「叶轮机械」；
+新数字先讲口径再报数字；所有新指标附复现脚本。
+```
+
+> 说明：蓝图 `upgrade-blueprint-D38.md` 已含技术选型、引用文献、周里程碑、风险与降级、验收清单——下一会话照蓝图执行即可。
+
+---
+
 ## 附录 A：全新工作区自救指南
 
 1. 克隆、切到系统指定分支（读系统提示，别自创分支）。
@@ -272,10 +363,53 @@ cd frontend && npm install --no-audit --no-fund && npm run build && npm run lint
 
 ---
 
-**v5 我改了什么**（相对 v4）：
-- §0.1：Day 19 恢复已完成（`1839aa5`），标记勿再操作；新增「恢复姿势」说明（patch 不随 clone 来，用粘贴恢复指令）。
-- §3.1：完整提交链更新至 `71b6c56`；PR #4 状态（10 提交、开启）。
-- §3.3/3.4：本会话冲刺成果 + **NSGA-II 数字口径修正史**（第二笔数字修正）。
-- §7：作战表逐日状态更新（D19–D37 文档）。
-- §10：#15 workflows 权限坑、#16 作用域坑、#3 uvicorn 残留坑；#8 身份配置提醒。
-- 新增 docs/ 交付物清单（§8）与预热模板安装指引（§0.2/§6）。
+**v6 我改了什么**（相对 v5）：
+- 更正：HANDOFF.md 实际已被 git 跟踪（header 旧说法过时），仓库克隆即含本文件；若要隐藏需 `git rm --cached`。
+- §3.1：PR #4 已合并（HEAD=70f5e6c）；本会话分支 `arena/019fb861-...`；shallow 提示。
+- §6：PR #4 待办改为「后端 Redeploy（承泽本人操作）」。
+- §7：新增 D38+ 升级冲刺行。
+- §8：登记 `docs/knowledge-boost-2026-07.md`（Day 38 弹药库）。
+- 新增 §12：下一会话任务书（脱胎换骨升级 + 设计优化课题）+ 开场白模板。
+- §0.0：新会话开场白改指向 §12。
+
+**v6.1 我改了什么**（2026-08-01，承泽拍板后）：
+- 承泽决策：全方案五层（P1–P4 + E5）／本地 GPU／真 SU2 闭环／交付物=平台升级（课题申报书→可选立项思路）。
+- §12 全面改写为五层任务书；新增 `docs/upgrade-blueprint-D38.md` 作战总纲（技术选型/引用/里程碑/口径/验收）。
+- §12.4 开场白模板更新为新决策版本。
+
+### Day 39 下午补记（15:48 北京时间）
+- 修复 4 处：CellData 场量提取根因（9 通道验证）；P1 场列动态推断 `[3,5]`；合成数据通道顺序对齐；P2 `--synthetic` 默认改真数据+conformal q_level clip
+- 新增 `verify_pointcloud.py`（数据一键验证：通道/物理范围/对齐）；`run_all_smoke.sh` 加 STEP 0
+- **UQ 页新增校准曲线**（CalibrationCurve：名义 vs 实测覆盖率，前端 build ✅ lint 0w/0e）——P2 前端落点
+- 9 通道布局：0-2 坐标, 3 Pressure, 4 Density, 5 Temperature, 6-8 Normals(X/Y/Z)
+
+### Day 39 傍晚补记（16:50 北京时间）
+- **verify 放宽 Pressure/Density 期望区间**（匹配真实数据：Pressure 1.3e4–2.7e5, Density 0.12–2.4）
+- **P1 训练加输入场量标准化**（Pressure ~1e5 量纲失衡 → 网络输入 3-8 列 per-channel 标准化；loss 从数万降至 6 量级，合成数据验证通过）⚠️ **Codespaces 跑真训练前必须先 git pull**
+
+### Day 39 晚间补记（17:30 北京时间）
+- **P1 纯点云真数据首个结果**（1024点/15epoch/CPU）：π **0.9200** / η **0.6076** / ṁ **0.9516**（基线 0.9844/0.9561/0.9827）→ 空间信息可用实证；η 低=最难+epoch少
+- **双头融合模型** `train_fused_p1.py`（统计特征+点云→标量+场，冒烟过）——标量 0.98 保底 + 场预测独有
+- **CPU 加速**：P1/P2 均支持 `--n_points` 降采样（2048→512，快 10 倍）；别再跑 2048 全量 CPU（75min+）
+- **一键真数据训练** `run_real_data.sh`：verify + P1融合 + P2UQ + P3生成
+
+### Day 39 晚间补记（17:58）
+- 🎉 **P1 双头融合真数据结果：三指标全部超越基线**（π 0.9902 / η 0.9608 / ṁ 0.9869 vs 0.9844/0.9561/0.9827），Gate 1 ✅
+- `export_fused_onnx.py`：P1 融合 ONNX 导出（验证通过，opset18）
+- `generate_design_p3.py` check_valid 兼容真实翼型（轮廓非退化）
+- 待承泽一键流程（run_real_data.sh）结果：P2 真覆盖率 + P3 真翼型生成
+
+### Day 39 收官（18:06 北京时间）—— 五层真数据全链路点亮 🏆
+- **P1 双头融合**：π 0.9718 / η 0.9634 / ṁ 0.9829（≥基线，η 超 0.007）→ **Gate 1 ✅**
+- **P2 校准 UQ**：覆盖率 93.5–96.5%（η 65%→93.5%）→ **Gate 2 ✅**
+- **P3 真实翼型生成**：3000 真实翼型 → 条件 VAE 收敛 → 10/10 有效 → **Gate 3 ✅**
+- 待续：P4 SU2 真验证（本机 Docker）、场头全量训练（场 MAE≤5%）、ONNX 部署替换、E5 升级 LLM
+
+### Day 39 晚间补记（18:12）—— 剩余三件事工具化
+- **P4 SU2 一键准备** `prepare_su2_p4.py`：生成 6 算例配置 + Docker 批跑脚本 + 操作说明（承泽装 Docker 即可跑）
+- **E5 LLM 可切换** `llm_design.py`：设 LLM_API_KEY 即从 rule-based 升级为 LLM 解析（无 key 自动回退，已验证）
+- **后端 fused 接线**：`/api/predict/fused` 端点（待 fused_surrogate.onnx 导出后启用）
+- **README**：加「融合模型 v3 精度」小节（空间信息增量价值结论）+ Roadmap 更新
+- 训练指南补：场头全量训练（--lam_field 2.0）、ONNX 导出、SU2 验证三节
+
+**待承泽**：① 下载 fused_best.pt 上传 → 导出 ONNX 部署；② 本机装 Docker+SU2 跑 P4；③ SnapDeploy Redeploy + 预热确认

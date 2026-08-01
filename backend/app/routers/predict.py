@@ -271,3 +271,40 @@ async def get_baseline_features():
         'true_performance': true_perf,
         'stats':         stats,
     }
+
+# ── P1 融合模型预测端点（Day 39 新增，可选）────────────────
+@router.post("/fused")
+async def predict_fused_route(payload: dict):
+    """
+    融合模型预测（统计特征 + 点云 + 工况 → π/η/ṁ）
+    入参：{"stats": [74个数], "X_pc": [[...]], "conds": [Omega, P]}
+    需要 backend/models/fused_surrogate.onnx 已导出。
+    """
+    from app.model import fused_available, predict_fused as _pf
+    if not fused_available():
+        raise HTTPException(status_code=501,
+                            detail="fused_surrogate.onnx 未导出。请先运行 export_fused_onnx.py 并用真数据 checkpoint 生成。")
+    stats = np.array(payload.get("stats"), dtype=np.float32)
+    X_pc = np.array(payload.get("X_pc"), dtype=np.float32)
+    conds = np.array(payload.get("conds"), dtype=np.float32)
+    if stats.shape != (74,):
+        raise HTTPException(status_code=422, detail="stats 需为 74 维")
+    if X_pc.ndim != 3 or X_pc.shape[2] != 9:
+        raise HTTPException(status_code=422, detail="X_pc 需为 (1, n_points, 9) 点云")
+    result = _pf(X_pc, stats[None, :], conds[None, :])
+    # 反标准化：读 fused_stats.json（若存在），把 scaled 输出还原为真实量纲
+    from pathlib import Path as _Path
+    _stats_path = _Path(__file__).resolve().parent.parent.parent / "models" / "fused_stats.json"
+    if _stats_path.exists():
+        import json as _json
+        with open(_stats_path, "r", encoding="utf-8") as _f:
+            _st = _json.load(_f)
+        y_mu = np.array(_st["y_mu"], dtype=np.float32)
+        y_sd = np.array(_st["y_sd"], dtype=np.float32)
+        y_real = (np.array(result["predictions_scaled"], dtype=np.float32) * y_sd + y_mu).tolist()
+        return {"status": "success",
+                "predictions": {"Compression_ratio": y_real[0][0],
+                                "Efficiency": y_real[0][1],
+                                "Massflow": y_real[0][2]},
+                "note": "fused ONNX 已反标准化"}
+    return {"status": "success", **result}

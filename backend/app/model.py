@@ -120,3 +120,72 @@ def predict_with_uncertainty(features: np.ndarray,
             'upper_95': mean + 1.96 * sigma,
         }
     return result
+
+# ── P1 场级预测端点支持（Day 39 新增，骨架）───────────────
+# 真实点云模型训练完成后，将 ONNX 路径 / 预处理挂到这里。
+# 当前为占位实现：返回与输入等长的合成场（待 P1 真实模型接入）。
+FIELD_ONNX_PATH = MODELS_DIR / "p1_field_model.onnx"  # 未来真实场模型
+
+
+def predict_surface_field(X_pc: np.ndarray, conds: np.ndarray) -> dict:
+    """
+    场级预测：输入表面点云 (N, C) + 工况 (2,) → 表面压力/温度场 + 标量。
+    当前占位：标量走现有代理，场返回合成梯度（真实 P1 模型训练后替换）。
+    """
+    n = len(X_pc)
+    t = np.linspace(0, 1, n)
+    pressure = 1.05e5 + 8e4 * (1 - t) + 5e3 * X_pc[:, 1]  # 占位梯度
+    temperature = 320 + 40 * t
+    return {
+        "scalars": {"placeholder": True},  # P1 真实模型接入后返回 (π, η, ṁ)
+        "field": {
+            "pressure": pressure.astype(np.float32).tolist(),
+            "temperature": temperature.astype(np.float32).tolist(),
+            "coords": X_pc[:, :3].astype(np.float32).tolist(),
+        },
+        "mode": "placeholder (P1 真实模型待接入)",
+    }
+
+
+# ── P1 双头融合模型（Day 39 新增，可选加载）────────────────
+# fused_surrogate.onnx 由 export_fused_onnx.py 生成；
+# 存在时启用融合预测端点（输入：点云 + 74维统计特征 + 工况）。
+FUSED_ONNX_PATH = MODELS_DIR / "fused_surrogate.onnx"
+_fused_session = None
+_fused_in_mu = None
+_fused_in_sd = None
+_fused_stats_mu = None
+_fused_stats_sd = None
+_fused_y_mu = None
+_fused_y_sd = None
+
+
+def fused_available() -> bool:
+    return FUSED_ONNX_PATH.exists()
+
+
+def _load_fused():
+    global _fused_session
+    if _fused_session is None and FUSED_ONNX_PATH.exists():
+        _fused_session = ort.InferenceSession(str(FUSED_ONNX_PATH),
+                                              providers=['CPUExecutionProvider'])
+    return _fused_session
+
+
+def predict_fused(X_pc: np.ndarray, stats: np.ndarray,
+                  conds: np.ndarray, scaler_stats=None) -> dict:
+    """
+    融合模型预测：点云 (N,C) + 统计特征 (74) + 工况 (2) → 标量 (π,η,ṁ)
+    注意：标准化参数需与训练一致（train_fused_p1.py 的 in_mu/in_sd 等），
+    简化版：输入已按训练标准化，stats 用传入 scaler 或默认不做。
+    """
+    sess = _load_fused()
+    if sess is None:
+        raise RuntimeError("fused_surrogate.onnx 未就绪，请先导出模型")
+    # 简化：假设 X_pc 已展平成 (1, n_points, C)，stats (1, 74)，conds (1, 2)
+    y_sc = sess.run(None, {"X_pc": X_pc.astype(np.float32),
+                           "stats": stats.astype(np.float32),
+                           "conds": conds.astype(np.float32)})[0]
+    # 反标准化（训练时 y 标准化用 ym/ys；此处简化直接返回 scaled，标注待完善）
+    return {"predictions_scaled": y_sc.tolist(),
+            "note": "fused ONNX 输出为标准化值；反标准化参数待与训练对齐"}
