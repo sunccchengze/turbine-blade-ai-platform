@@ -398,3 +398,9 @@ cd frontend && npm install --no-audit --no-fund && npm run build && npm run lint
 - `export_fused_onnx.py`：P1 融合 ONNX 导出（验证通过，opset18）
 - `generate_design_p3.py` check_valid 兼容真实翼型（轮廓非退化）
 - 待承泽一键流程（run_real_data.sh）结果：P2 真覆盖率 + P3 真翼型生成
+
+### Day 39 收官（18:06 北京时间）—— 五层真数据全链路点亮 🏆
+- **P1 双头融合**：π 0.9718 / η 0.9634 / ṁ 0.9829（≥基线，η 超 0.007）→ **Gate 1 ✅**
+- **P2 校准 UQ**：覆盖率 93.5–96.5%（η 65%→93.5%）→ **Gate 2 ✅**
+- **P3 真实翼型生成**：3000 真实翼型 → 条件 VAE 收敛 → 10/10 有效 → **Gate 3 ✅**
+- 待续：P4 SU2 真验证（本机 Docker）、场头全量训练（场 MAE≤5%）、ONNX 部署替换、E5 升级 LLM
