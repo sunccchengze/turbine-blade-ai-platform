@@ -45,9 +45,11 @@ def make_blade_points(n_points, rng):
     pressure = 1.05e5 + 8e4 * (1 - t) + 5e3 * side + 2e3 * rng.normal(size=n_points)
     density = 1.2 + 0.9 * (1 - t) + 0.1 * rng.normal(size=n_points)
     temperature = 320 + 40 * s + 3 * rng.normal(size=n_points)
-    X = np.concatenate([coords, normals,
+    # 通道顺序必须与 build_pointcloud_dataset.py 一致：
+    # 0-2 坐标, 3 Pressure, 4 Density, 5 Temperature, 6-8 Normals(X/Y/Z)
+    X = np.concatenate([coords,
                         pressure[:, None], density[:, None],
-                        temperature[:, None]], axis=-1).astype(np.float32)
+                        temperature[:, None], normals], axis=-1).astype(np.float32)
     return X
 
 
