@@ -80,6 +80,8 @@ async def root():
             "pareto_evolution":   "/api/optimize/pareto-evolution",
             "training_stats":     "/api/optimize/training-data-stats",
             "uq_results":         "/api/optimize/uq-results",
+            "assistant_design":   "/api/assistant/design",
+            "assistant_generate": "/api/assistant/generate",
         }
     }
 

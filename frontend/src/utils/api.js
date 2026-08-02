@@ -79,3 +79,13 @@ export const getUQResults = async () => {
   const response = await api.get('/api/optimize/uq-results')
   return response.data
 }
+
+// ── 生成式逆设计 ──────────────────────────────────────────
+export const generateDesign = async (targets, nCandidates = 5) => {
+  const response = await api.post('/api/assistant/generate', {
+    ...targets,
+    n_candidates: nCandidates,
+    refine: true,
+  })
+  return response.data
+}

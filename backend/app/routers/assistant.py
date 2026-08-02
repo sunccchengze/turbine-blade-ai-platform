@@ -1,23 +1,26 @@
 """
 assistant.py
-E5 LLM 设计助手 API（骨架）：自然语言设计意图 → 调参 → 代理预测 → 解释
+E5 LLM 设计助手 API：自然语言设计意图 → 逆设计 → 代理预测 → 解释
 
 设计（对齐 upgrade-blueprint-D38.md §E5 / CFD-copilot arXiv 2512.07917）：
-- 前端对话面板收集自然语言 → 本端点解析意图（rule-based，可升级 LLM function calling）
-- 解析出目标 (Efficiency/Compression_ratio/Massflow 的期望值或方向) → 调 /api/predict/
-- 返回预测 + 人话解释（权衡：效率↑ 通常以流量↓ 为代价）
+- 前端对话面板 / 生成页收集目标 → 本端点解析意图
+- 解析出目标 (Efficiency/Compression_ratio/Massflow) → 逆设计搜索
+- 返回最接近目标的候选设计 + 人话解释（权衡：效率↑ 通常以流量↓ 为代价）
 
-说明：当前为 rule-based MVP 骨架，后续可替换为 LLM API（Qwen/DeepSeek function calling）。
+说明：意图解析为 rule-based MVP（可升级 LLM function calling）；
+设计求解走 surrogate 近邻 + L-BFGS-B（见 services/inverse_design.py）。
 """
 
 import re
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
-from typing import Optional, List
+from typing import Optional, List, Dict
+
 import numpy as np
 
 from app.model import predict_single
-from app.routers.predict import INPUT_COLS, FEATURE_STATS
+from app.routers.predict import INPUT_COLS
+from app.services.inverse_design import inverse_design, explain_design
 
 router = APIRouter(prefix="/api/assistant", tags=["Design Assistant"])
 
@@ -37,7 +40,17 @@ _BASELINE = _df[_INPUT_COLS].iloc[_median_idx].to_dict()
 
 class AssistantRequest(BaseModel):
     text: str = Field(..., description="自然语言设计意图，如：帮我把效率提到 0.91，流量别低于 21")
-    features: Optional[List[float]] = Field(None, description="可选：74维特征，缺省用基准")
+    features: Optional[List[float]] = Field(None, description="可选：74维特征，缺省走逆设计库搜索")
+    n_candidates: int = Field(5, ge=1, le=20, description="返回候选数")
+
+
+class GenerateRequest(BaseModel):
+    """结构化目标输入（生成页专用，不经自然语言解析）。"""
+    Efficiency: Optional[float] = Field(None, description="目标效率 η")
+    Massflow: Optional[float] = Field(None, description="目标流量 kg/s")
+    Compression_ratio: Optional[float] = Field(None, description="目标压比 π")
+    n_candidates: int = Field(5, ge=1, le=20)
+    refine: bool = Field(True, description="是否对最优候选做局部精修")
 
 
 def _parse_intent(text: str):
@@ -77,40 +90,85 @@ def _parse_intent_rule(text: str):
     return intent
 
 
+def _run_inverse(targets: Dict[str, float], n_candidates: int = 5, refine: bool = True) -> dict:
+    result = inverse_design(targets, n_candidates=n_candidates, refine=refine)
+    best = result["best"]
+    explanations = explain_design(targets, best["predictions"])
+    return {
+        "status": "success",
+        "parsed_intent": {"targets": targets},
+        "targets": targets,
+        "predictions": best["predictions"],
+        "gaps": best.get("gaps", {}),
+        "geometry": best.get("geometry"),
+        "features": best.get("features"),
+        "candidates": [
+            {
+                "rank": c["rank"],
+                "sample_id": c["sample_id"],
+                "predictions": c["predictions"],
+                "gaps": c["gaps"],
+                "distance": c["distance"],
+                "method": c["method"],
+                "refined": c["refined"],
+                "geometry": c["geometry"],
+            }
+            for c in result["candidates"]
+        ],
+        "explanation": explanations,
+        "mode": result["mode"],
+        "library_size": result["library_size"],
+    }
+
+
 @router.post("/design")
 async def design(request: AssistantRequest):
-    """解析自然语言意图 → 预测 → 解释。"""
+    """解析自然语言意图 → 逆设计 → 解释。"""
     intent = _parse_intent(request.text)
     if not intent["targets"]:
         raise HTTPException(status_code=422,
                             detail="未能从输入中解析出设计目标。示例：'帮我把效率提到 0.91，流量不低于 21'")
 
+    # 若调用方显式传入 74 维特征：只做该点预测（兼容旧客户端），
+    # 否则走真正的逆设计搜索（随目标变化）。
     if request.features:
-        base = dict(zip(INPUT_COLS, request.features))
-    else:
-        base = dict(_BASELINE)
+        if len(request.features) != len(INPUT_COLS):
+            raise HTTPException(status_code=422,
+                                detail=f"features 需为 {len(INPUT_COLS)} 维")
+        pred = predict_single(np.array(request.features, dtype=np.float32))
+        explanations = explain_design(intent["targets"], pred)
+        return {
+            "status": "success",
+            "parsed_intent": intent,
+            "targets": intent["targets"],
+            "predictions": pred,
+            "explanation": explanations,
+            "mode": "fixed-features (no inverse search)",
+        }
 
-    pred = predict_single(np.array([base[c] for c in INPUT_COLS]))
+    try:
+        out = _run_inverse(intent["targets"], n_candidates=request.n_candidates)
+        out["parsed_intent"] = intent
+        return out
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"逆设计失败: {e}") from e
 
-    # 人话解释（trade-off 说明）
-    explanations = []
-    if "Efficiency" in intent["targets"]:
-        t = intent["targets"]["Efficiency"]
-        d = pred["Efficiency"] - t
-        explanations.append(f"当前方案效率 {pred['Efficiency']:.4f}"
-                            + ("，已达目标" if d >= 0 else f"，距目标还差 {-d:.4f}"))
-    if "Massflow" in intent["targets"]:
-        t = intent["targets"]["Massflow"]
-        d = pred["Massflow"] - t
-        explanations.append(f"当前方案流量 {pred['Massflow']:.2f} kg/s"
-                            + ("，满足要求" if d >= 0 else f"，低于目标 {t:.1f}"))
-    # 权衡提示
-    explanations.append("注：效率与流量存在 Pareto 权衡，提升效率通常伴随流量下降。")
 
-    return {
-        "status": "success",
-        "parsed_intent": intent,
-        "predictions": pred,
-        "explanation": explanations,
-        "mode": "rule-based MVP (可升级 LLM function calling)",
-    }
+@router.post("/generate")
+async def generate(request: GenerateRequest):
+    """
+    结构化逆设计（生成页主端点）。
+    输入目标 η/π/ṁ → 返回最接近的候选设计（随目标变化）。
+    """
+    targets = {}
+    for k in ("Efficiency", "Massflow", "Compression_ratio"):
+        v = getattr(request, k)
+        if v is not None:
+            targets[k] = float(v)
+    if not targets:
+        raise HTTPException(status_code=422,
+                            detail="至少提供一个目标：Efficiency / Massflow / Compression_ratio")
+    try:
+        return _run_inverse(targets, n_candidates=request.n_candidates, refine=request.refine)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"逆设计失败: {e}") from e

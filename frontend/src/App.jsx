@@ -72,6 +72,7 @@ const PAGE_TITLES = {
   '/optimize':    '多目标优化 Optimize · 叶轮机械 AI 平台',
   '/uq':          '不确定性 UQ · 叶轮机械 AI 平台',
   '/methodology': '方法论 Methodology · 叶轮机械 AI 平台',
+  '/generate':    '生成设计 Generate · 叶轮机械 AI 平台',
   '/about':       '关于 About · 叶轮机械 AI 平台',
 }
 
