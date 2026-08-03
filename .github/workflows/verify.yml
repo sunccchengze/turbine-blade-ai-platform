@@ -1,0 +1,75 @@
+name: Verify Reproducibility
+
+# 可复现性持续验证（对应 README「快速复现」）：
+#  1. R² 复现：留出测试集 (n=100, seed 42) 上 π/η/ṁ 必须逐位等于 0.9844/0.9561/0.9827
+#  2. NSGA-II 复现：全锁版环境下 max η 必须 ≈ 0.9173（允许 4 位小数内浮动）
+#
+# 重要：NSGA-II 结果对依赖版本敏感（pymoo/numpy/scipy/onnxruntime 任一偏离
+# requirements.txt 都会改变最终前沿），本作业即为此而设。
+# 安装：GitHub → Actions → Verify Reproducibility → Enable workflow
+# （本仓库 GitHub App 无 workflows 权限，需在 Actions 页面手动启用）
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  reproduce:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Install locked requirements
+        run: |
+          pip install --no-input -r backend/requirements.txt
+          python -c "import numpy, pymoo, onnxruntime, sklearn; print('numpy', numpy.__version__, '| pymoo', pymoo.__version__, '| ort', onnxruntime.__version__, '| sklearn', sklearn.__version__)"
+
+      - name: Reproduce R² (README §3)
+        run: |
+          python - <<'EOF'
+          import numpy as np, pandas as pd, joblib, onnxruntime as ort
+          from sklearn.model_selection import train_test_split
+          from sklearn.metrics import r2_score
+          df = pd.read_csv("backend/data/processed/plaid_rotor37_features.csv")
+          out = ['Compression_ratio', 'Efficiency', 'Massflow']
+          inc = [c for c in df.columns if c not in ['sample_id'] + out]
+          X, y = df[inc].values.astype(np.float32), df[out].values.astype(np.float32)
+          X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.10, random_state=42)
+          sx = joblib.load("backend/models/scaler_X_v2.pkl")
+          sy = joblib.load("backend/models/scaler_y_v2.pkl")
+          sess = ort.InferenceSession("backend/models/surrogate_model.onnx")
+          pred = sy.inverse_transform(sess.run(None, {sess.get_inputs()[0].name: sx.transform(X_test).astype(np.float32)})[0])
+          got = [round(float(r2_score(y_test[:, i], pred[:, i])), 4) for i in range(3)]
+          want = [0.9844, 0.9561, 0.9827]
+          print("got:", got, "want:", want)
+          assert all(abs(g - w) < 1e-4 for g, w in zip(got, want)), f"MISMATCH {got} vs {want}"
+          print("✅ R² 复现通过")
+          EOF
+
+      - name: Reproduce NSGA-II Pareto front (README §5)
+        run: |
+          python backend/scripts/generate_pareto_evolution.py 2>&1 | tail -3
+          python - <<'EOF'
+          import pandas as pd
+          pf = pd.read_csv("backend/data/processed/pareto_front_solutions.csv")
+          eta, mdot = pf['Efficiency'].max(), pf['Massflow'].max()
+          print(f"max η = {eta:.4f} (expect ~0.9173) · max ṁ = {mdot:.2f} (expect ~21.74) · n = {len(pf)}")
+          assert abs(eta - 0.9173) < 0.002, f"η drift: {eta}"
+          assert abs(mdot - 21.74) < 0.05, f"ṁ drift: {mdot}"
+          assert len(pf) == 100
+          print("✅ NSGA-II 复现通过（全锁版环境）")
+          EOF
+
+      - name: Regenerate Pareto evidence report
+        run: |
+          python backend/scripts/pareto_evidence.py > /tmp/evidence.log 2>&1 || (cat /tmp/evidence.log; exit 1)
+          tail -5 /tmp/evidence.log
+          echo "✅ pareto_evidence 复现通过"

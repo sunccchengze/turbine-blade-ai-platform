@@ -448,9 +448,9 @@ export default function HomePage() {
           <ScrollSection>
             <SectionHeader
               tag="Optimization Results"
-              title="AI 找到的最优设计"
-              subtitle={<>NSGA-II 找到的设计方案超越了全部 1,000 个 CFD 训练样本<br />
-                <span style={{ fontSize: '12px', color: '#475569' }}>NSGA-II discovered designs that surpass all 1,000 CFD training samples.</span></>}
+              title="代理模型预测的最优设计"
+              subtitle={<>NSGA-II 在 74 维空间找到的 Pareto 前沿，代理预测效率超越全部训练样本（留出集邻域误差持平测试集水平；最终需 RANS 抽查终审，见 P4）<br />
+                <span style={{ fontSize: '12px', color: '#475569' }}>NSGA-II Pareto front in the 74-D design space — surrogate-predicted designs surpass all 1,000 training samples (holdout error verified near the front; final RANS spot-check pending, see P4)</span></>}
             />
             <div style={{
               display: 'grid',

@@ -94,15 +94,19 @@ def predict_batch(features_batch: np.ndarray) -> list:
 def predict_with_uncertainty(features: np.ndarray,
                               n_samples: int = 100) -> dict:
     """
-    带不确定性的预测
-    注意：ONNX 版本使用预计算的 UQ 统计量估算置信区间
-    （原 MC Dropout 方案已在 PyTorch 训练阶段完整实现）
+    带不确定性的预测（生产模式）
+
+    注意：生产 API 使用预计算的 UQ 统计量（来自训练阶段 100 次 MC Dropout
+    采样的平均 σ）估算置信区间，不做实时重复采样——ONNX 推理不支持
+    PyTorch 训练期的 Dropout 随机性，实时 MC 采样会引入不可接受的时延。
+    该 σ 是模型认知不确定性的保守指示器（已知低估真实不确定性，
+    覆盖率实测 65–89%，详见 README UQ 节），定位为相对置信度指示器。
     """
     # 确定性预测
     pred = predict_single(features)
 
     # 基于训练集 UQ 结果的统计估算
-    # 这些 sigma 值来自之前完整的 MC Dropout 实验
+    # 这些 sigma 值来自训练阶段完整的 MC Dropout 实验（100 次采样）
     sigma_map = {
         'Compression_ratio': 0.006393,
         'Efficiency':        0.001007,
