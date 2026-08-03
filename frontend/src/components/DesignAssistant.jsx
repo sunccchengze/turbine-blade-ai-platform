@@ -21,10 +21,12 @@ export default function DesignAssistant() {
     try {
       const { data } = await api.post('/api/assistant/design', { text })
       const pred = data.predictions
+      const nCand = data.candidates?.length || 1
       const reply = [
-        `📊 预测（基准设计）：效率 ${pred.Efficiency?.toFixed(4)} · 压比 ${pred.Compression_ratio?.toFixed(4)} · 流量 ${pred.Massflow?.toFixed(2)} kg/s`,
+        `📊 逆设计最优方案：效率 ${pred.Efficiency?.toFixed(4)} · 压比 ${pred.Compression_ratio?.toFixed(4)} · 流量 ${pred.Massflow?.toFixed(2)} kg/s`,
+        nCand > 1 ? `🧩 共 ${nCand} 个候选（详见「生成设计」页）` : null,
         ...(data.explanation || []).map(e => `💡 ${e}`),
-      ].join('\n')
+      ].filter(Boolean).join('\n')
       setMessages(m => [...m, { role: 'bot', text: reply }])
     } catch (e) {
       const detail = e?.response?.data?.detail
