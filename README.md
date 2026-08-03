@@ -377,6 +377,15 @@ python backend/scripts/generate_pareto_evolution.py
 
 **3 维输出**：`Compression_ratio` (π) · `Efficiency` (η) · `Massflow` (ṁ)
 
+**官方划分与验证口径**（`eval_official_test_split.py` 实测确认）：
+- PLAID 官方共 **1,200 组**：前 1,000 组 = train split（含几何+输出），后 200 组 = test split；
+- **官方 test 200 组为完全黑盒**：几何场量与输出标签均隐藏，仅提供工况 Ω/P
+  （PLAID 防数据泄漏设计）→ **R² 客观上无法在官方 test 上计算**；
+- 已做的等价验证：①官方 train 1,000 组与仓库 CSV **Ω/P 逐组精确匹配（1000/1000）**——
+  所用数据与官方 train split 完全一致；②官方 test 200 组工况**全部落在训练范围内（200/200）**——
+  test 与 train 同域，模型对其有效；③test 工况在 train 中的近邻标签分布与训练分布一致。
+- 因此主口径 R² 采用留出测试集（n=100, seed 42）——README 全文统一此口径。
+
 > ⚠️ **诚实披露**：统计特征化是**刻意的设计选择**，代价是丢失了空间分布信息
 > （模型看不到「压力峰值出现在叶片哪个位置」）。
 > 在 1,000 样本量级下，这个取舍换来了训练稳定性；
