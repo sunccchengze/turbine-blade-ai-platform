@@ -22,8 +22,9 @@
 
 ## 下一项：P1 无泄漏输入消融
 
-- [ ] 增加 geometry-conditioned 模式：屏蔽 Pressure/Density/Temperature，只保留坐标、Normals 和工况
-- [ ] 明确 74 维统计特征中的场量来源，建立 geometry-only 统计特征或降级为 field-conditioned 代理
+- [x] 增加 geometry-conditioned 模式：屏蔽 Pressure/Density/Temperature，只保留坐标、Normals 和工况
+- [x] 明确 74 维统计特征中的场量来源，geometry-only 模式剔除场量统计特征
+- [ ] 在 RTX 4050 上完成 geometry-conditioned 40 epoch/1024 点正式训练
 - [ ] 对比 field-conditioned 与 geometry-conditioned 的标量 R² 和逐通道场指标
 - [ ] 结果未完成前，不更新 README 的模型能力宣称
 

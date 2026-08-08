@@ -13,7 +13,13 @@ P1 双头融合模型（内阁裁决版完整实现）：统计特征头 + 点�
 
 用法（真实数据在 data/processed/pointcloud/ 且特征 CSV 存在）：
     python backend/scripts/train_fused_p1.py --epochs 50 --batch_size 32
+    python backend/scripts/train_fused_p1.py --epochs 40 --batch_size 8 --n_points 1024 --input_mode geometry-conditioned
     python backend/scripts/train_fused_p1.py --smoke   # 合成冒烟
+
+输入模式：
+- field-conditioned：9 通道 + 74 维场统计量，仅作场条件融合诊断对照。
+- geometry-conditioned：坐标 + Normals + 工况，统计特征剔除 Pressure/Density/Temperature，
+  用于无目标场泄漏的前向实验。
 
 输出：data/processed/p1/fused_runs/<ts>/（metrics.json 含 R² 对比）
 """
@@ -37,20 +43,26 @@ FEATURES_CSV = ROOT / "data" / "processed" / "plaid_rotor37_features.csv"
 RUNS_DIR = ROOT / "data" / "processed" / "p1" / "fused_runs"
 
 
-def load_stats():
-    """加载 74 维统计特征（与特征 CSV 同序，sample_id 对齐点云 npz）。"""
+def load_stats(input_mode="field-conditioned"):
+    """加载统计特征，并按输入模式剔除目标场统计量。"""
     import pandas as pd
     df = pd.read_csv(FEATURES_CSV)
     out = ['Compression_ratio', 'Efficiency', 'Massflow']
     inc = [c for c in df.columns if c not in ['sample_id'] + out]
+    if input_mode == "geometry-conditioned":
+        # 几何前向模式只允许工况、坐标统计量和法向统计量。
+        # Pressure/Density/Temperature 统计量均来自 CFD 场，必须排除以防目标泄漏。
+        blocked = ("Pressure", "Density", "Temperature")
+        inc = [c for c in inc if not c.startswith(blocked)]
     X = df[inc].values.astype(np.float32)
     y = df[out].values.astype(np.float32)
     sid = df['sample_id'].values
-    return X, y, sid
+    return X, y, sid, inc
 
 
-def align_by_sample_id(X_stats, y_stats, sid_stats, X_pc, y_pc, sid_pc, conds):
-    """按 sample_id 对齐统计特征与点云。"""
+def align_by_sample_id(X_stats, y_stats, sid_stats, X_pc, y_pc, sid_pc, conds,
+                       field_targets=None):
+    """按 sample_id 对齐统计特征、点云、场监督目标和工况。"""
     sid_stats = sid_stats.astype(np.int64)
     sid_pc = sid_pc.astype(np.int64)
     idx_s = {s: i for i, s in enumerate(sid_stats)}
@@ -60,8 +72,9 @@ def align_by_sample_id(X_stats, y_stats, sid_stats, X_pc, y_pc, sid_pc, conds):
     Xp = np.stack([X_pc[idx_p[s]] for s in common])
     ys = np.stack([y_pc[idx_p[s]] for s in common])
     cs = np.stack([conds[idx_p[s]] for s in common])
+    ft = None if field_targets is None else np.stack([field_targets[idx_p[s]] for s in common])
     print(f"  对齐样本数：{len(common)}")
-    return Xs, Xp, cs, ys
+    return Xs, Xp, cs, ys, ft
 
 
 # ── 双头融合模型 ─────────────────────────────────────────
@@ -113,7 +126,7 @@ def train_fused(model, data, args):
     import torch.nn as nn
     from sklearn.model_selection import train_test_split
 
-    (Xs, Xp, cs, ys) = data
+    Xs, Xp, cs, ys, field_targets = data
     # 划分（同口径 random_state=42）
     idx_tr, idx_te = train_test_split(np.arange(len(ys)), test_size=0.10,
                                       random_state=SEED)
@@ -121,6 +134,8 @@ def train_fused(model, data, args):
     Xp_tr, Xp_te = Xp[idx_tr], Xp[idx_te]
     cs_tr, cs_te = cs[idx_tr], cs[idx_te]
     ys_tr, ys_te = ys[idx_tr], ys[idx_te]
+    ft_tr = None if field_targets is None else field_targets[idx_tr]
+    ft_te = None if field_targets is None else field_targets[idx_te]
 
     # 标准化
     sm, ss = Xs_tr.mean(0), Xs_tr.std(0) + 1e-6
@@ -133,20 +148,23 @@ def train_fused(model, data, args):
     device = next(model.parameters()).device
     opt = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=1e-4)
     w = torch.tensor([1.0, 3.0, 1.5], device=device)
-    # 场目标列（Pressure/Temperature，9 通道下为 3,5）
+    # 场监督目标始终是 [Pressure, Temperature]，但它们必须独立于输入。
+    # field-conditioned 模式的输入含场量，仅作为诊断对照；geometry-conditioned
+    # 模式的输入只有坐标+Normals，场头才是严格前向预测。
+    use_field = field_targets is not None and hasattr(model, 'field_head')
     C = Xp.shape[2]
-    field_cols = [c for c in [3, 5] if c < C]
-    use_field = len(field_cols) > 0 and hasattr(model, 'field_head')
     if use_field:
-        # 输入场量标准化（与 train_pointnet_p1 一致）
-        in_mu = Xp_tr[:, :, 3:9].mean(axis=(0, 1), keepdims=True)
-        in_sd = Xp_tr[:, :, 3:9].std(axis=(0, 1), keepdims=True) + 1e-6
-        Xp_tr_n = Xp_tr.copy(); Xp_tr_n[:, :, 3:9] = (Xp_tr[:, :, 3:9] - in_mu) / in_sd
-        Xp_te_n = Xp_te.copy(); Xp_te_n[:, :, 3:9] = (Xp_te[:, :, 3:9] - in_mu) / in_sd
-        # 场监督目标使用原始量纲统计量；输入 Xp_tr_n 的标准化统计量不能用于
-        # 直接反标准化输出，否则场 MAE 会被错误标注为原始量纲。
-        field_mu = Xp_tr[:, :, field_cols].mean(axis=(0, 1), keepdims=True)
-        field_sd = Xp_tr[:, :, field_cols].std(axis=(0, 1), keepdims=True) + 1e-6
+        if C >= 9:
+            # field-conditioned：只标准化输入中的场量列；目标仍从独立 ft_* 读取。
+            in_mu = Xp_tr[:, :, 3:9].mean(axis=(0, 1), keepdims=True)
+            in_sd = Xp_tr[:, :, 3:9].std(axis=(0, 1), keepdims=True) + 1e-6
+            Xp_tr_n = Xp_tr.copy(); Xp_tr_n[:, :, 3:9] = (Xp_tr[:, :, 3:9] - in_mu) / in_sd
+            Xp_te_n = Xp_te.copy(); Xp_te_n[:, :, 3:9] = (Xp_te[:, :, 3:9] - in_mu) / in_sd
+        else:
+            # geometry-conditioned：坐标+Normals 输入，不做任何目标场拼接。
+            Xp_tr_n, Xp_te_n = Xp_tr, Xp_te
+        field_mu = ft_tr.mean(axis=(0, 1), keepdims=True)
+        field_sd = ft_tr.std(axis=(0, 1), keepdims=True) + 1e-6
         masks = (np.abs(Xp_tr[:, :, :3]).sum(-1) > 1e-6).astype(np.float32)
     else:
         Xp_tr_n, Xp_te_n = Xp_tr, Xp_te
@@ -165,7 +183,7 @@ def train_fused(model, data, args):
             opt.zero_grad()
             if use_field:
                 pred, f_pred = model(xp, st, c, need_field=True)
-                f_target = (torch.tensor(Xp_tr[idx][:, :, field_cols], device=device)
+                f_target = (torch.tensor(ft_tr[idx], device=device)
                              - torch.tensor(field_mu, device=device)) / torch.tensor(field_sd, device=device)
                 mb = torch.tensor(masks[idx], device=device)
                 l_f = ((f_pred - f_target) ** 2).mean(dim=-1) * mb
@@ -190,7 +208,7 @@ def train_fused(model, data, args):
         if use_field:
             pred, f_pred = model(xp, st, c, need_field=True)
             f_pred_np = f_pred.cpu().numpy() * field_sd + field_mu
-            f_true_np = Xp_te[:, :, field_cols]
+            f_true_np = ft_te
         else:
             pred = model(xp, st, c)
         pred = pred.cpu().numpy() * ys_ + ym
@@ -208,7 +226,7 @@ def train_fused(model, data, args):
         mae = float(np.abs(diff_masked).mean())
         channel_names = {3: "Pressure", 5: "Temperature"}
         by_channel = {}
-        for j, col in enumerate(field_cols):
+        for j, col in enumerate([3, 5]):
             d_j = diff[:, :, j][m_te]
             t_j = f_true_np[:, :, j][m_te]
             by_channel[channel_names.get(col, f"channel_{col}")] = {
@@ -231,6 +249,9 @@ def main():
     ap.add_argument("--n_points", type=int, default=None)
     ap.add_argument("--lam_field", type=float, default=0.5,
                     help="场损失权重（越大场预测越准，可能略损标量）")
+    ap.add_argument("--input_mode", choices=["field-conditioned", "geometry-conditioned"],
+                    default="field-conditioned",
+                    help="field-conditioned=9通道诊断对照；geometry-conditioned=仅坐标+Normals，防目标泄漏")
     args = ap.parse_args()
 
     import torch
@@ -242,20 +263,33 @@ def main():
         X_pc, conds, y = build_smoke_data(n=200, n_points=512)
         X_stats = np.random.randn(200, 74).astype(np.float32)
         sid = np.arange(200)
-        Xs, Xp, cs, ys = align_by_sample_id(X_stats, y, sid, X_pc, y, sid, conds)
+        Xs, Xp, cs, ys, field_targets = align_by_sample_id(
+            X_stats, y, sid, X_pc, y, sid, conds, X_pc[:, :, :2])
     else:
-        X_stats, y_stats, sid_stats = load_stats()
+        X_stats, y_stats, sid_stats, stat_names = load_stats(args.input_mode)
         path = DATA_PC if DATA_PC.exists() else DATA_PC_SYNTH
         if not path.exists():
             raise SystemExit("❌ 未找到点云数据，先构建")
-        X_pc, conds, y, sid_pc = load_data(path)
+        X_pc_full, conds, y, sid_pc = load_data(path)
+        # 场监督目标单独保存，严禁把目标场随输入模式一起丢失。
+        field_targets = X_pc_full[:, :, [3, 5]] if X_pc_full.shape[2] >= 6 else None
+        if args.input_mode == "geometry-conditioned":
+            if X_pc_full.shape[2] < 9:
+                raise SystemExit("❌ geometry-conditioned 需要 9 通道点云以提取坐标+Normals")
+            X_pc = np.concatenate([X_pc_full[:, :, :3], X_pc_full[:, :, 6:9]], axis=2)
+            print(f"  输入模式：geometry-conditioned（统计特征 {len(stat_names)} 维，点云 6 通道）")
+        else:
+            X_pc = X_pc_full
+            print(f"  输入模式：field-conditioned（统计特征 {len(stat_names)} 维，点云 9 通道；诊断对照）")
         if args.n_points and X_pc.shape[1] > args.n_points:
             rng = np.random.default_rng(SEED)
             idx = rng.choice(X_pc.shape[1], args.n_points, replace=False)
             X_pc = X_pc[:, idx, :]
+            field_targets = field_targets[:, idx, :] if field_targets is not None else None
             print(f"  降采样到 {args.n_points} 点")
-        Xs, Xp, cs, ys = align_by_sample_id(
-            X_stats, y_stats, sid_stats, X_pc, y, sid_pc, conds)
+        Xs, Xp, cs, ys, ft = align_by_sample_id(
+            X_stats, y_stats, sid_stats, X_pc, y, sid_pc, conds, field_targets)
+        field_targets = ft
 
     C = Xp.shape[2]
     Fused = make_fused_model(Xs.shape[1], C)
@@ -264,7 +298,7 @@ def main():
     print(f"模型参数量：{n_params:,}")
 
     t0 = time.time()
-    r2, field_metrics = train_fused(model, (Xs, Xp, cs, ys), args)
+    r2, field_metrics = train_fused(model, (Xs, Xp, cs, ys, field_targets), args)
     elapsed = time.time() - t0
 
     print("\n===== 双头融合 测试集 R²（口径：留出 10%, random_state=42）=====")
@@ -280,7 +314,8 @@ def main():
     torch.save(model.state_dict(), run_dir / "fused_best.pt")
     with open(run_dir / "metrics.json", "w", encoding="utf-8") as f:
         json.dump({"r2": r2, "field": field_metrics, "n_params": n_params,
-                   "elapsed_s": elapsed, "note": "双头融合（统计特征+点云）"},
+                   "elapsed_s": elapsed, "input_mode": args.input_mode,
+                   "note": "双头融合（统计特征+点云）；geometry-conditioned 模式屏蔽目标场输入"}, 
                   f, ensure_ascii=False, indent=2)
     print(f"✅ 已保存：{run_dir}")
 

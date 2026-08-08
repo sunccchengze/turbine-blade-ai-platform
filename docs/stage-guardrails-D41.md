@@ -170,6 +170,9 @@
 - ✅ 修复 P1 两个训练脚本的场指标量纲 bug：监督目标和预测现在使用原始量纲统计量正确反标准化；修复前的场 MAE 不再采信。
 - ⚠️ 最小训练结果仅为诊断 smoke（CPU/2 epoch/256 点），不是最终模型性能；正式训练需用户 RTX 4050 的 CUDA torch 环境。
 - ✅ 新增 `backend/requirements-training.txt`，生产 `backend/requirements.txt` 保持不含 torch。
+- ✅ 用户 RTX 4050 CUDA 训练已成功：field-conditioned 融合模型 40 epoch/1024 点，π R²=0.9926、η R²=0.9553、ṁ R²=0.9928；场 Pressure rel_l2=0.003656、Temperature rel_l2=0.001248。该结果标为 E2 field-conditioned diagnostic，不作 geometry-only 结论。
+- ✅ 已新增 `--input_mode geometry-conditioned`：统计特征从 74 维剔除 Pressure/Density/Temperature，点云输入从 9 通道降为坐标+Normals 6 通道。
+- ✅ geometry-conditioned CPU 2 epoch/256 点冒烟通过：π R²=0.8610、η R²=0.2858、ṁ R²=0.8116；这是模式连通性证据，不是正式性能。
 - ⚠️ `run_all_smoke.sh` 仍会在缺少 torch 的纯生产环境停止；这是预期的训练依赖隔离结果，不应把 torch 塞回生产依赖。
 - ⚠️ 前端 build 仍有既有 CSS at-rule 和大 chunk 警告；未扩大范围修复。
 
