@@ -32,8 +32,10 @@
 - [ ] geometry-conditioned 512/1024/2048 点与训练 epoch 消融
 - [x] η 专项特征审计：Pearson/互信息/ExtraTrees 诊断报告
 - [x] 增加 `combined` / `stats-only` / `pointcloud-only` 表示消融入口并完成短训连通性验证
-- [ ] RTX 4050 上 stats-only 与 pointcloud-only 正式 40 epoch/1024 点实验
-- [ ] η 专项表示消融：几何统计、法向、工况与物理派生量
+- [x] RTX 4050 上 stats-only 与 pointcloud-only 正式 40 epoch/1024 点实验
+- [x] η 专项表示消融：几何统计、法向、工况与物理派生量初步信息审计
+- [ ] pointcloud-only 稳定性诊断：输入尺度、BatchNorm、小批量、点采样、学习率、损失权重
+- [ ] η 专项物理派生特征消融
 
 ## 禁止越级
 

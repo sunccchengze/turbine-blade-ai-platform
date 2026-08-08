@@ -181,7 +181,8 @@
 - ✅ η 特征审计已完成并写入 `docs/eta-feature-audit-D41.md`：场量统计与 η 的 Pearson/互信息关联整体强于几何统计；下一步按受控消融验证，不回填目标场输入。
 - ✅ `train_fused_p1.py` 已增加 geometry-conditioned 的 `combined` / `stats-only` / `pointcloud-only` 表示消融入口；三种模式均通过沙盒 2 epoch/256 点连通性验证。
 - ✅ 用户 RTX 4050 已完成 `stats-only` 单次正式实验：π=0.9779、η=0.8741、ṁ=0.9805；相对 combined seed=42，点云分支对 π 为正、对 η/ṁ 为负，仍待 `pointcloud-only` 和多 seed 复验。
-- ⚠️ 沙盒短训仅证明入口可运行，不能代替 RTX 4050 正式比较；正式消融必须固定 `split_seed=42`，至少 3 seed。
+- ✅ 用户 RTX 4050 已完成 stats-only 与 pointcloud-only 三 seed 正式消融：stats-only η=0.851433±0.025515；pointcloud-only η=0.725067±0.213644，seed=43 明显塌陷。
+- ⚠️ pointcloud-only 高方差是当前新阻塞，下一步先诊断输入尺度、BatchNorm、小批量、点采样、学习率和损失权重，不扩大网络或宣传结果。
 - ⚠️ `run_all_smoke.sh` 仍会在缺少 torch 的纯生产环境停止；这是预期的训练依赖隔离结果，不应把 torch 塞回生产依赖。
 - ⚠️ 前端 build 仍有既有 CSS at-rule 和大 chunk 警告；未扩大范围修复。
 
