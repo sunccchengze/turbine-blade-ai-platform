@@ -1,0 +1,149 @@
+# P4 输入链路审计 · D41
+
+> 目的：在尝试真实 SU2/RANS 之前，逐文件确认“候选设计 → 几何 → 网格 → 求解器 → 性能提取”是否真的存在。本文只记录仓库内可验证事实，不把计划或 dry-run 当作结果。
+>
+> **审计日期**：2026-08-08  
+> **证据等级**：E1（代码/配置存在）与 E2（代理/留出证据）为主；尚未达到 E3。
+
+---
+
+## 1. 结论摘要
+
+当前仓库可以完整追踪到：
+
+```text
+74 维特征
+  → ONNX 代理模型
+  → NSGA-II / 逆设计候选
+  → 参数化示意几何
+```
+
+但目前不能在仓库内完成：
+
+```text
+真实 Rotor37 几何
+  → 可运行 SU2 网格
+  → Rotor37 对应边界条件
+  → RANS 收敛
+  → π / η / ṁ 性能提取
+```
+
+**P4 当前状态：输入链路审计完成，真实 RANS 被资产缺口阻塞。**
+
+---
+
+## 2. 已确认存在的输入和产物
+
+| 环节 | 文件/位置 | 实际状态 | 证据等级 |
+|---|---|---|---|
+| 统计特征 | `backend/data/processed/plaid_rotor37_features.csv` | 1000 组、74 维输入和 3 维输出 | E2 |
+| Pareto 候选 | `backend/data/processed/pareto_front_solutions.csv` | 100 个代理模型候选，含 74 维设计列 | E2 |
+| Pareto 证据 | `backend/data/processed/pareto_evidence.json` | 范围、距离、留出误差分析已生成 | E2 |
+| 代理模型 | `backend/models/surrogate_model.onnx` | 可由 FastAPI 和复现脚本加载 | E2 |
+| 标准化器 | `backend/models/scaler_X_v2.pkl`、`scaler_y_v2.pkl` | 生产推理依赖 | E2 |
+| P3 训练脚本 | `backend/scripts/generate_design_p3.py` | 当前优先合成翼型；真实翼型文件存在时才读取 | E1 |
+| 逆设计服务 | `backend/app/services/inverse_design.py` | 训练库近邻 + L-BFGS-B；返回特征和几何 payload | E1/E2 |
+| 前端几何 | `frontend/src/components/BladeViewer3D.jsx` | 根据少量统计量生成参数化 Three.js 形状 | E1 |
+| P4 骨架 | `backend/scripts/run_su2_validation_p4.py` | 支持 dry-run；真实调用仍需外部网格和求解器 | E1 |
+| P4 准备器 | `backend/scripts/prepare_su2_p4.py` | 生成简化单排模板和 Docker 批跑脚本 | E1 |
+
+---
+
+## 3. 已确认缺失或未闭环的资产
+
+### 3.1 真实网格不存在
+
+仓库中未发现可用于 Rotor37 RANS 的：
+
+- `.su2` 网格
+- `.cgns` 网格
+- `.vtk` / `.msh` 等可转换网格
+- Rotor37 多排/混合平面装配文件
+
+`run_su2_validation_p4.py` 生成的 `rotor37_mesh.su2` 只是配置模板中引用的文件名，并不是真实文件。
+
+### 3.2 真实候选几何没有接入 P4
+
+`inverse_design.py` 返回的 `geometry` 只包含：
+
+- `Omega`
+- `P`
+- `Pressure_mean`
+- `Pressure_std`
+- `Temperature_mean`
+- `CoordinateY_mean`
+
+前端再用这些统计量构造参数化示意叶片。它不是 Rotor37 原始表面，也不是可直接网格化的真实 CAD/CFD 几何。
+
+### 3.3 P4 脚本的真实运行部分仍是骨架
+
+当前脚本存在以下限制：
+
+- `--dry-run` 是默认安全路径。
+- 默认配置使用 `MACH_NUMBER=0.4`、`AOA=0.0`、单一外流 RANS 模板，不是已对齐的 Rotor37 跨声速多排工况。
+- `MESH_FILENAME=rotor37_mesh.su2` 只是占位引用。
+- `surrogate_prediction` 在 comparison 输出中仍为 `None`。
+- 真实运行分支只返回 SU2 日志尾部，尚未实现从场量/表面结果提取 π、η、ṁ。
+
+### 3.4 相关规划文件并不等于运行产物
+
+文档提到的以下路径在当前仓库中不存在：
+
+- `backend/scripts/make_naca0012_su2_case.py`
+- `data/processed/p4/naca0012_quickstart`
+- `backend/data/processed/official_test_sanity.json`
+- `.github/workflows/verify.yml`
+
+其中：
+
+- 前两个是旧会话/本地环境遗留引用，不能作为当前仓库能力声明。
+- `official_test_sanity.json` 只有在下载官方数据并执行脚本后才会生成。
+- 当前仓库只有 `docs/verify-reproducibility-workflow.yml` 模板，不是 `.github/workflows/verify.yml` 已安装的 CI。
+
+---
+
+## 4. 最小阻塞清单
+
+要达到 P4-min，用户需要提供或确认：
+
+1. Rotor37 原始几何或已经转换好的 CFD 网格。
+2. 网格格式和转换链路（CGNS → SU2，或其他可运行格式）。
+3. SU2 准确版本和运行方式：原生、WSL 或 Docker。
+4. 入口/出口/周期/转子参考系/转速/压力/温度等边界条件。
+5. 性能提取定义：压比、等熵效率、质量流量如何从 SU2 输出计算。
+6. 至少一个候选解如何从 Pareto 特征对应到真实几何的映射。
+
+在这些信息未齐之前，最诚实的下一步不是修改前端，而是由用户提供本地资产或确认允许先做独立 SU2 教程通路验证。
+
+---
+
+## 5. 下一步建议
+
+### 方案 A：已有 Rotor37 资产
+
+用户提供路径/压缩包后：
+
+1. 先只读取并检查文件，不修改原始资产。
+2. 运行网格质量、边界名称和坐标系审计。
+3. 选择一个候选解，建立“候选 ID—几何—网格—工况”映射。
+4. 生成真实 cfg，先跑单解，保存完整日志。
+5. 实现性能提取并生成代理 vs RANS 对照。
+
+### 方案 B：暂时没有 Rotor37 资产
+
+1. 明确记录：无法进行 Rotor37 物理验证。
+2. 可单独跑 SU2 官方教程，证据级别只记为 E1：**SU2 通路验证**。
+3. 不把教程结果写入 Rotor37 性能表，不给首页增加“CFD 已验证”标签。
+4. 并行推进特征→几何可行性检查，但不宣称几何已可制造。
+
+### 方案 C：先补工程基础
+
+在真实 RANS 之前，可以完成但不越级的工作：
+
+- 为 P4 脚本增加候选输入 schema 和真实字段校验。
+- 将 `surrogate_prediction` 从候选特征重新计算并写入报告。
+- 将 dry-run 输出明确命名为 `dry_run_comparison.json`。
+- 为真实运行增加“未收敛不得提取性能”的保护。
+- 为所有结果写入运行环境、版本、网格哈希和输入文件哈希。
+
+这些改动能提升可靠性，但不能替代真实 CFD 结果。
