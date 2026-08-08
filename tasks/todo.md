@@ -37,7 +37,7 @@
 - [x] 增加 `--data_seed`，隔离点云降采样随机性与训练 seed
 - [x] pointcloud-only 固定 data_seed=42 的正式 3 seed 稳定性诊断
 - [x] 增加 BatchNorm/LayerNorm 归一化对照入口
-- [ ] RTX 4050 上 pointcloud-only LayerNorm seed=42/43/44 对照
+- [x] RTX 4050 上 pointcloud-only LayerNorm seed=42/43/44 对照
 - [ ] pointcloud-only 学习率/损失权重最小对照
 - [ ] η 专项物理派生特征消融
 
