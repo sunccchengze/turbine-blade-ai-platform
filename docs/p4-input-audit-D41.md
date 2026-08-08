@@ -28,7 +28,9 @@
   → π / η / ṁ 性能提取
 ```
 
-**P4 当前状态：输入链路审计完成，真实 RANS 被资产缺口阻塞。**
+**P4 当前状态：真实点云资产已接入并通过审计；真实 RANS 仍被 CFD 网格/边界条件/性能提取链路阻塞。**
+
+> 点云文件已统一放置于 `data/processed/pointcloud/rotor37_pc.npz`，大小约 69.3 MB；因目录默认被 `.gitignore` 忽略，本次对该文件显式强制跟踪。
 
 ---
 
@@ -37,6 +39,7 @@
 | 环节 | 文件/位置 | 实际状态 | 证据等级 |
 |---|---|---|---|
 | 统计特征 | `backend/data/processed/plaid_rotor37_features.csv` | 1000 组、74 维输入和 3 维输出 | E2 |
+| 真实点云 | `data/processed/pointcloud/rotor37_pc.npz` | 1000×2048×9；keys 完整；与特征 CSV 的 sample_id 完全对齐 | E2 |
 | Pareto 候选 | `backend/data/processed/pareto_front_solutions.csv` | 100 个代理模型候选，含 74 维设计列 | E2 |
 | Pareto 证据 | `backend/data/processed/pareto_evidence.json` | 范围、距离、留出误差分析已生成 | E2 |
 | 代理模型 | `backend/models/surrogate_model.onnx` | 可由 FastAPI 和复现脚本加载 | E2 |
