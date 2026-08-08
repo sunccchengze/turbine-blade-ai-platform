@@ -80,7 +80,7 @@ def align_by_sample_id(X_stats, y_stats, sid_stats, X_pc, y_pc, sid_pc, conds,
 # ── 双头融合模型 ─────────────────────────────────────────
 def make_fused_model(n_stats, n_pc_channels, n_cond=2, n_scalar=3,
                      n_field=2, latent=256, fused_hidden=128,
-                     use_stats=True, use_pc=True):
+                     use_stats=True, use_pc=True, norm_type="batchnorm"):
     import torch
     import torch.nn as nn
     if not use_stats and not use_pc:
@@ -92,7 +92,8 @@ def make_fused_model(n_stats, n_pc_channels, n_cond=2, n_scalar=3,
             self.use_stats = use_stats
             self.use_pc = use_pc
             if use_pc:
-                self.pc_encoder = DualHeadSurrogate(n_pc_channels, n_cond).encoder
+                self.pc_encoder = DualHeadSurrogate(
+                    n_pc_channels, n_cond, norm_type=norm_type).encoder
             if use_stats:
                 self.stats_head = nn.Sequential(
                     nn.Linear(n_stats, 128), nn.BatchNorm1d(128), nn.ReLU(),
@@ -270,6 +271,9 @@ def main():
     ap.add_argument("--representation", choices=["combined", "stats-only", "pointcloud-only"],
                     default="combined",
                     help="geometry-conditioned 消融：combined / stats-only / pointcloud-only")
+    ap.add_argument("--norm_type", choices=["batchnorm", "layernorm"],
+                    default="batchnorm",
+                    help="PointNet 编码器归一化：默认 batchnorm；稳定性对照可用 layernorm")
     ap.add_argument("--seed", type=int, default=SEED,
                     help="随机种子：控制点云降采样、初始化和训练顺序；默认 42")
     ap.add_argument("--split_seed", type=int, default=SEED,
@@ -321,7 +325,10 @@ def main():
     use_stats = args.representation != "pointcloud-only"
     use_pc = args.representation != "stats-only"
     print(f"  表示模式：{args.representation}（stats={use_stats}, pointcloud={use_pc}）")
-    Fused = make_fused_model(Xs.shape[1], C, use_stats=use_stats, use_pc=use_pc)
+    print(f"  归一化：{args.norm_type}")
+    Fused = make_fused_model(
+        Xs.shape[1], C, use_stats=use_stats, use_pc=use_pc,
+        norm_type=args.norm_type)
     model = Fused().to(device)
     n_params = sum(p.numel() for p in model.parameters())
     print(f"模型参数量：{n_params:,}")
@@ -345,7 +352,7 @@ def main():
         json.dump({"r2": r2, "field": field_metrics, "n_params": n_params,
                    "elapsed_s": elapsed, "seed": args.seed, "split_seed": args.split_seed,
                    "data_seed": args.data_seed, "input_mode": args.input_mode,
-                   "representation": args.representation,
+                   "representation": args.representation, "norm_type": args.norm_type,
                    "note": "P1 输入表示消融；geometry-conditioned 模式屏蔽目标场输入"}, 
                   f, ensure_ascii=False, indent=2)
     print(f"✅ 已保存：{run_dir}")

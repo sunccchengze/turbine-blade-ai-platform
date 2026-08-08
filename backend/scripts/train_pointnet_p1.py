@@ -48,14 +48,21 @@ def set_seed(seed=SEED):
 
 # ── 模型 ──────────────────────────────────────────────────
 class PointNetEncoder(nn.Module):
-    """共享逐点 MLP + 全局 maxpool。输入 (B, N, C)，输出全局特征 (B, 256)。"""
+    """共享逐点 MLP + 全局 maxpool。支持 BatchNorm/LayerNorm 对照。"""
 
-    def __init__(self, in_channels, out_dim=256):
+    def __init__(self, in_channels, out_dim=256, norm_type="batchnorm"):
         super().__init__()
+        if norm_type == "layernorm":
+            norm = lambda dim: nn.LayerNorm(dim)
+        elif norm_type == "batchnorm":
+            norm = lambda dim: nn.BatchNorm1d(dim)
+        else:
+            raise ValueError(f"未知 norm_type: {norm_type}")
+        self.norm_type = norm_type
         self.mlp = nn.Sequential(
-            nn.Linear(in_channels, 64), nn.BatchNorm1d(64), nn.ReLU(),
-            nn.Linear(64, 128), nn.BatchNorm1d(128), nn.ReLU(),
-            nn.Linear(128, out_dim), nn.BatchNorm1d(out_dim), nn.ReLU(),
+            nn.Linear(in_channels, 64), norm(64), nn.ReLU(),
+            nn.Linear(64, 128), norm(128), nn.ReLU(),
+            nn.Linear(128, out_dim), norm(out_dim), nn.ReLU(),
         )
         self.out_dim = out_dim
 
@@ -70,9 +77,9 @@ class DualHeadSurrogate(nn.Module):
     """双头代理：全局特征 + 工况 → 标量 + 场。"""
 
     def __init__(self, in_channels, n_cond=2, n_scalar=3,
-                 n_field=2, hidden=128, out_dim=256):
+                 n_field=2, hidden=128, out_dim=256, norm_type="batchnorm"):
         super().__init__()
-        self.encoder = PointNetEncoder(in_channels, out_dim)
+        self.encoder = PointNetEncoder(in_channels, out_dim, norm_type=norm_type)
         self.cond_norm = nn.LayerNorm(n_cond)
         self.fuse = nn.Sequential(
             nn.Linear(out_dim + n_cond, hidden), nn.ReLU(),
