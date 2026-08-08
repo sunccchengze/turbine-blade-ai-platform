@@ -200,11 +200,25 @@ def train_fused(model, data, args):
     field_metrics = {}
     if use_field:
         m_te = (np.abs(Xp_te[:, :, :3]).sum(-1) > 1e-6)
-        rel_l2 = float(np.linalg.norm((f_pred_np - f_true_np)[m_te])
-                       / max(np.linalg.norm(f_true_np[m_te]), 1e-8))
-        mae = float(np.abs((f_pred_np - f_true_np)[m_te]).mean())
-        field_metrics = {"rel_l2": rel_l2, "mae": mae}
-        print(f"  场指标: rel_l2={rel_l2:.4f} mae={mae:.4f} (Pressure/Temperature 原始量纲)")
+        diff = f_pred_np - f_true_np
+        diff_masked = diff[m_te]
+        true_masked = f_true_np[m_te]
+        rel_l2 = float(np.linalg.norm(diff_masked)
+                       / max(np.linalg.norm(true_masked), 1e-8))
+        mae = float(np.abs(diff_masked).mean())
+        channel_names = {3: "Pressure", 5: "Temperature"}
+        by_channel = {}
+        for j, col in enumerate(field_cols):
+            d_j = diff[:, :, j][m_te]
+            t_j = f_true_np[:, :, j][m_te]
+            by_channel[channel_names.get(col, f"channel_{col}")] = {
+                "rel_l2": float(np.linalg.norm(d_j) / max(np.linalg.norm(t_j), 1e-8)),
+                "mae": float(np.abs(d_j).mean()),
+            }
+        field_metrics = {"rel_l2": rel_l2, "mae": mae, "by_channel": by_channel}
+        print(f"  场指标: rel_l2={rel_l2:.4f} mae={mae:.4f} (aggregate; raw units)")
+        for name, metrics in by_channel.items():
+            print(f"    {name}: rel_l2={metrics['rel_l2']:.4f} mae={metrics['mae']:.4f} (raw units)")
     return r2, field_metrics
 
 

@@ -227,10 +227,20 @@ def train(model, data, args):
             f_pred_np = f_pred.cpu().numpy() * field_sd + field_mu
             f_true_np = X_te[:, :, field_cols]
             m_np = m_te.numpy() if isinstance(m_te, torch.Tensor) else m_te
-            rel_l2 = float(np.linalg.norm((f_pred_np - f_true_np) * m_np[..., None])
-                           / max(np.linalg.norm(f_true_np * m_np[..., None]), 1e-8))
-            mae = float(np.abs((f_pred_np - f_true_np) * m_np[..., None]).mean())
-            field_metrics = {"rel_l2": rel_l2, "mae": mae}
+            diff = (f_pred_np - f_true_np) * m_np[..., None]
+            true_masked = f_true_np * m_np[..., None]
+            rel_l2 = float(np.linalg.norm(diff) / max(np.linalg.norm(true_masked), 1e-8))
+            mae = float(np.abs(diff).mean())
+            channel_names = {3: "Pressure", 5: "Temperature"}
+            by_channel = {}
+            for j, col in enumerate(field_cols):
+                d_j = diff[:, :, j]
+                t_j = true_masked[:, :, j]
+                by_channel[channel_names.get(col, f"channel_{col}")] = {
+                    "rel_l2": float(np.linalg.norm(d_j) / max(np.linalg.norm(t_j), 1e-8)),
+                    "mae": float(np.abs(d_j).mean()),
+                }
+            field_metrics = {"rel_l2": rel_l2, "mae": mae, "by_channel": by_channel}
 
     return r2, field_metrics, (s_pred_orig, s_true)
 
