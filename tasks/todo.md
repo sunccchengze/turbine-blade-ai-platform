@@ -30,7 +30,8 @@
 - [x] 增加 `--seed` 并完成沙盒 seed 1/2 短训连通性验证
 - [x] RTX 4050 上 geometry-conditioned 正式多 seed（42/43/44）稳定性实验
 - [ ] geometry-conditioned 512/1024/2048 点与训练 epoch 消融
-- [ ] η 专项特征/表示消融：几何统计、法向、工况与物理派生量
+- [x] η 专项特征审计：Pearson/互信息/ExtraTrees 诊断报告
+- [ ] η 专项表示消融：几何统计、法向、工况与物理派生量
 
 ## 禁止越级
 
