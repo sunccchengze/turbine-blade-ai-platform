@@ -40,7 +40,8 @@
 - [x] RTX 4050 上 pointcloud-only LayerNorm seed=42/43/44 对照
 - [x] 补齐 pointcloud-only lr=3e-4 的 seed=42/44
 - [x] pointcloud-only 固定 lr=3e-4 的 `lam_field=0.25` seed=42 诊断
-- [ ] pointcloud-only 固定 lr=3e-4 的 `lam_field=0.1` seed=42 单点诊断
+- [x] pointcloud-only 固定 lr=3e-4 的 `lam_field=0.1` seed=42 单点诊断
+- [ ] pointcloud-only 固定 lr=3e-4 的 `lam_field=0` 标量专项诊断
 - [ ] η 专项物理派生特征消融
 
 ## 禁止越级
