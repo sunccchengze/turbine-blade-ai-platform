@@ -176,7 +176,8 @@
 - ✅ 用户 RTX 4050 geometry-conditioned 正式单次实验完成：40 epoch/1024 点，π R²=0.9853、η R²=0.8696、ṁ R²=0.9766；Pressure rel_l2=0.0511/MAE=3960.40 Pa，Temperature rel_l2=0.0126/MAE=3.758 K。已写入 `docs/p1-input-mode-ablation-D41.md`。
 - ⚠️ geometry-conditioned 的 η 明显低于基线，说明场量统计对效率预测有重要增量；不能宣称融合模型全面提升，下一步需要多 seed/配置消融。
 - ✅ `train_fused_p1.py` 已增加 `--seed` 与独立 `--split_seed`：前者控制初始化/点采样/训练顺序，后者固定留出划分；沙盒 2 epoch/256 点 seed 1/2 诊断运行通过。
-- ⚠️ 沙盒短训 seed 1/2 的 R² 波动很大，说明不能用 2 epoch 诊断推断稳定性；必须在 RTX 4050 上按正式 40 epoch 配置跑多 seed。
+- ✅ 用户 RTX 4050 已完成 geometry-conditioned 正式多 seed（42/43/44，固定 split_seed=42）：π 均值 0.984367±0.000833，η 0.882533±0.014949，ṁ 0.982667±0.005522；Pressure rel_l2 0.053615±0.002542，Temperature rel_l2 0.012658±0.000547。
+- ⚠️ 多 seed 证实 η 的下降是稳定现象：三次均低于原基线 0.9561；不能继续把当前几何模式描述为全面提升。下一步应研究效率相关几何表示/物理特征。
 - ⚠️ `run_all_smoke.sh` 仍会在缺少 torch 的纯生产环境停止；这是预期的训练依赖隔离结果，不应把 torch 塞回生产依赖。
 - ⚠️ 前端 build 仍有既有 CSS at-rule 和大 chunk 警告；未扩大范围修复。
 
