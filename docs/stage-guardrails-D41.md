@@ -179,6 +179,8 @@
 - ✅ 用户 RTX 4050 已完成 geometry-conditioned 正式多 seed（42/43/44，固定 split_seed=42）：π 均值 0.984367±0.000833，η 0.882533±0.014949，ṁ 0.982667±0.005522；Pressure rel_l2 0.053615±0.002542，Temperature rel_l2 0.012658±0.000547。
 - ⚠️ 多 seed 证实 η 的下降是稳定现象：三次均低于原基线 0.9561；不能继续把当前几何模式描述为全面提升。下一步应研究效率相关几何表示/物理特征。
 - ✅ η 特征审计已完成并写入 `docs/eta-feature-audit-D41.md`：场量统计与 η 的 Pearson/互信息关联整体强于几何统计；下一步按受控消融验证，不回填目标场输入。
+- ✅ `train_fused_p1.py` 已增加 geometry-conditioned 的 `combined` / `stats-only` / `pointcloud-only` 表示消融入口；三种模式均通过沙盒 2 epoch/256 点连通性验证。
+- ⚠️ 沙盒短训仅证明入口可运行，不能代替 RTX 4050 正式比较；正式消融必须固定 `split_seed=42`，至少 3 seed。
 - ⚠️ `run_all_smoke.sh` 仍会在缺少 torch 的纯生产环境停止；这是预期的训练依赖隔离结果，不应把 torch 塞回生产依赖。
 - ⚠️ 前端 build 仍有既有 CSS at-rule 和大 chunk 警告；未扩大范围修复。
 

@@ -79,40 +79,55 @@ def align_by_sample_id(X_stats, y_stats, sid_stats, X_pc, y_pc, sid_pc, conds,
 
 # ── 双头融合模型 ─────────────────────────────────────────
 def make_fused_model(n_stats, n_pc_channels, n_cond=2, n_scalar=3,
-                     n_field=2, latent=256, fused_hidden=128):
+                     n_field=2, latent=256, fused_hidden=128,
+                     use_stats=True, use_pc=True):
     import torch
     import torch.nn as nn
+    if not use_stats and not use_pc:
+        raise ValueError("至少需要启用 stats 或 pointcloud 分支")
 
     class FusedSurrogate(nn.Module):
         def __init__(self):
             super().__init__()
-            self.pc_encoder = DualHeadSurrogate(n_pc_channels, n_cond).encoder  # 复用 PointNet 编码器
-            self.stats_head = nn.Sequential(
-                nn.Linear(n_stats, 128), nn.BatchNorm1d(128), nn.ReLU(),
-                nn.Linear(128, 64), nn.BatchNorm1d(64), nn.ReLU(),
-            )
+            self.use_stats = use_stats
+            self.use_pc = use_pc
+            if use_pc:
+                self.pc_encoder = DualHeadSurrogate(n_pc_channels, n_cond).encoder
+            if use_stats:
+                self.stats_head = nn.Sequential(
+                    nn.Linear(n_stats, 128), nn.BatchNorm1d(128), nn.ReLU(),
+                    nn.Linear(128, 64), nn.BatchNorm1d(64), nn.ReLU(),
+                )
+            fuse_dim = (256 if use_pc else 0) + (64 if use_stats else 0) + n_cond
             self.fuse = nn.Sequential(
-                nn.Linear(256 + 64 + n_cond, fused_hidden), nn.ReLU(),
+                nn.Linear(fuse_dim, fused_hidden), nn.ReLU(),
                 nn.Linear(fused_hidden, fused_hidden), nn.ReLU(),
             )
             self.scalar_head = nn.Linear(fused_hidden, n_scalar)
-            # 场头（可选）：点云逐点特征 + 全局 → 表面场
-            self.point_proj = nn.Sequential(
-                nn.Linear(n_pc_channels, 64), nn.ReLU(),
-            )
-            self.field_head = nn.Sequential(
-                nn.Linear(256 + 64, 128), nn.ReLU(),
-                nn.Linear(128, n_field),
-            )
+            if use_pc:
+                # 场头只有在点云分支存在时才可用。
+                self.point_proj = nn.Sequential(
+                    nn.Linear(n_pc_channels, 64), nn.ReLU(),
+                )
+                self.field_head = nn.Sequential(
+                    nn.Linear(256 + 64, 128), nn.ReLU(),
+                    nn.Linear(128, n_field),
+                )
 
         def forward(self, x_pc, stats, conds, need_field=False):
             B, N, C = x_pc.shape
-            g = self.pc_encoder(x_pc)                 # (B, 256)
-            s = self.stats_head(stats)                # (B, 64)
-            feat = self.fuse(torch.cat([g, s, conds], dim=-1))
-            scalar = self.scalar_head(feat)
+            parts = [conds]
+            g = None
+            if self.use_pc:
+                g = self.pc_encoder(x_pc)
+                parts.insert(0, g)
+            if self.use_stats:
+                parts.insert(-1, self.stats_head(stats))
+            scalar = self.scalar_head(self.fuse(torch.cat(parts, dim=-1)))
             if not need_field:
                 return scalar
+            if not self.use_pc:
+                raise RuntimeError("stats-only 模式不支持场预测头")
             pp = self.point_proj(x_pc.reshape(-1, C)).reshape(B, N, 64)
             g_exp = g.unsqueeze(1).expand(-1, N, -1)
             field = self.field_head(torch.cat([g_exp, pp], dim=-1))
@@ -252,6 +267,9 @@ def main():
     ap.add_argument("--input_mode", choices=["field-conditioned", "geometry-conditioned"],
                     default="field-conditioned",
                     help="field-conditioned=9通道诊断对照；geometry-conditioned=仅坐标+Normals，防目标泄漏")
+    ap.add_argument("--representation", choices=["combined", "stats-only", "pointcloud-only"],
+                    default="combined",
+                    help="geometry-conditioned 消融：combined / stats-only / pointcloud-only")
     ap.add_argument("--seed", type=int, default=SEED,
                     help="随机种子：控制点云降采样、初始化和训练顺序；默认 42")
     ap.add_argument("--split_seed", type=int, default=SEED,
@@ -296,7 +314,12 @@ def main():
         field_targets = ft
 
     C = Xp.shape[2]
-    Fused = make_fused_model(Xs.shape[1], C)
+    if args.input_mode == "field-conditioned" and args.representation != "combined":
+        raise SystemExit("❌ field-conditioned 只允许 combined；消融模式请使用 geometry-conditioned")
+    use_stats = args.representation != "pointcloud-only"
+    use_pc = args.representation != "stats-only"
+    print(f"  表示模式：{args.representation}（stats={use_stats}, pointcloud={use_pc}）")
+    Fused = make_fused_model(Xs.shape[1], C, use_stats=use_stats, use_pc=use_pc)
     model = Fused().to(device)
     n_params = sum(p.numel() for p in model.parameters())
     print(f"模型参数量：{n_params:,}")
@@ -319,8 +342,8 @@ def main():
     with open(run_dir / "metrics.json", "w", encoding="utf-8") as f:
         json.dump({"r2": r2, "field": field_metrics, "n_params": n_params,
                    "elapsed_s": elapsed, "seed": args.seed, "split_seed": args.split_seed,
-                   "input_mode": args.input_mode,
-                   "note": "双头融合（统计特征+点云）；geometry-conditioned 模式屏蔽目标场输入"}, 
+                   "input_mode": args.input_mode, "representation": args.representation,
+                   "note": "P1 输入表示消融；geometry-conditioned 模式屏蔽目标场输入"}, 
                   f, ensure_ascii=False, indent=2)
     print(f"✅ 已保存：{run_dir}")
 
