@@ -38,7 +38,8 @@
 - [x] pointcloud-only 固定 data_seed=42 的正式 3 seed 稳定性诊断
 - [x] 增加 BatchNorm/LayerNorm 归一化对照入口
 - [x] RTX 4050 上 pointcloud-only LayerNorm seed=42/43/44 对照
-- [ ] pointcloud-only 学习率/损失权重最小对照
+- [ ] 补齐 pointcloud-only lr=3e-4 的 seed=42/44
+- [ ] pointcloud-only 标量/场损失权重最小对照
 - [ ] η 专项物理派生特征消融
 
 ## 禁止越级

@@ -184,7 +184,8 @@
 - ✅ 用户 RTX 4050 已完成 stats-only 与 pointcloud-only 三 seed 正式消融：stats-only η=0.851433±0.025515；pointcloud-only η=0.725067±0.213644，seed=43 明显塌陷。
 - ✅ pointcloud-only 固定 `data_seed=42` 后完成三 seed 隔离：η=0.816067±0.083724，相比原 data_seed 随 seed 的 0.725067±0.213644 有改善，但仍明显不稳定。
 - ✅ 已完成 pointcloud-only LayerNorm 三 seed 对照：η=0.683200±0.070757，明显低于 BatchNorm 的 0.816067±0.083724；保留 BatchNorm 为默认，LayerNorm 仅作负面对照。
-- ⚠️ 点采样与归一化都不是唯一根因；下一步固定 BatchNorm，诊断学习率和标量/场损失权重，不扩大网络或宣传结果。
+- ✅ pointcloud-only lr=3e-4 / BatchNorm / seed=43 单次诊断：η R²=0.8947，但 π=0.9518、ṁ=0.9272、Pressure rel_l2=0.0717 变差；这是多任务权衡信号，不是全面改进。
+- ⚠️ 点采样与归一化都不是唯一根因；需补齐 lr=3e-4 的 seed=42/44，再诊断标量/场损失权重，不扩大网络或宣传结果。
 - ⚠️ `run_all_smoke.sh` 仍会在缺少 torch 的纯生产环境停止；这是预期的训练依赖隔离结果，不应把 torch 塞回生产依赖。
 - ⚠️ 前端 build 仍有既有 CSS at-rule 和大 chunk 警告；未扩大范围修复。
 
