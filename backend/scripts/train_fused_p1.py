@@ -129,7 +129,7 @@ def train_fused(model, data, args):
     Xs, Xp, cs, ys, field_targets = data
     # 划分（同口径 random_state=42）
     idx_tr, idx_te = train_test_split(np.arange(len(ys)), test_size=0.10,
-                                      random_state=args.seed)
+                                      random_state=args.split_seed)
     Xs_tr, Xs_te = Xs[idx_tr], Xs[idx_te]
     Xp_tr, Xp_te = Xp[idx_tr], Xp[idx_te]
     cs_tr, cs_te = cs[idx_tr], cs[idx_te]
@@ -253,7 +253,9 @@ def main():
                     default="field-conditioned",
                     help="field-conditioned=9通道诊断对照；geometry-conditioned=仅坐标+Normals，防目标泄漏")
     ap.add_argument("--seed", type=int, default=SEED,
-                    help="随机种子：控制划分、点云降采样、初始化和训练顺序；默认 42")
+                    help="随机种子：控制点云降采样、初始化和训练顺序；默认 42")
+    ap.add_argument("--split_seed", type=int, default=SEED,
+                    help="固定 train/test 划分随机种子；多 seed 稳定性实验建议保持 42")
     args = ap.parse_args()
 
     import torch
@@ -303,7 +305,7 @@ def main():
     r2, field_metrics = train_fused(model, (Xs, Xp, cs, ys, field_targets), args)
     elapsed = time.time() - t0
 
-    print(f"\n===== 双头融合 测试集 R²（口径：留出 10%, random_state={args.seed}）=====")
+    print(f"\n===== 双头融合 测试集 R²（口径：留出 10%, split_seed={args.split_seed}）=====")
     for k, v in r2.items():
         print(f"  {k:18s} R² = {v:.4f}")
     if field_metrics:
@@ -316,7 +318,8 @@ def main():
     torch.save(model.state_dict(), run_dir / "fused_best.pt")
     with open(run_dir / "metrics.json", "w", encoding="utf-8") as f:
         json.dump({"r2": r2, "field": field_metrics, "n_params": n_params,
-                   "elapsed_s": elapsed, "seed": args.seed, "input_mode": args.input_mode,
+                   "elapsed_s": elapsed, "seed": args.seed, "split_seed": args.split_seed,
+                   "input_mode": args.input_mode,
                    "note": "双头融合（统计特征+点云）；geometry-conditioned 模式屏蔽目标场输入"}, 
                   f, ensure_ascii=False, indent=2)
     print(f"✅ 已保存：{run_dir}")
