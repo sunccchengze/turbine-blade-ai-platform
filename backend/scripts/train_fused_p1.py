@@ -129,7 +129,7 @@ def train_fused(model, data, args):
     Xs, Xp, cs, ys, field_targets = data
     # 划分（同口径 random_state=42）
     idx_tr, idx_te = train_test_split(np.arange(len(ys)), test_size=0.10,
-                                      random_state=SEED)
+                                      random_state=args.seed)
     Xs_tr, Xs_te = Xs[idx_tr], Xs[idx_te]
     Xp_tr, Xp_te = Xp[idx_tr], Xp[idx_te]
     cs_tr, cs_te = cs[idx_tr], cs[idx_te]
@@ -252,10 +252,12 @@ def main():
     ap.add_argument("--input_mode", choices=["field-conditioned", "geometry-conditioned"],
                     default="field-conditioned",
                     help="field-conditioned=9通道诊断对照；geometry-conditioned=仅坐标+Normals，防目标泄漏")
+    ap.add_argument("--seed", type=int, default=SEED,
+                    help="随机种子：控制划分、点云降采样、初始化和训练顺序；默认 42")
     args = ap.parse_args()
 
     import torch
-    np.random.seed(SEED); torch.manual_seed(SEED)
+    np.random.seed(args.seed); torch.manual_seed(args.seed)
     device = "cuda" if torch.cuda.is_available() else "cpu"
     print(f"设备：{device}")
 
@@ -282,7 +284,7 @@ def main():
             X_pc = X_pc_full
             print(f"  输入模式：field-conditioned（统计特征 {len(stat_names)} 维，点云 9 通道；诊断对照）")
         if args.n_points and X_pc.shape[1] > args.n_points:
-            rng = np.random.default_rng(SEED)
+            rng = np.random.default_rng(args.seed)
             idx = rng.choice(X_pc.shape[1], args.n_points, replace=False)
             X_pc = X_pc[:, idx, :]
             field_targets = field_targets[:, idx, :] if field_targets is not None else None
@@ -301,7 +303,7 @@ def main():
     r2, field_metrics = train_fused(model, (Xs, Xp, cs, ys, field_targets), args)
     elapsed = time.time() - t0
 
-    print("\n===== 双头融合 测试集 R²（口径：留出 10%, random_state=42）=====")
+    print(f"\n===== 双头融合 测试集 R²（口径：留出 10%, random_state={args.seed}）=====")
     for k, v in r2.items():
         print(f"  {k:18s} R² = {v:.4f}")
     if field_metrics:
@@ -314,7 +316,7 @@ def main():
     torch.save(model.state_dict(), run_dir / "fused_best.pt")
     with open(run_dir / "metrics.json", "w", encoding="utf-8") as f:
         json.dump({"r2": r2, "field": field_metrics, "n_params": n_params,
-                   "elapsed_s": elapsed, "input_mode": args.input_mode,
+                   "elapsed_s": elapsed, "seed": args.seed, "input_mode": args.input_mode,
                    "note": "双头融合（统计特征+点云）；geometry-conditioned 模式屏蔽目标场输入"}, 
                   f, ensure_ascii=False, indent=2)
     print(f"✅ 已保存：{run_dir}")

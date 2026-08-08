@@ -175,6 +175,8 @@
 - ✅ geometry-conditioned CPU 2 epoch/256 点冒烟通过：π R²=0.8610、η R²=0.2858、ṁ R²=0.8116；这是模式连通性证据，不是正式性能。
 - ✅ 用户 RTX 4050 geometry-conditioned 正式单次实验完成：40 epoch/1024 点，π R²=0.9853、η R²=0.8696、ṁ R²=0.9766；Pressure rel_l2=0.0511/MAE=3960.40 Pa，Temperature rel_l2=0.0126/MAE=3.758 K。已写入 `docs/p1-input-mode-ablation-D41.md`。
 - ⚠️ geometry-conditioned 的 η 明显低于基线，说明场量统计对效率预测有重要增量；不能宣称融合模型全面提升，下一步需要多 seed/配置消融。
+- ✅ `train_fused_p1.py` 已增加 `--seed`，控制初始化、点云降采样、训练顺序和留出划分；沙盒 2 epoch/256 点 seed 1/2 诊断运行通过。
+- ⚠️ 沙盒短训 seed 1/2 的 R² 波动很大，说明不能用 2 epoch 诊断推断稳定性；必须在 RTX 4050 上按正式 40 epoch 配置跑多 seed。
 - ⚠️ `run_all_smoke.sh` 仍会在缺少 torch 的纯生产环境停止；这是预期的训练依赖隔离结果，不应把 torch 塞回生产依赖。
 - ⚠️ 前端 build 仍有既有 CSS at-rule 和大 chunk 警告；未扩大范围修复。
 

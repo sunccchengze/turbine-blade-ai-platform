@@ -27,7 +27,8 @@
 - [x] 在 RTX 4050 上完成 geometry-conditioned 40 epoch/1024 点正式训练
 - [x] 对比 field-conditioned 与 geometry-conditioned 的标量 R² 和逐通道场指标
 - [x] 结果未完成前，不更新 README 的模型能力宣称
-- [ ] geometry-conditioned 多 seed（至少 3 次）稳定性实验
+- [x] 增加 `--seed` 并完成沙盒 seed 1/2 短训连通性验证
+- [ ] RTX 4050 上 geometry-conditioned 正式多 seed（42/43/44）稳定性实验
 - [ ] geometry-conditioned 512/1024/2048 点与训练 epoch 消融
 
 ## 禁止越级
