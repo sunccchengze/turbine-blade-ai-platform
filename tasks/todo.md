@@ -20,9 +20,17 @@
 - [ ] 向用户索取缺失的本地 SU2/Rotor37 网格资产
 - [x] 输出 P4 输入审计报告
 
+## 下一项：P1 无泄漏输入消融
+
+- [ ] 增加 geometry-conditioned 模式：屏蔽 Pressure/Density/Temperature，只保留坐标、Normals 和工况
+- [ ] 明确 74 维统计特征中的场量来源，建立 geometry-only 统计特征或降级为 field-conditioned 代理
+- [ ] 对比 field-conditioned 与 geometry-conditioned 的标量 R² 和逐通道场指标
+- [ ] 结果未完成前，不更新 README 的模型能力宣称
+
 ## 禁止越级
 
 - [ ] 未完成真实 RANS 前，不更新为“CFD 已验证”
+- [ ] 输入含目标场时，不称为“场预测”或“几何到场的前向代理”
 - [ ] 未获得官方 test 标签前，不计算或声称官方 test R²
 - [ ] 未完成特征到几何闭环前，不称 Pareto 解“可制造”
 - [ ] 未经 build、API 和浏览器验收，不称前端/线上完成

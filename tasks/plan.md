@@ -71,8 +71,9 @@ UQ calibration / active learning / presentation updates
 
 **Gate P4-3 验收**：3 个真实对照结果，明确哪些是定量结论、哪些只是趋势结论。
 
-### Phase 4: 几何可行性和 UQ
+### Phase 4: 无泄漏输入、几何可行性和 UQ
 
+- [ ] T4.0 先做输入泄漏消融：field-conditioned（9通道）与 geometry-conditioned（坐标+Normals+工况）分开训练和命名；对 74 维特征中的场量统计来源给出明确口径。
 - [ ] T4.1 定义几何自交、厚度、连续性、网格成功率和 RANS 收敛率指标。
 - [ ] T4.2 将 Pareto 特征→几何→网格→RANS 结果串成可复现报告。
 - [ ] T4.3 用真实误差样本评估/校准 UQ；在此之前不扩大 95% 保证表述。
