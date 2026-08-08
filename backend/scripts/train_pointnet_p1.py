@@ -162,8 +162,11 @@ def train(model, data, args):
     else:
         X_tr_n, X_te_n = X_tr, X_te
 
-    # 场目标标准化（用标准化后的输入场量，与 X_tr_n 匹配）
-    fm, fs = X_tr_n[:, :, field_cols].mean(), X_tr_n[:, :, field_cols].std() + 1e-6
+    # 场目标标准化：保留原始量纲的均值/标准差，便于评估时正确反标准化。
+    # 注意：输入场量 X_tr_n 已按通道标准化，但监督目标必须单独保存原始量纲统计量；
+    # 否则会把标准化预测与 Pa/K 等原始值直接比较，导致场 MAE/rel_l2 失真。
+    field_mu = X_tr[:, :, field_cols].mean(axis=(0, 1), keepdims=True)
+    field_sd = X_tr[:, :, field_cols].std(axis=(0, 1), keepdims=True) + 1e-6
 
     device = next(model.parameters()).device
     opt = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=1e-4)
@@ -188,7 +191,8 @@ def train(model, data, args):
             l_s = l_s.sum()
             # 场损失（masked）
             if field_cols:
-                f_target = (torch.tensor(X_tr_n[idx][:, :, field_cols], device=device) - fm) / fs
+                f_target = (torch.tensor(X_tr[idx][:, :, field_cols], device=device)
+                             - torch.tensor(field_mu, device=device)) / torch.tensor(field_sd, device=device)
                 l_f = ((f_pred - f_target) ** 2).mean(dim=-1) * mb.float()
                 l_f = l_f.sum() / (mb.sum().clamp(min=1))
             else:
@@ -220,7 +224,7 @@ def train(model, data, args):
         # 场指标
         field_metrics = {}
         if field_cols:
-            f_pred_np = f_pred.cpu().numpy() * fs + fm
+            f_pred_np = f_pred.cpu().numpy() * field_sd + field_mu
             f_true_np = X_te[:, :, field_cols]
             m_np = m_te.numpy() if isinstance(m_te, torch.Tensor) else m_te
             rel_l2 = float(np.linalg.norm((f_pred_np - f_true_np) * m_np[..., None])

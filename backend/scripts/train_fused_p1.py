@@ -143,7 +143,10 @@ def train_fused(model, data, args):
         in_sd = Xp_tr[:, :, 3:9].std(axis=(0, 1), keepdims=True) + 1e-6
         Xp_tr_n = Xp_tr.copy(); Xp_tr_n[:, :, 3:9] = (Xp_tr[:, :, 3:9] - in_mu) / in_sd
         Xp_te_n = Xp_te.copy(); Xp_te_n[:, :, 3:9] = (Xp_te[:, :, 3:9] - in_mu) / in_sd
-        fm, fs = Xp_tr_n[:, :, field_cols].mean(), Xp_tr_n[:, :, field_cols].std() + 1e-6
+        # 场监督目标使用原始量纲统计量；输入 Xp_tr_n 的标准化统计量不能用于
+        # 直接反标准化输出，否则场 MAE 会被错误标注为原始量纲。
+        field_mu = Xp_tr[:, :, field_cols].mean(axis=(0, 1), keepdims=True)
+        field_sd = Xp_tr[:, :, field_cols].std(axis=(0, 1), keepdims=True) + 1e-6
         masks = (np.abs(Xp_tr[:, :, :3]).sum(-1) > 1e-6).astype(np.float32)
     else:
         Xp_tr_n, Xp_te_n = Xp_tr, Xp_te
@@ -162,7 +165,8 @@ def train_fused(model, data, args):
             opt.zero_grad()
             if use_field:
                 pred, f_pred = model(xp, st, c, need_field=True)
-                f_target = (torch.tensor(Xp_tr_n[idx][:, :, field_cols], device=device) - fm) / fs
+                f_target = (torch.tensor(Xp_tr[idx][:, :, field_cols], device=device)
+                             - torch.tensor(field_mu, device=device)) / torch.tensor(field_sd, device=device)
                 mb = torch.tensor(masks[idx], device=device)
                 l_f = ((f_pred - f_target) ** 2).mean(dim=-1) * mb
                 l_f = l_f.sum() / (mb.sum().clamp(min=1))
@@ -185,8 +189,8 @@ def train_fused(model, data, args):
         c = torch.tensor(cs_te_s, device=device)
         if use_field:
             pred, f_pred = model(xp, st, c, need_field=True)
-            f_pred_np = f_pred.cpu().numpy() * fs + fm   # 还原到标准化前
-            f_true_np = Xp_te_n[:, :, field_cols] * fs + fm
+            f_pred_np = f_pred.cpu().numpy() * field_sd + field_mu
+            f_true_np = Xp_te[:, :, field_cols]
         else:
             pred = model(xp, st, c)
         pred = pred.cpu().numpy() * ys_ + ym

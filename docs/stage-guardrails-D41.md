@@ -151,7 +151,11 @@
 - ✅ 后端静态编译：`compileall` 通过。
 - ✅ API 本地验收：`/health`、`/api/predict/health`、`/api/predict/model-info`、确定性预测和 `mode=statistical` UQ 响应均为 200/正确字段。
 - ✅ 前端：`npm run build` 成功，`npm run lint` 为 0 warnings / 0 errors。
-- ⚠️ `run_all_smoke.sh` 在 P1 点云训练入口停止：当前 `backend/requirements.txt` 未声明 PyTorch，环境报 `ModuleNotFoundError: torch`。已生成的合成点云仅是 smoke 的中间产物，不能作为科研结果。
+- ✅ 真实点云最小训练链路已在沙盒 CPU 环境运行：`train_pointnet_p1.py` 和 `train_fused_p1.py` 均读取 `data/processed/pointcloud/rotor37_pc.npz`，完成 2 epoch、256 点降采样、留出集评估。
+- ✅ 修复 P1 两个训练脚本的场指标量纲 bug：监督目标和预测现在使用原始量纲统计量正确反标准化；修复前的场 MAE 不再采信。
+- ⚠️ 最小训练结果仅为诊断 smoke（CPU/2 epoch/256 点），不是最终模型性能；正式训练需用户 RTX 4050 的 CUDA torch 环境。
+- ✅ 新增 `backend/requirements-training.txt`，生产 `backend/requirements.txt` 保持不含 torch。
+- ⚠️ `run_all_smoke.sh` 仍会在缺少 torch 的纯生产环境停止；这是预期的训练依赖隔离结果，不应把 torch 塞回生产依赖。
 - ⚠️ 前端 build 仍有既有 CSS at-rule 和大 chunk 警告；未扩大范围修复。
 
 ---

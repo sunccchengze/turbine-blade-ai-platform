@@ -1,0 +1,10 @@
+# 训练环境依赖（不用于生产推理部署）
+#
+# 生产 API 继续只安装 backend/requirements.txt；ONNX Runtime 不需要 torch。
+# 本文件复用生产侧的数据处理、评估和导出依赖，再额外安装 PyTorch。
+#
+# Windows + NVIDIA GPU 安装 torch 时，请优先按 PyTorch 官方安装选择器
+# 选择与本机驱动兼容的 CUDA wheel；不要把 CUDA 版 torch 写入生产 requirements。
+-r requirements.txt
+
+torch==2.13.0
