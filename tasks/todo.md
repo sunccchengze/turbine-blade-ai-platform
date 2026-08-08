@@ -24,9 +24,11 @@
 
 - [x] 增加 geometry-conditioned 模式：屏蔽 Pressure/Density/Temperature，只保留坐标、Normals 和工况
 - [x] 明确 74 维统计特征中的场量来源，geometry-only 模式剔除场量统计特征
-- [ ] 在 RTX 4050 上完成 geometry-conditioned 40 epoch/1024 点正式训练
-- [ ] 对比 field-conditioned 与 geometry-conditioned 的标量 R² 和逐通道场指标
-- [ ] 结果未完成前，不更新 README 的模型能力宣称
+- [x] 在 RTX 4050 上完成 geometry-conditioned 40 epoch/1024 点正式训练
+- [x] 对比 field-conditioned 与 geometry-conditioned 的标量 R² 和逐通道场指标
+- [x] 结果未完成前，不更新 README 的模型能力宣称
+- [ ] geometry-conditioned 多 seed（至少 3 次）稳定性实验
+- [ ] geometry-conditioned 512/1024/2048 点与训练 epoch 消融
 
 ## 禁止越级
 
