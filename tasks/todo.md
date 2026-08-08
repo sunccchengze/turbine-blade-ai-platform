@@ -41,7 +41,10 @@
 - [x] 补齐 pointcloud-only lr=3e-4 的 seed=42/44
 - [x] pointcloud-only 固定 lr=3e-4 的 `lam_field=0.25` seed=42 诊断
 - [x] pointcloud-only 固定 lr=3e-4 的 `lam_field=0.1` seed=42 单点诊断
-- [ ] pointcloud-only 固定 lr=3e-4 的 `lam_field=0` 标量专项诊断
+- [x] pointcloud-only 固定 lr=3e-4 的 `lam_field=0` 标量专项诊断
+- [x] pointcloud-only 损失权重权衡已完成，停止无限网格搜索
+- [ ] 回到 combined 主模型的正式冻结/导出评估
+- [ ] P4 Rotor37 几何/网格/SU2 输入链路
 - [ ] η 专项物理派生特征消融
 
 ## 禁止越级
