@@ -27,11 +27,11 @@ class PredictRequest(BaseModel):
     )
     include_uncertainty: bool = Field(
         default=False,
-        description="是否包含MC Dropout不确定性估计"
+        description="是否包含不确定性估计（生产模式：训练期预计算 σ 统计量，非实时 MC 采样）"
     )
     n_mc_samples: int = Field(
         default=100,
-        description="MC Dropout采样次数（仅当include_uncertainty=True时有效）",
+        description="兼容参数：训练期 MC Dropout 采样次数；生产模式固定使用预计算统计量，本参数不影响结果",
         ge=10,
         le=500
     )
@@ -62,17 +62,19 @@ async def predict(request: PredictRequest):
     features = np.array(request.features)
 
     if request.include_uncertainty:
-        # MC Dropout 预测
+        # 生产 UQ 模式：预计算 σ 统计量（非实时 MC 采样，见 model.py 说明）
         result = predict_with_uncertainty(
             features,
             n_samples=request.n_mc_samples
         )
         return {
             "status":         "success",
-            "mode":           "uncertainty",
+            "mode":           "statistical",
+            "uq_method":      "precomputed MC-Dropout sigma statistics (100 samples at training time)",
             "n_mc_samples":   request.n_mc_samples,
+            "note":           "生产模式使用训练期预计算 σ；实时 MC 采样仅在 PyTorch 训练管线中可用",
             "predictions":    result,
-            "model_version":  "ResidualSurrogate-v2-MC",
+            "model_version":  "ResidualSurrogate-v2-UQ",
         }
     else:
         # 确定性预测

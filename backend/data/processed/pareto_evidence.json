@@ -1,0 +1,123 @@
+{
+  "feature_bounds": {
+    "checked_against": "all 1000 samples (full dataset, not just NSGA-II's 800-train box)",
+    "n_pareto_violating_full_range": 0,
+    "violating_features": [],
+    "violating_count_features": 0
+  },
+  "nn_distance": {
+    "pareto_to_train_nn": {
+      "min": 16.4728946685791,
+      "median": 17.382259368896484,
+      "p75": 17.766255855560303,
+      "max": 18.27296257019043
+    },
+    "train_internal_nn_reference": {
+      "min": 4.347285747528076,
+      "median": 6.088860988616943,
+      "p75": 6.452065110206604,
+      "max": 9.50973892211914
+    }
+  },
+  "prediction_extrapolation": {
+    "max_eta_gap_vs_nn_truth": 0.03836715221405029,
+    "median_eta_gap_vs_nn_truth": 0.02352684736251831,
+    "max_massflow_gap_vs_nn_truth": 1.7097797393798828,
+    "median_massflow_gap_vs_nn_truth": 0.5232858657836914,
+    "note": "Pareto 解预测值 − 最近邻训练样本实测值（η/ṁ 列）"
+  },
+  "holdout_error_vs_pareto_proximity": {
+    "layers": [
+      {
+        "layer": 1,
+        "d_range": [
+          17.337,
+          18.721
+        ],
+        "n": 25,
+        "MAE": {
+          "Compression_ratio": 0.00573,
+          "Efficiency": 0.00149,
+          "Massflow": 0.05878
+        },
+        "median_MAE_pct": {
+          "Compression_ratio": 0.29,
+          "Efficiency": 0.17,
+          "Massflow": 0.3
+        }
+      },
+      {
+        "layer": 2,
+        "d_range": [
+          18.721,
+          19.477
+        ],
+        "n": 25,
+        "MAE": {
+          "Compression_ratio": 0.00729,
+          "Efficiency": 0.00158,
+          "Massflow": 0.0609
+        },
+        "median_MAE_pct": {
+          "Compression_ratio": 0.36,
+          "Efficiency": 0.18,
+          "Massflow": 0.31
+        }
+      },
+      {
+        "layer": 3,
+        "d_range": [
+          19.477,
+          20.026
+        ],
+        "n": 25,
+        "MAE": {
+          "Compression_ratio": 0.00665,
+          "Efficiency": 0.00225,
+          "Massflow": 0.06386
+        },
+        "median_MAE_pct": {
+          "Compression_ratio": 0.34,
+          "Efficiency": 0.26,
+          "Massflow": 0.33
+        }
+      },
+      {
+        "layer": 4,
+        "d_range": [
+          20.026,
+          22.262
+        ],
+        "n": 25,
+        "MAE": {
+          "Compression_ratio": 0.007,
+          "Efficiency": 0.00126,
+          "Massflow": 0.0815
+        },
+        "median_MAE_pct": {
+          "Compression_ratio": 0.35,
+          "Efficiency": 0.15,
+          "Massflow": 0.42
+        }
+      }
+    ],
+    "spearman_corr_d_vs_error": {
+      "Compression_ratio": 0.096,
+      "Efficiency": -0.018,
+      "Massflow": 0.053
+    },
+    "testset_baseline": {
+      "MAE": {
+        "Compression_ratio": 0.006667382549494505,
+        "Efficiency": 0.0016449642134830356,
+        "Massflow": 0.06626094877719879
+      },
+      "R2": {
+        "Compression_ratio": 0.9843567609786987,
+        "Efficiency": 0.9560788869857788,
+        "Massflow": 0.9827058911323547
+      },
+      "n": 100
+    }
+  }
+}
