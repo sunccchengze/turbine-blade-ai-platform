@@ -34,7 +34,9 @@
 - [x] 增加 `combined` / `stats-only` / `pointcloud-only` 表示消融入口并完成短训连通性验证
 - [x] RTX 4050 上 stats-only 与 pointcloud-only 正式 40 epoch/1024 点实验
 - [x] η 专项表示消融：几何统计、法向、工况与物理派生量初步信息审计
-- [ ] pointcloud-only 稳定性诊断：输入尺度、BatchNorm、小批量、点采样、学习率、损失权重
+- [x] 增加 `--data_seed`，隔离点云降采样随机性与训练 seed
+- [ ] pointcloud-only 固定 data_seed=42 的正式 3 seed 稳定性诊断
+- [ ] pointcloud-only 稳定性诊断：输入尺度、BatchNorm、小批量、学习率、损失权重
 - [ ] η 专项物理派生特征消融
 
 ## 禁止越级

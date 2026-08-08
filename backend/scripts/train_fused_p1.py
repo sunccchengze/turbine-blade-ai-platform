@@ -274,6 +274,8 @@ def main():
                     help="随机种子：控制点云降采样、初始化和训练顺序；默认 42")
     ap.add_argument("--split_seed", type=int, default=SEED,
                     help="固定 train/test 划分随机种子；多 seed 稳定性实验建议保持 42")
+    ap.add_argument("--data_seed", type=int, default=SEED,
+                    help="固定点云随机降采样种子；多 seed 稳定性实验建议保持 42")
     args = ap.parse_args()
 
     import torch
@@ -304,7 +306,7 @@ def main():
             X_pc = X_pc_full
             print(f"  输入模式：field-conditioned（统计特征 {len(stat_names)} 维，点云 9 通道；诊断对照）")
         if args.n_points and X_pc.shape[1] > args.n_points:
-            rng = np.random.default_rng(args.seed)
+            rng = np.random.default_rng(args.data_seed)
             idx = rng.choice(X_pc.shape[1], args.n_points, replace=False)
             X_pc = X_pc[:, idx, :]
             field_targets = field_targets[:, idx, :] if field_targets is not None else None
@@ -342,7 +344,8 @@ def main():
     with open(run_dir / "metrics.json", "w", encoding="utf-8") as f:
         json.dump({"r2": r2, "field": field_metrics, "n_params": n_params,
                    "elapsed_s": elapsed, "seed": args.seed, "split_seed": args.split_seed,
-                   "input_mode": args.input_mode, "representation": args.representation,
+                   "data_seed": args.data_seed, "input_mode": args.input_mode,
+                   "representation": args.representation,
                    "note": "P1 输入表示消融；geometry-conditioned 模式屏蔽目标场输入"}, 
                   f, ensure_ascii=False, indent=2)
     print(f"✅ 已保存：{run_dir}")
