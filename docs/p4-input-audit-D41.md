@@ -421,7 +421,17 @@ backend/scripts/prepare_su2_restart_cfg.py
 
 用户本机使用 `SOLUTION_FILENAME=restart_flow_2ndorder.dat` 续算 1000 iteration 后，history 首行 `rms[Rho]=-7.065`，证明 restart 文件已读入；但 CFL 从 1.2 快速增长，末尾 `relrms[Rho]=-0.221601`，显著劣于续算前的 `-3.39242`。随后使用 restart + bounded CFL max=5，末尾进一步退化至 `relrms[Rho]=-0.0531346`。判定：restart 文件路径/键正确，但当前 restart 续算无法保持部分收敛状态；停止继续覆盖 restart 文件，回到从初始场的一阶 coarse baseline，后续若重启必须先备份 restart 并绑定 cfg/版本。
 
-## 24. 下一步建议
+## 24. 隔离 SU2 运行目录入口
+
+已新增：
+
+```text
+backend/scripts/prepare_su2_run_case.py
+```
+
+它复制 cfg/mesh/inlet 到独立目录，计算 SHA256，写入 `run_manifest.json`，并拒绝覆盖非空运行目录。后续每次 SU2 运行都应在独立目录完成，避免 restart/history/forces/TURBOMACHINERY 互相覆盖。
+
+## 25. 下一步建议
 
 ### 方案 A：已有 Rotor37 资产
 

@@ -45,7 +45,8 @@
 - [x] restart 续算尝试失败：relrms 从 -3.39242 退化到 -0.221601
 - [x] 读取续算 history 起始行：restart 已成功读入，但续算退化
 - [x] restart + bounded CFL max=5 仍退化至 relrms=-0.0531，停止 restart 路线
-- [ ] 回到从初始场的一阶 coarse baseline，备份 restart 后再试其他续算方案
+- [x] 新增隔离 SU2 运行目录和 SHA256 manifest 机制
+- [ ] 用独立目录重新运行一阶 coarse baseline，保留不覆盖证据
 - [ ] 收敛后再逐步恢复二阶/正式收敛
 - [ ] 核验外部网格版本、边界、许可证和与项目工况的对应关系
 - [x] 输出 P4 输入审计报告
