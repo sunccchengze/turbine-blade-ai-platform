@@ -419,7 +419,7 @@ backend/scripts/prepare_su2_restart_cfg.py
 
 ### 续算结果
 
-用户本机使用 `SOLUTION_FILENAME=restart_flow_2ndorder.dat` 续算 1000 iteration 后，history 首行 `rms[Rho]=-7.065`，证明 restart 文件已读入；但 CFL 从 1.2 快速增长，末尾 `relrms[Rho]=-0.221601`，显著劣于续算前的 `-3.39242`。判定：restart 文件路径/键正确，失败根因是 restart 后 CFL 自适应过于激进；下一步在 restart cfg 上限制 bounded CFL max=5。
+用户本机使用 `SOLUTION_FILENAME=restart_flow_2ndorder.dat` 续算 1000 iteration 后，history 首行 `rms[Rho]=-7.065`，证明 restart 文件已读入；但 CFL 从 1.2 快速增长，末尾 `relrms[Rho]=-0.221601`，显著劣于续算前的 `-3.39242`。随后使用 restart + bounded CFL max=5，末尾进一步退化至 `relrms[Rho]=-0.0531346`。判定：restart 文件路径/键正确，但当前 restart 续算无法保持部分收敛状态；停止继续覆盖 restart 文件，回到从初始场的一阶 coarse baseline，后续若重启必须先备份 restart 并绑定 cfg/版本。
 
 ## 24. 下一步建议
 
