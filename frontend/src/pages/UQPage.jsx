@@ -277,7 +277,7 @@ export default function UQPage() {
             }}>
               <Shield size={18} color="#a78bfa" />
             </div>
-            <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#f1f5f9' }}>
+            <h1 style={{ fontSize: 'clamp(2.2rem, 4.8vw, 4rem)', fontWeight: 600, color: 'var(--paper)', fontFamily: 'var(--display)', letterSpacing: '-.05em', lineHeight: 1.08 }}>
               不确定性量化
               <span style={{ fontSize: '11px', color: '#475569', fontWeight: 600, marginLeft: '10px', letterSpacing: '0.08em' }}>
                 UNCERTAINTY QUANTIFICATION

@@ -90,11 +90,15 @@ button, input, select { font: inherit; }
 
 @layer components {
   .glass-card, .surface-card {
-    background: var(--panel);
-    border: 1px solid var(--line);
-    border-radius: 10px;
+    background: var(--panel) !important;
+    border: 1px solid var(--line) !important;
+    border-radius: 9px !important;
   }
   .glass-card { backdrop-filter: blur(12px); }
+  .glass-card [style*='#818cf8'], .glass-card [style*='#22d3ee'] { color: var(--teal) !important; }
+  .glass-card [style*='#34d399'] { color: var(--teal-bright) !important; }
+  .glass-card [style*='#fbbf24'] { color: var(--yellow) !important; }
+  .glass-card [style*='#1e293b'], .glass-card [style*='#0f172a'] { background: var(--ink) !important; }
   .card-glow { transition: border-color .25s, background .25s, transform .25s; }
   .card-glow:hover { border-color: var(--line-strong); background: var(--panel-2); transform: translateY(-2px); }
   .gradient-text { color: var(--teal-bright); }

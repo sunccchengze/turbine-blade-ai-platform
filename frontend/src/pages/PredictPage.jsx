@@ -15,9 +15,9 @@ function ResultCard({ label, value, sigma, unit, color, icon: Icon, baseline }) 
     : null
 
   const palettes = {
-    primary: { text: '#818cf8', bg: 'rgba(99,102,241,0.08)',  border: 'rgba(99,102,241,0.2)'  },
-    cyan:    { text: '#22d3ee', bg: 'rgba(34,211,238,0.08)',  border: 'rgba(34,211,238,0.2)'  },
-    green:   { text: '#34d399', bg: 'rgba(52,211,153,0.08)',  border: 'rgba(52,211,153,0.2)'  },
+    primary: { text: '#86b9aa', bg: 'rgba(134,185,170,0.08)',  border: 'rgba(134,185,170,0.2)'  },
+    cyan:    { text: '#b5ded0', bg: 'rgba(181,222,208,0.08)',  border: 'rgba(181,222,208,0.2)'  },
+    green:   { text: '#e7c85b', bg: 'rgba(231,200,91,0.08)',  border: 'rgba(231,200,91,0.2)'  },
   }
   const p = palettes[color]
 
@@ -318,7 +318,7 @@ export default function PredictPage() {
             }}>
               <Cpu size={18} color="#818cf8" />
             </div>
-            <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#f1f5f9' }}>
+            <h1 style={{ fontSize: 'clamp(2.2rem, 4.8vw, 4rem)', fontWeight: 600, color: 'var(--paper)', fontFamily: 'var(--display)', letterSpacing: '-.05em', lineHeight: 1.08 }}>
               实时性能预测
               <span style={{ fontSize: '11px', color: '#475569', fontWeight: 600, marginLeft: '10px', letterSpacing: '0.08em' }}>
                 LIVE PREDICTION

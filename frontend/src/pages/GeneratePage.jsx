@@ -64,7 +64,7 @@ export default function GeneratePage() {
             <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(52,211,153,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Wand2 size={18} color="var(--teal-bright)" />
             </div>
-            <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--paper)' }}>
+            <h1 style={{ fontSize: 'clamp(2.2rem, 4.8vw, 4rem)', fontWeight: 600, color: 'var(--paper)', fontFamily: 'var(--display)', letterSpacing: '-.05em', lineHeight: 1.08 }}>
               生成式设计
               <span style={{ fontSize: '11px', color: 'var(--faint)', fontWeight: 600, marginLeft: '10px', letterSpacing: '0.08em' }}>
                 GENERATIVE DESIGN · INVERSE
