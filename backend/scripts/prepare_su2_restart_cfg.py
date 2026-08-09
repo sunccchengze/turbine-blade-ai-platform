@@ -23,11 +23,21 @@ def main() -> None:
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--restart", default="restart_flow_2ndorder.dat")
     ap.add_argument("--iter", type=int, default=1000)
+    ap.add_argument("--bounded-cfl-max", type=float, default=None,
+                    help="可选：restart 后启用 bounded CFL，设置上限")
+    ap.add_argument("--cfl-up", type=float, default=1.2)
+    ap.add_argument("--cfl-down", type=float, default=0.5)
     args = ap.parse_args()
     text = args.cfg.read_text(encoding="utf-8", errors="replace")
     updated = set_or_add(text, "RESTART_SOL", "YES")
     updated = set_or_add(updated, "SOLUTION_FILENAME", args.restart)
     updated = set_or_add(updated, "ITER", str(args.iter))
+    cfl_note = None
+    if args.bounded_cfl_max is not None:
+        updated = set_or_add(updated, "CFL_ADAPT", "YES")
+        updated = set_or_add(updated, "CFL_NUMBER", "1.0")
+        updated = set_or_add(updated, "CFL_ADAPT_PARAM", f"( {args.cfl_down}, {args.cfl_up}, 1.0, {args.bounded_cfl_max}, 0.001, 0 )")
+        cfl_note = f"bounded CFL max={args.bounded_cfl_max}, up={args.cfl_up}, down={args.cfl_down}"
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(updated, encoding="utf-8", newline="")
     meta = {
@@ -37,6 +47,7 @@ def main() -> None:
         "additional_iterations": args.iter,
         "purpose": "continue partially converged SU2 state; not yet a convergence claim",
         "su2_restart_key": "SOLUTION_FILENAME",
+        "cfl_override": cfl_note,
     }
     report = args.out.with_suffix(".changes.json")
     report.write_text(json.dumps(meta, ensure_ascii=False, indent=2), encoding="utf-8")
