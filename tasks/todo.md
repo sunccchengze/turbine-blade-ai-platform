@@ -20,7 +20,7 @@
 - [x] 用户已获得 R37_coarse.su2、R37_fine.su2、CGNS、cfg、inlet.dat 资源
 - [x] fine mesh 审计：3557497 节点、3474432 HEXAHEDRON、9 markers、cfg 一致
 - [x] 新增外部 SU2 case 只读审计脚本
-- [ ] fine mesh 隔离 5 iteration preprocessing smoke
+- [x] fine mesh 隔离短运行：preprocessing 成功并进入 solver；因本机内存 99% 主动中止，禁止继续长跑
 - [x] 用户审计 coarse mesh + cfg：130432 HEXAHEDRON、140201 节点、9 markers
 - [x] 坐标 extent 显示 Z 轴最大，轴向与 cfg 基本一致
 - [x] 新增工作 cfg 生成脚本，不修改原始 cfg
@@ -51,8 +51,9 @@
 - [x] clean analyze case 复跑：仍 relrms=-3.39242，MARKER_ANALYZE 未改变收敛平台
 - [x] 带完整 stdout 日志复跑并提取 10 个 Stage Performance 节点
 - [x] 运行 `parse_su2_stage_performance.py`：10 个节点，converged=false，生成 JSON/CSV
-- [ ] 决定最后一次收敛诊断或冻结为非收敛趋势证据
-- [ ] 收敛后再逐步恢复二阶/正式收敛
+- [x] 决定停止本机 fine 长运行，冻结 P4 为真实 SU2 通路 + 未收敛 Stage Performance 趋势
+- [ ] 如确有必要，仅在 coarse 上做一次受控数值诊断；不再盲目增加迭代
+- [ ] 未来获得服务器/HPC 后，再独立恢复 fine/二阶正式收敛
 - [ ] 核验外部网格版本、边界、许可证和与项目工况的对应关系
 - [x] 输出 P4 输入审计报告
 
