@@ -48,7 +48,8 @@
 - [x] clean working cfg 复核新增 MARKER_ANALYZE=(INLET,OUTLET)
 - [x] clean analyze case 复跑：仍 relrms=-3.39242，MARKER_ANALYZE 未改变收敛平台
 - [x] 带完整 stdout 日志复跑并提取 10 个 Stage Performance 节点
-- [ ] 运行 `parse_su2_stage_performance.py` 生成 JSON/CSV 记录
+- [x] 运行 `parse_su2_stage_performance.py`：10 个节点，converged=false，生成 JSON/CSV
+- [ ] 决定最后一次收敛诊断或冻结为非收敛趋势证据
 - [ ] 收敛后再逐步恢复二阶/正式收敛
 - [ ] 核验外部网格版本、边界、许可证和与项目工况的对应关系
 - [x] 输出 P4 输入审计报告
