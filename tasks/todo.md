@@ -41,13 +41,14 @@
 - [x] 生成 bounded-CFL max=10 一阶 500 iteration：relrms=-3.10767
 - [x] 生成 bounded-CFL max=20 一阶 500 iteration：relrms=-3.21966
 - [x] bounded-CFL max=20 一阶 1000 iteration：relrms=-3.39242，平台未达收敛
-- [x] 审阅 TURBOMACHINERY 输出：仅 iOuterIter=0，不能作为末态性能
+- [x] 审阅 TURBOMACHINERY 输出：iOuterIter=0 文件不能作为末态时间序列
 - [x] 失败 restart 路线已停止
 - [x] 新增隔离 SU2 运行目录和 SHA256 manifest 机制
 - [x] 独立目录重新运行一阶 coarse baseline，复现 relrms=-3.39242
 - [x] clean working cfg 复核新增 MARKER_ANALYZE=(INLET,OUTLET)
 - [x] clean analyze case 复跑：仍 relrms=-3.39242，MARKER_ANALYZE 未改变收敛平台
-- [ ] 带完整 stdout 日志复跑/检索 Stage Performance 输出
+- [x] 带完整 stdout 日志复跑并提取 10 个 Stage Performance 节点
+- [ ] 运行 `parse_su2_stage_performance.py` 生成 JSON/CSV 记录
 - [ ] 收敛后再逐步恢复二阶/正式收敛
 - [ ] 核验外部网格版本、边界、许可证和与项目工况的对应关系
 - [x] 输出 P4 输入审计报告

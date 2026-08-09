@@ -441,7 +441,19 @@ backend/scripts/prepare_su2_run_case.py
 
 用户在独立运行目录 `p4_runs/fresh_first_bounded20_1000` 重新运行同一 fresh cfg，得到完全相同的 `relrms[Rho]=-3.39242`。这确认结果可复现，平台不再受共享目录覆盖或旧 restart 污染影响；当前瓶颈是 coarse case 的数值/物理收敛平台。
 
-## 25. 下一步建议
+## 25. SU2 Stage Performance 解析入口
+
+已新增：
+
+```text
+backend/scripts/parse_su2_stage_performance.py
+```
+
+它从完整 `su2_run.log` 提取每个 `MACHINE` 行，输出 JSON/CSV，并读取 `Converged` 状态；未收敛时自动标注为 non-converged diagnostic trend。
+
+用户本机 clean analyze log 已提取到 10 个阶段性能节点：0、100、…、900。`PR_tt` 从约 1.9252 演化到 1.79092，`Efi_tt` 从 90.5675% 演化到 82.7267%；700–900 区间变化开始变缓，但 residual 仍未达到 `< -4`，只能作为性能演化趋势，不能作为最终 CFD 性能。
+
+## 26. 下一步建议
 
 ### 方案 A：已有 Rotor37 资产
 
