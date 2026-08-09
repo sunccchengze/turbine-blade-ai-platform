@@ -47,7 +47,8 @@
 - [x] restart + bounded CFL max=5 仍退化至 relrms=-0.0531，停止 restart 路线
 - [x] 新增隔离 SU2 运行目录和 SHA256 manifest 机制
 - [x] 独立目录重新运行一阶 coarse baseline，复现 relrms=-3.39242
-- [ ] 审阅独立目录 TURBOMACHINERY 输出和性能平台
+- [x] 审阅独立目录 TURBOMACHINERY 输出：仅 iOuterIter=0，不能作为末态性能
+- [ ] 审计 TURBOMACHINERY_KIND/TURBO_PERF_KIND/MARKER_ANALYZE/性能平均方式
 - [ ] 收敛后再逐步恢复二阶/正式收敛
 - [ ] 核验外部网格版本、边界、许可证和与项目工况的对应关系
 - [x] 输出 P4 输入审计报告
