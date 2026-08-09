@@ -329,7 +329,17 @@ backend/scripts/prepare_external_su2_working_cfg.py
 
 它保留下载的原始 cfg，只将已审计确认的网格文件名指向 `R37_coarse.su2`，并修正 `95000.0.0` 为 `95000.0`，同时输出变更 JSON。坐标范围显示 Z 方向最大延展，与当前 cfg 的 Z 轴工况设置一致，但正式运行前仍需由 SU2 preprocessing 验证。
 
-## 19. 下一步建议
+## 19. SU2 冒烟配置入口
+
+已新增：
+
+```text
+backend/scripts/prepare_su2_smoke_cfg.py
+```
+
+它从已审计的工作 cfg 生成有限迭代配置，只验证 SU2 网格读取、marker、周期、入口 profile 和 RANS 初始化；冒烟输出不计入任何 π/η/ṁ 科研结果。
+
+## 20. 下一步建议
 
 ### 方案 A：已有 Rotor37 资产
 
