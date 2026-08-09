@@ -407,7 +407,17 @@ dominant_axis = Z
 
 **轴向 Gate 通过**：网格主流向与 cfg 的 Z 轴设置一致；下一步不再把整体轴向错置作为首要假设。
 
-## 23. 下一步建议
+## 23. SU2 部分收敛状态续算入口
+
+已新增：
+
+```text
+backend/scripts/prepare_su2_restart_cfg.py
+```
+
+它从已审计的一阶 cfg 生成 `RESTART_SOL=YES` 的续算配置，并指向 `restart_flow_2ndorder.dat`；原始 cfg 和 restart 文件不修改。续算后仍需重新检查 residual、CFL、turbomachinery spanwise 输出和性能稳定性。
+
+## 24. 下一步建议
 
 ### 方案 A：已有 Rotor37 资产
 
