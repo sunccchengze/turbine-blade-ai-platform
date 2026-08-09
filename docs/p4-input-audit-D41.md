@@ -371,6 +371,14 @@ backend/scripts/prepare_su2_smoke_cfg.py
 
 **P4 通路 Gate：通过；收敛 Gate：尚未通过；性能结论：尚不可用。** 二阶配置曾在第 3 内迭代 NaN，当前一阶配置是稳定推进的正确降级路径。
 
+### 一阶 500 iteration 追加结果
+
+- 500/500 iteration 正常结束，`Exit Success`；
+- 无 NaN、无负体积、无 solver crash；
+- 末尾 `relrms[Rho] = -3.38664`，收敛标准为 `< -4`；
+- 因此仍未收敛；20 次时的短暂低残差不能视为最终趋势；
+- 需要先审阅 `history.csv`、`forces_breakdown.dat` 和 CFL/边界设置，再决定数值调整。
+
 ## 22. 下一步建议
 
 ### 方案 A：已有 Rotor37 资产
