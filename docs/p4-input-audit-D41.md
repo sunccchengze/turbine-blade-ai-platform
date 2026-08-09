@@ -360,12 +360,16 @@ backend/scripts/prepare_su2_smoke_cfg.py
 
 - mesh/marker/periodic preprocessing 成功；
 - turbomachinery inlet/outlet summary 成功打印；
-- `INNER_ITER=0,1,2` 成功开始；
-- `INNER_ITER=3` 出现 `NaN`，SU2 报 `diverged (NaN detected)`。
+- 一阶 SA smoke 完成 `INNER_ITER=0–19`；
+- 无 NaN、无负体积、无 solver crash；
+- 密度残差约从 `-3.606` 降至 `-4.468`；
+- 湍流残差约从 `-8.119` 降至 `-8.719`；
+- 周期匹配、旋转框架、入口 profile 和 restart/Paraview/Tecplot/forces 输出均成功；
+- SU2 最终 `Exit Success`，但 `Converged: No`。
 
-初始阶段打印的性能值（如 `Efi_ts=195.915%`、负的 `Efi_tt`）属于未收敛初始场诊断，不能作为性能结果。
+初始阶段打印的性能值属于未收敛场诊断，不能作为性能结果。运行中出现 `TURBOMACHINERY folder creation failed`，但未阻止求解；后续需检查重复运行目录/输出文件管理。
 
-当前判定：**SU2 通路已打通，但 RANS 数值稳定 Gate 未通过。** 这不是路径/文件/marker 失败，而是当前二阶 Roe + SST/旋转框架从初始场启动时的数值发散。下一步先使用课程提供的 `R37_from_scratch_1stOrder.cfg`，同样替换 mesh 文件名并关闭 restart，优先让一阶格式稳定推进。
+**P4 通路 Gate：通过；收敛 Gate：尚未通过；性能结论：尚不可用。** 二阶配置曾在第 3 内迭代 NaN，当前一阶配置是稳定推进的正确降级路径。
 
 ## 22. 下一步建议
 
