@@ -36,7 +36,8 @@
 - [x] 读取 history.csv 表头和末尾，确认残差/CFL/性能列含义
 - [x] 进一步核对 inlet_kw_new.dat 与 cfg 的入口物理语义
 - [x] 审阅 forces_breakdown.dat / CFL 演化
-- [ ] 生成 `--fixed-cfl` 的一阶 500 iteration 对照并审阅残差
+- [x] 生成 `--fixed-cfl` 一阶 500 iteration 对照：relrms=-1.54914，过于保守
+- [ ] 生成 bounded-CFL（max=5, up=1.2, down=0.5）一阶 500 iteration 对照
 - [ ] 收敛后再逐步恢复二阶/正式收敛
 - [ ] 核验外部网格版本、边界、许可证和与项目工况的对应关系
 - [x] 输出 P4 输入审计报告

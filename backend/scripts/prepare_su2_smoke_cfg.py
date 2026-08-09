@@ -17,6 +17,8 @@ def main() -> None:
     ap.add_argument("--iter", type=int, default=20)
     ap.add_argument("--fixed-cfl", action="store_true",
                     help="关闭 CFL 自适应并固定 CFL_NUMBER=1，适合 RANS 稳定性诊断")
+    ap.add_argument("--bounded-cfl", action="store_true",
+                    help="保守 CFL 自适应：初始1、下降0.5、增长1.2、上限5")
     args = ap.parse_args()
     text = args.cfg.read_text(encoding="utf-8", errors="replace")
     if not re.search(r"^\s*SOLVER\s*=\s*RANS", text, flags=re.M):
@@ -44,10 +46,22 @@ def main() -> None:
     if n == 0:
         updated += f"\nITER= {args.iter}\n"
     cfl_replacements = []
+    if args.fixed_cfl and args.bounded_cfl:
+        raise SystemExit("--fixed-cfl 与 --bounded-cfl 不能同时使用")
     if args.fixed_cfl:
         updated, _ = re.subn(r"^\s*CFL_ADAPT\s*=.*$", "CFL_ADAPT= NO", updated, count=1, flags=re.M)
         updated, _ = re.subn(r"^\s*CFL_NUMBER\s*=.*$", "CFL_NUMBER= 1.0", updated, count=1, flags=re.M)
         cfl_replacements = ["CFL_ADAPT -> NO", "CFL_NUMBER -> 1.0"]
+    elif args.bounded_cfl:
+        updated, _ = re.subn(r"^\s*CFL_ADAPT\s*=.*$", "CFL_ADAPT= YES", updated, count=1, flags=re.M)
+        updated, _ = re.subn(r"^\s*CFL_NUMBER\s*=.*$", "CFL_NUMBER= 1.0", updated, count=1, flags=re.M)
+        updated, n_cfl = re.subn(
+            r"^\s*CFL_ADAPT_PARAM\s*=.*$",
+            "CFL_ADAPT_PARAM= ( 0.5, 1.2, 1.0, 5.0, 0.001, 0 )",
+            updated, count=1, flags=re.M)
+        if n_cfl == 0:
+            updated += "\nCFL_ADAPT_PARAM= ( 0.5, 1.2, 1.0, 5.0, 0.001, 0 )\n"
+        cfl_replacements = ["CFL_ADAPT -> YES", "CFL_NUMBER -> 1.0", "CFL_ADAPT_PARAM -> (0.5,1.2,1.0,5.0,0.001,0)"]
     updated += "\n% Generated smoke-only config: do not use for scientific performance claims.\n"
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(updated, encoding="utf-8", newline="")
@@ -56,6 +70,7 @@ def main() -> None:
         "smoke_cfg": str(args.out),
         "iterations": args.iter,
         "fixed_cfl": args.fixed_cfl,
+        "bounded_cfl": args.bounded_cfl,
         "cfl_replacements": cfl_replacements,
         "purpose": "SU2 mesh/marker/profile/initialization smoke only",
         "scientific_result": False,
