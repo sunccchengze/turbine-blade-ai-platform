@@ -319,7 +319,11 @@ backend/scripts/audit_external_su2_case.py
 
 它只读审计 SU2 ASCII 网格的 NELEM/NPOIN、体单元/表面单元、marker 和 cfg 的关键参数，并自动检查 `MESH_FILENAME` 是否与实际文件一致、cfg marker 是否存在于网格、网格 marker 是否被 cfg 覆盖，同时显示 `TURBOMACHINERY_KIND`、`TURBO_PERF_KIND`、`MARKER_ANALYZE` 和性能平均方式；不运行求解器。优先审计 coarse mesh，确认它确实是体网格且 marker/cfg 一致后，再处理 fine mesh。
 
-用户本机最终 cfg 审计确认：`TURBOMACHINERY_KIND=AXIAL`、`TURBO_PERF_KIND=(COMPRESSOR)`、`MARKER_TURBOMACHINERY=(INLET,OUTLET)`、`MARKER_ANALYZE=(INLET,OUTLET)`、`PERFORMANCE_AVERAGE_PROCESS_KIND=MASSFLUX`、`MIXEDOUT_COEFF`、`MARKER_GILES=(OUTLET,RADIAL_EQUILIBRIUM,...)` 均存在，且 marker 与网格一致。性能配置 Gate 通过，下一步在全新隔离目录复跑并观察 stage performance 时间序列。
+用户本机最终 cfg 审计确认：`TURBOMACHINERY_KIND=AXIAL`、`TURBO_PERF_KIND=(COMPRESSOR)`、`MARKER_TURBOMACHINERY=(INLET,OUTLET)`、`MARKER_ANALYZE=(INLET,OUTLET)`、`PERFORMANCE_AVERAGE_PROCESS_KIND=MASSFLUX`、`MIXEDOUT_COEFF`、`MARKER_GILES=(OUTLET,RADIAL_EQUILIBRIUM,...)` 均存在，且 marker 与网格一致。性能配置 Gate 通过。
+
+### clean analyze case 结果
+
+加入 `MARKER_ANALYZE` 后的全新隔离 case 仍得到 `relrms[Rho]=-3.39242`、`Converged=No`、`Exit Success`。因此 `MARKER_ANALYZE` 没有改变当前数值收敛平台；下一步保存完整 stdout，确认 SU2 是否在运行中更新 stage performance，以及性能是否能从日志/TURBOMACHINERY 输出独立提取。
 
 ## 18. 外部 coarse case 工作配置入口
 
