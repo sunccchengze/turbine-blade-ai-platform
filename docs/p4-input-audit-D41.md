@@ -319,7 +319,17 @@ backend/scripts/audit_external_su2_case.py
 
 它只读审计 SU2 ASCII 网格的 NELEM/NPOIN、体单元/表面单元、marker 和 cfg 的关键参数，并自动检查 `MESH_FILENAME` 是否与实际文件一致、cfg marker 是否存在于网格、网格 marker 是否被 cfg 覆盖；不运行求解器。优先审计 coarse mesh，确认它确实是体网格且 marker/cfg 一致后，再处理 fine mesh。
 
-## 18. 下一步建议
+## 18. 外部 coarse case 工作配置入口
+
+已新增：
+
+```text
+backend/scripts/prepare_external_su2_working_cfg.py
+```
+
+它保留下载的原始 cfg，只将已审计确认的网格文件名指向 `R37_coarse.su2`，并修正 `95000.0.0` 为 `95000.0`，同时输出变更 JSON。坐标范围显示 Z 方向最大延展，与当前 cfg 的 Z 轴工况设置一致，但正式运行前仍需由 SU2 preprocessing 验证。
+
+## 19. 下一步建议
 
 ### 方案 A：已有 Rotor37 资产
 

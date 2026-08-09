@@ -20,7 +20,9 @@
 - [x] 用户已获得 R37_coarse.su2、R37_fine.su2、CGNS、cfg、inlet.dat 资源
 - [x] 新增外部 SU2 case 只读审计脚本
 - [x] 用户审计 coarse mesh + cfg：130432 HEXAHEDRON、140201 节点、9 markers
-- [ ] 解决 cfg 的 `oriented_R37_z.su2` 与实际 `R37_coarse.su2` 文件名/轴向一致性
+- [x] 坐标 extent 显示 Z 轴最大，轴向与 cfg 基本一致
+- [x] 新增工作 cfg 生成脚本，不修改原始 cfg
+- [ ] 生成并审阅 `R37_from_scratch_work.cfg`
 - [ ] 核验外部网格版本、边界、许可证和与项目工况的对应关系
 - [x] 输出 P4 输入审计报告
 
