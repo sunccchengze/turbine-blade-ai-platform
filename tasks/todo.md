@@ -17,7 +17,9 @@
 - [x] 接入并审计 `data/processed/pointcloud/rotor37_pc.npz`（1000×2048×9，sample_id 完全对齐）
 - [x] 追踪 Pareto 候选到几何/网格的文件级数据流
 - [x] 确认 Rotor37 样本含真实表面拓扑，但不含体网格/流体域/入口出口
-- [ ] 定位 SU2 Foundation Rotor37 coarse/fine mesh、CGNS、cfg、inlet profile
+- [x] 用户已获得 R37_coarse.su2、R37_fine.su2、CGNS、cfg、inlet.dat 资源
+- [x] 新增外部 SU2 case 只读审计脚本
+- [ ] 用户同步后审计 coarse mesh + cfg
 - [ ] 核验外部网格版本、边界、许可证和与项目工况的对应关系
 - [x] 输出 P4 输入审计报告
 

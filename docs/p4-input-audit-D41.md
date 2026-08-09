@@ -309,7 +309,17 @@ used_vertices = 29773
 
 这次结果证明：后续应以 PLAID 原始 `ElementConnectivity` 作为叶片表面几何来源；要完成真实 RANS，仍需另行获取/构造流体域网格和边界条件。BPA 只保留为可视化/重建对照，不再作为 CFD 拓扑来源。
 
-## 17. 下一步建议
+## 17. 外部 SU2 Rotor37 case 审计入口
+
+已新增：
+
+```text
+backend/scripts/audit_external_su2_case.py
+```
+
+它只读审计 SU2 ASCII 网格的 NELEM/NPOIN、体单元/表面单元、marker 和 cfg 的关键参数，不运行求解器。优先审计 coarse mesh，确认它确实是体网格且 marker/cfg 一致后，再处理 fine mesh。
+
+## 18. 下一步建议
 
 ### 方案 A：已有 Rotor37 资产
 
