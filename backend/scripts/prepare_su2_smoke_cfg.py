@@ -18,7 +18,13 @@ def main() -> None:
     ap.add_argument("--fixed-cfl", action="store_true",
                     help="关闭 CFL 自适应并固定 CFL_NUMBER=1，适合 RANS 稳定性诊断")
     ap.add_argument("--bounded-cfl", action="store_true",
-                    help="保守 CFL 自适应：初始1、下降0.5、增长1.2、上限5")
+                    help="保守 CFL 自适应：初始1、下降0.5、增长1.2、上限由 --cfl-max 指定")
+    ap.add_argument("--cfl-max", type=float, default=5.0,
+                    help="bounded CFL 上限，默认 5")
+    ap.add_argument("--cfl-up", type=float, default=1.2,
+                    help="bounded CFL 增长因子，默认 1.2")
+    ap.add_argument("--cfl-down", type=float, default=0.5,
+                    help="bounded CFL 下降因子，默认 0.5")
     args = ap.parse_args()
     text = args.cfg.read_text(encoding="utf-8", errors="replace")
     if not re.search(r"^\s*SOLVER\s*=\s*RANS", text, flags=re.M):
@@ -57,11 +63,11 @@ def main() -> None:
         updated, _ = re.subn(r"^\s*CFL_NUMBER\s*=.*$", "CFL_NUMBER= 1.0", updated, count=1, flags=re.M)
         updated, n_cfl = re.subn(
             r"^\s*CFL_ADAPT_PARAM\s*=.*$",
-            "CFL_ADAPT_PARAM= ( 0.5, 1.2, 1.0, 5.0, 0.001, 0 )",
+            f"CFL_ADAPT_PARAM= ( {args.cfl_down}, {args.cfl_up}, 1.0, {args.cfl_max}, 0.001, 0 )",
             updated, count=1, flags=re.M)
         if n_cfl == 0:
             updated += "\nCFL_ADAPT_PARAM= ( 0.5, 1.2, 1.0, 5.0, 0.001, 0 )\n"
-        cfl_replacements = ["CFL_ADAPT -> YES", "CFL_NUMBER -> 1.0", "CFL_ADAPT_PARAM -> (0.5,1.2,1.0,5.0,0.001,0)"]
+        cfl_replacements = [f"CFL_ADAPT -> YES", f"CFL_NUMBER -> 1.0", f"CFL_ADAPT_PARAM -> ({args.cfl_down},{args.cfl_up},1.0,{args.cfl_max},0.001,0)"]
     updated += "\n% Generated smoke-only config: do not use for scientific performance claims.\n"
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(updated, encoding="utf-8", newline="")
