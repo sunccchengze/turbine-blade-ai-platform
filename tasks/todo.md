@@ -51,6 +51,8 @@
 - [x] BPA/Poisson 双向表面保真审计：BPA 初筛通过，Poisson 淘汰
 - [x] 运行 `audit_mesh_boundaries.py`：20 个边界分量，主要分量位于内部，倾向重建孔洞/碎片
 - [x] BPA 边界语义 Gate 不通过，停止任意补洞路线
+- [ ] 同步最新代码后运行 `extract_raw_mesh_p4.py --index 0`
+- [ ] 审阅 PLAID 原始 meshes 是否含 ElementConnectivity/边界拓扑
 - [ ] 寻找原始 CGNS/SU2 网格或官方几何连接信息
 - [ ] 寻找正式表面重建/原始 CGNS/SU2 网格路径
 - [ ] P4 Rotor37 正式表面拓扑/网格/SU2 输入链路

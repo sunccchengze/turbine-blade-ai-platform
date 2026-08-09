@@ -238,7 +238,17 @@ boundary_edges_total = 454
 
 **判定：BPA 表面候选不具备可直接封闭并进入 CFD 的边界语义。** 不应在缺少原始几何拓扑的情况下任意补洞；下一步优先寻找 CGNS/SU2 原始网格或官方几何连接信息。
 
-## 12. 下一步建议
+## 12. 原始 PLAID mesh 追溯入口
+
+已新增：
+
+```text
+backend/scripts/extract_raw_mesh_p4.py
+```
+
+它以 streaming 方式从 `PLAID-datasets/Rotor37` 读取单个样本，审计原始 `meshes` 树中的坐标、单元连接、边界和 CGNS 相关数组，并把一个样本的 meshes 保存到被忽略的 `data/processed/p4/raw_mesh/`。该入口优先于从下采样点云猜测拓扑。
+
+## 13. 下一步建议
 
 ### 方案 A：已有 Rotor37 资产
 
