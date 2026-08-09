@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { Activity, Compass, Cpu, TrendingUp, BarChart3, Home, Menu, X, User, BookOpen, Wand2, Radio } from 'lucide-react'
+import { Activity, Compass, Cpu, TrendingUp, BarChart3, Home, Menu, X, User, BookOpen, Wand2, Radio, Sun, Moon } from 'lucide-react'
 
 const navItems = [
   { path: '/', label: '概览', en: 'Overview', icon: Home },
@@ -12,7 +12,7 @@ const navItems = [
   { path: '/methodology', label: '方法', en: 'Method', icon: BookOpen },
 ]
 
-export default function Navbar() {
+export default function Navbar({ theme, onToggleTheme }) {
   const location = useLocation()
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -53,6 +53,9 @@ export default function Navbar() {
           <div className="badge" style={{ color: 'var(--teal-bright)', borderColor: 'rgba(134,185,170,.28)', background: 'rgba(134,185,170,.06)' }}>
             <Radio size={10} /> LOCAL / WASM
           </div>
+          <button onClick={onToggleTheme} aria-label={theme === 'dark' ? '切换到浅色模式' : '切换到深色模式'} title={theme === 'dark' ? '浅色模式 Light mode' : '深色模式 Dark mode'} style={{ width: 30, height: 30, display: 'grid', placeItems: 'center', color: 'var(--yellow)', background: 'transparent', border: '1px solid var(--line)', borderRadius: 6, cursor: 'pointer' }}>
+            {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />}
+          </button>
           <Link to="/about" aria-label="关于 About" style={{ color: 'var(--muted)', display: isMobile ? 'none' : 'grid', placeItems: 'center' }}><User size={15} /></Link>
           {isMobile && <button onClick={() => setMobileOpen(value => !value)} aria-label={mobileOpen ? '关闭菜单' : '打开菜单'} style={{ display: 'grid', placeItems: 'center', color: 'var(--paper)', background: 'none', border: 0, cursor: 'pointer' }}>{mobileOpen ? <X size={20} /> : <Menu size={20} />}</button>}
         </div>

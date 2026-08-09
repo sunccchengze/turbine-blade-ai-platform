@@ -18,7 +18,48 @@
   --mono: 'DM Mono', ui-monospace, monospace;
   --display: 'Space Grotesk', system-ui, sans-serif;
   --body: 'Manrope', system-ui, sans-serif;
+  color-scheme: dark;
 }
+
+:root[data-theme='light'] {
+  --ink: #f1f0e8;
+  --ink-2: #e7e9e0;
+  --panel: #fbfaf3;
+  --panel-2: #ffffff;
+  --line: rgba(22, 48, 39, .14);
+  --line-strong: rgba(22, 48, 39, .28);
+  --paper: #14231d;
+  --muted: #52665c;
+  --faint: #77877e;
+  --teal: #2d7569;
+  --teal-bright: #1e675c;
+  --yellow: #a87817;
+  --rust: #ad5038;
+  color-scheme: light;
+}
+
+:root[data-theme='light'] body {
+  background: var(--ink);
+}
+
+:root[data-theme='light'] ::-webkit-scrollbar-track { background: var(--ink); }
+:root[data-theme='light'] ::-webkit-scrollbar-thumb { background: #9eaa9d; }
+:root[data-theme='light'] .grid-bg {
+  background-image: linear-gradient(rgba(45,117,105,.09) 1px, transparent 1px), linear-gradient(90deg, rgba(45,117,105,.09) 1px, transparent 1px);
+}
+:root[data-theme='light'] .hero-glow { background: radial-gradient(circle, rgba(45,117,105,.12), transparent 68%); }
+
+/* 旧页面中的少量内联颜色也随主题切换，避免新旧页面出现两套白平衡。 */
+:root[data-theme='light'] [style*='#0f172a'],
+:root[data-theme='light'] [style*='var(--ink)'] { background-color: var(--ink) !important; }
+:root[data-theme='light'] [style*='#1e293b'],
+:root[data-theme='light'] [style*='var(--panel)'] { background-color: var(--panel) !important; }
+:root[data-theme='light'] [style*='#f1f5f9'],
+:root[data-theme='light'] [style*='#e2e8f0'] { color: var(--paper) !important; }
+:root[data-theme='light'] [style*='#94a3b8'],
+:root[data-theme='light'] [style*='#64748b'],
+:root[data-theme='light'] [style*='#475569'] { color: var(--muted) !important; }
+
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }

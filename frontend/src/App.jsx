@@ -102,6 +102,15 @@ function BackToTop() {
 }
 
 export default function App() {
+  const [theme, setTheme] = useState(() => localStorage.getItem('turbine-theme') || 'dark')
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme
+    localStorage.setItem('turbine-theme', theme)
+  }, [theme])
+
+  const toggleTheme = () => setTheme(value => value === 'dark' ? 'light' : 'dark')
+
   return (
     <BrowserRouter>
       <RouteTitles />
@@ -109,7 +118,7 @@ export default function App() {
       <BackToTop />
       {/* 内容层 */}
       <div style={{ position: 'relative', zIndex: 1 }}>
-        <Navbar />
+        <Navbar theme={theme} onToggleTheme={toggleTheme} />
         <NewsBanner />
         <Suspense fallback={<PageLoading />}>
           <Routes>
