@@ -45,7 +45,9 @@
 - [x] pointcloud-only 损失权重权衡已完成，停止无限网格搜索
 - [ ] 回到 combined 主模型的正式冻结/导出评估
 - [x] 用户本机运行 `audit_geometry_feasibility.py`，全部几何质量 flags 为 0
-- [ ] 用户本机运行 `prototype_surface_reconstruction.py`，审阅 OBJ 和拓扑报告
+- [x] 用户本机运行实验性拓扑原型并审阅结果：k=12 非流形边 10307，Gate 不通过
+- [ ] 用 k=6/8/16 做原型敏感性诊断（不作为 CFD 网格）
+- [ ] 寻找正式表面重建/原始 CGNS/SU2 网格路径
 - [ ] P4 Rotor37 正式表面拓扑/网格/SU2 输入链路
 - [ ] η 专项物理派生特征消融
 

@@ -142,7 +142,24 @@ backend/scripts/prototype_surface_reconstruction.py
 
 它用点云坐标和法向量构造局部切平面三角扇，输出 OBJ 预览和边界/非流形/退化三角形报告。该输出只用于判断点云是否值得继续做正式拓扑重建，明确不是 SU2/CGNS 网格。
 
-## 7. 下一步建议
+## 7. 实验性拓扑原型 Gate 结果
+
+用户本机对 sample 0、`k=12` 运行结果：
+
+```text
+vertices = 2048
+faces = 18359
+edges = 14358
+boundary_edges = 743
+nonmanifold_edges = 10307
+degenerate_local_triangles_skipped = 0
+```
+
+判定：**Gate 不通过**。非流形边占比过高，局部切平面三角扇没有恢复出合法的全局表面拓扑。该 OBJ 只能用于观察点云连接倾向，不能用于 SU2/CGNS 或 CFD。
+
+这次失败归因于原型算法的全局拓扑缺失，不归因于此前点云几何质量 Gate；原始点云仍通过有限性、重复率、法向和空间秩检查。
+
+## 8. 下一步建议
 
 ### 方案 A：已有 Rotor37 资产
 
