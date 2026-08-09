@@ -319,7 +319,7 @@ backend/scripts/audit_external_su2_case.py
 
 它只读审计 SU2 ASCII 网格的 NELEM/NPOIN、体单元/表面单元、marker 和 cfg 的关键参数，并自动检查 `MESH_FILENAME` 是否与实际文件一致、cfg marker 是否存在于网格、网格 marker 是否被 cfg 覆盖，同时显示 `TURBOMACHINERY_KIND`、`TURBO_PERF_KIND`、`MARKER_ANALYZE` 和性能平均方式；不运行求解器。优先审计 coarse mesh，确认它确实是体网格且 marker/cfg 一致后，再处理 fine mesh。
 
-用户本机最终 cfg 审计确认：`TURBOMACHINERY_KIND=AXIAL`、`TURBO_PERF_KIND=(COMPRESSOR)`、`MARKER_TURBOMACHINERY=(INLET,OUTLET)`、`PERFORMANCE_AVERAGE_PROCESS_KIND=MASSFLUX`、`MIXEDOUT_COEFF`、`MARKER_GILES=(OUTLET,RADIAL_EQUILIBRIUM,...)` 均存在，且 marker 与网格一致。性能配置 Gate 通过，当前主要阻塞转为 RANS 收敛。
+用户本机最终 cfg 审计确认：`TURBOMACHINERY_KIND=AXIAL`、`TURBO_PERF_KIND=(COMPRESSOR)`、`MARKER_TURBOMACHINERY=(INLET,OUTLET)`、`PERFORMANCE_AVERAGE_PROCESS_KIND=MASSFLUX`、`MIXEDOUT_COEFF`、`MARKER_GILES=(OUTLET,RADIAL_EQUILIBRIUM,...)` 均存在，且 marker 与网格一致。工作 cfg 生成器现补入 SU2 官方 turbomachinery 性能分析需要的 `MARKER_ANALYZE=(INLET,OUTLET)`；原始课程 cfg 不修改。性能配置 Gate 将在 clean case 复核后重新判定，当前主要阻塞仍是 RANS 收敛。
 
 ## 18. 外部 coarse case 工作配置入口
 

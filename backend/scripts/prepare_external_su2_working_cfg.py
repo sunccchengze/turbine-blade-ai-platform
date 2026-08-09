@@ -26,6 +26,8 @@ def main() -> None:
             line = f"MESH_FILENAME= {args.mesh.name}{newline}"
         lines.append(line)
     updated = "".join(lines).replace("95000.0.0", "95000.0")
+    if not re.search(r"^\s*MARKER_ANALYZE\s*=", updated, flags=re.M):
+        updated += "\nMARKER_ANALYZE= ( INLET, OUTLET )\n"
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(updated, encoding="utf-8", newline="")
     changes = {
@@ -34,7 +36,7 @@ def main() -> None:
         "mesh_file": str(args.mesh),
         "mesh_filename_before": old_mesh,
         "mesh_filename_after": f"MESH_FILENAME= {args.mesh.name}",
-        "replacements": ["MESH_FILENAME -> actual audited mesh", "95000.0.0 -> 95000.0"],
+        "replacements": ["MESH_FILENAME -> actual audited mesh", "95000.0.0 -> 95000.0", "MARKER_ANALYZE -> (INLET, OUTLET) if absent"],
         "original_preserved": True,
     }
     report = args.out.with_suffix(".changes.json")

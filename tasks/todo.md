@@ -41,14 +41,12 @@
 - [x] 生成 bounded-CFL max=10 一阶 500 iteration：relrms=-3.10767
 - [x] 生成 bounded-CFL max=20 一阶 500 iteration：relrms=-3.21966
 - [x] bounded-CFL max=20 一阶 1000 iteration：relrms=-3.39242，平台未达收敛
-- [ ] 审阅 TURBOMACHINERY 输出和阶段性能平台
-- [x] restart 续算尝试失败：relrms 从 -3.39242 退化到 -0.221601
-- [x] 读取续算 history 起始行：restart 已成功读入，但续算退化
-- [x] restart + bounded CFL max=5 仍退化至 relrms=-0.0531，停止 restart 路线
+- [x] 审阅 TURBOMACHINERY 输出：仅 iOuterIter=0，不能作为末态性能
+- [x] 失败 restart 路线已停止
 - [x] 新增隔离 SU2 运行目录和 SHA256 manifest 机制
 - [x] 独立目录重新运行一阶 coarse baseline，复现 relrms=-3.39242
-- [x] 审阅独立目录 TURBOMACHINERY 输出：仅 iOuterIter=0，不能作为末态性能
-- [ ] 审计 TURBOMACHINERY_KIND/TURBO_PERF_KIND/MARKER_ANALYZE/性能平均方式
+- [ ] clean working cfg 复核新增 MARKER_ANALYZE=(INLET,OUTLET)
+- [ ] clean case 重新运行后审阅 stage performance 时间序列
 - [ ] 收敛后再逐步恢复二阶/正式收敛
 - [ ] 核验外部网格版本、边界、许可证和与项目工况的对应关系
 - [x] 输出 P4 输入审计报告
