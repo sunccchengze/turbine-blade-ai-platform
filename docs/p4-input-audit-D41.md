@@ -379,7 +379,17 @@ backend/scripts/prepare_su2_smoke_cfg.py
 - 因此仍未收敛；20 次时的短暂低残差不能视为最终趋势；
 - 需要先审阅 `history.csv`、`forces_breakdown.dat` 和 CFL/边界设置，再决定数值调整。
 
-## 22. 下一步建议
+## 22. SU2 marker 几何轴向审计入口
+
+已新增：
+
+```text
+backend/scripts/audit_su2_marker_geometry.py
+```
+
+它计算 INLET/OUTLET/PER1/PER2/HUB/BLADE/SHROUD 等 marker 的空间中心、包围盒和入口到出口主方向，用于核对 cfg 的 Z 轴流向与实际网格坐标；不运行求解器。
+
+## 23. 下一步建议
 
 ### 方案 A：已有 Rotor37 资产
 
