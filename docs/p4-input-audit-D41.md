@@ -431,6 +431,10 @@ backend/scripts/prepare_su2_run_case.py
 
 它复制 cfg/mesh/inlet 到独立目录，计算 SHA256，写入 `run_manifest.json`，并拒绝覆盖非空运行目录。后续每次 SU2 运行都应在独立目录完成，避免 restart/history/forces/TURBOMACHINERY 互相覆盖。
 
+### 隔离 fresh baseline
+
+用户在独立运行目录 `p4_runs/fresh_first_bounded20_1000` 重新运行同一 fresh cfg，得到完全相同的 `relrms[Rho]=-3.39242`。这确认结果可复现，平台不再受共享目录覆盖或旧 restart 污染影响；当前瓶颈是 coarse case 的数值/物理收敛平台。
+
 ## 25. 下一步建议
 
 ### 方案 A：已有 Rotor37 资产
