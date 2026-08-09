@@ -60,6 +60,15 @@
 :root[data-theme='light'] [style*='#64748b'],
 :root[data-theme='light'] [style*='#475569'] { color: var(--muted) !important; }
 
+:root[data-theme='light'] .js-plotly-plot .xtick text,
+:root[data-theme='light'] .js-plotly-plot .ytick text,
+:root[data-theme='light'] .js-plotly-plot .axis-title,
+:root[data-theme='light'] .js-plotly-plot .legendtext,
+:root[data-theme='light'] .js-plotly-plot .annotation-text,
+:root[data-theme='light'] .js-plotly-plot .cbaxis text { fill: var(--muted) !important; }
+:root[data-theme='light'] .js-plotly-plot .gridlayer path,
+:root[data-theme='light'] .js-plotly-plot .zerolinelayer path { stroke: rgba(20, 45, 36, .14) !important; }
+
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
