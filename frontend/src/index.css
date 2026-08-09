@@ -41,6 +41,19 @@
 :root[data-theme='light'] body {
   background: var(--ink);
 }
+:root[data-theme='light'] header {
+  background: color-mix(in srgb, var(--ink) 92%, transparent) !important;
+}
+:root[data-theme='light'] [style*='rgba(11,14,13'] {
+  background: var(--ink) !important;
+}
+:root[data-theme='light'] [style*='rgba(17,22,21'] {
+  background: var(--panel) !important;
+  color: var(--paper) !important;
+}
+:root[data-theme='light'] [style*='rgba(15,23,42'] {
+  background: var(--ink) !important;
+}
 
 :root[data-theme='light'] ::-webkit-scrollbar-track { background: var(--ink); }
 :root[data-theme='light'] ::-webkit-scrollbar-thumb { background: #9eaa9d; }
