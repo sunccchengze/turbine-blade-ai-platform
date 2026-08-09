@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback, useRef } from 'react'
 import BladeViewer3D from '../components/BladeViewer3D'
 import { motion } from 'framer-motion'
 import {
-  Cpu, RefreshCw, AlertCircle,
+  RefreshCw, AlertCircle,
   TrendingUp, Gauge, Wind,
   Info
 } from 'lucide-react'
@@ -201,7 +201,6 @@ export default function PredictPage() {
   const [result,       setResult]       = useState(null)
   const [loading,      setLoading]      = useState(false)
   const [error,        setError]        = useState(null)
-  const [history,      setHistory]      = useState([])
   // 窄屏（<900px）时双栏改单列，避免 360px 固定左栏在手机上溢出
   const [isNarrow,     setIsNarrow]     = useState(() => window.innerWidth < 900)
 
@@ -235,13 +234,6 @@ export default function PredictPage() {
         const featureArray = Object.values(feats).map(Number)
         const res = await predictPerformance(featureArray, withUQ)
         setResult(res)
-        // 加入历史
-        setHistory(prev => [{
-          timestamp: new Date().toLocaleTimeString(),
-          result: res,
-          omega: feats.Omega,
-          p: feats.P,
-        }, ...prev].slice(0, 8))
       } catch (e) {
         setError(e.message || '预测失败 Prediction failed')
       } finally {
@@ -301,372 +293,47 @@ export default function PredictPage() {
   }
 
   return (
-    <div style={{ background: 'var(--ink)', minHeight: '100vh', padding: '54px 24px 80px' }}>
-      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-
-        {/* 页面标题 */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          style={{ marginBottom: '32px' }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
-            <div style={{
-              width: '36px', height: '36px', borderRadius: '10px',
-              background: 'rgba(99,102,241,0.15)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}>
-              <Cpu size={18} color="#818cf8" />
-            </div>
-            <h1 style={{ fontSize: 'clamp(2.2rem, 4.8vw, 4rem)', fontWeight: 600, color: 'var(--paper)', fontFamily: 'var(--display)', letterSpacing: '-.05em', lineHeight: 1.08 }}>
-              实时性能预测
-              <span style={{ fontSize: '11px', color: '#475569', fontWeight: 600, marginLeft: '10px', letterSpacing: '0.08em' }}>
-                LIVE PREDICTION
-              </span>
-            </h1>
+    <main style={{ background: 'var(--ink)', minHeight: '100vh', padding: '58px 28px 90px' }}>
+      <div style={{ maxWidth: 1240, margin: '0 auto' }}>
+        <motion.header initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end', gap: 28, flexWrap: 'wrap', marginBottom: 34 }}>
+          <div>
+            <div style={{ color: 'var(--yellow)', font: '10px var(--mono)', letterSpacing: '.14em' }}>01 / 实时预测 · LIVE PREDICTION</div>
+            <h1 style={{ color: 'var(--paper)', font: '600 clamp(38px,5vw,64px)/1.08 var(--display)', letterSpacing: '-.055em', marginTop: 14 }}>让模型回答<br /><span style={{ color: 'var(--teal-bright)' }}>一个运行点的问题</span></h1>
           </div>
-          <p style={{ fontSize: '14px', color: '#64748b', maxWidth: '680px', lineHeight: 1.7 }}>
-            调节压气机叶片的运行参数，气动代理模型（Aerodynamic Surrogate Model）实时输出气动性能预测——无需 CFD 计算。
-            <br />
-            <span style={{ fontSize: '12px', color: '#475569' }}>
-              Adjust blade operating parameters and get real-time aerodynamic performance predictions from the surrogate model — no CFD required.
-            </span>
-          </p>
-        </motion.div>
+          <p style={{ maxWidth: 380, color: 'var(--muted)', fontSize: 13, lineHeight: 1.85 }}>调整运行与统计特征，浏览器内的 ONNX 代理模型会立即返回预测。结果用于筛选，不替代最终 RANS。</p>
+        </motion.header>
 
-        {error && (
-          <div style={{
-            marginBottom: '20px', padding: '12px 16px', borderRadius: '10px',
-            background: 'rgba(248,113,113,0.08)', border: '1px solid rgba(248,113,113,0.2)',
-            display: 'flex', alignItems: 'center', gap: '8px',
-            fontSize: '13px', color: '#f87171',
-          }}>
-            <AlertCircle size={15} />
-            {error}
-          </div>
-        )}
+        {error && <div style={{ marginBottom: 16, padding: '12px 16px', border: '1px solid rgba(173,80,56,.35)', color: 'var(--rust)', borderRadius: 7, fontSize: 12 }}><AlertCircle size={14} style={{ verticalAlign: 'middle', marginRight: 7 }} />{error}</div>}
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', paddingBottom: 18, borderBottom: '1px solid var(--line)', marginBottom: 18 }}>
+          <span className="badge" style={{ color: 'var(--teal-bright)' }}>LOCAL / ONNX WASM</span>
+          <span className="badge" style={{ color: 'var(--muted)' }}>74 维输入</span>
+          <span className="badge" style={{ color: 'var(--yellow)' }}>名义区间 · 非严格保证</span>
+        </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: isNarrow ? '1fr' : '360px 1fr', gap: '24px' }}>
-
-          {/* ── 左侧：参数控制面板 ─────────────────────── */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.1 }}
-          >
-            <div className="glass-card" style={{ padding: '24px' }}>
-
-              {/* 面板标题 */}
-              <div style={{
-                display: 'flex', alignItems: 'center',
-                justifyContent: 'space-between', marginBottom: '24px',
-              }}>
-                <h3 style={{ fontSize: '14px', fontWeight: 600, color: '#e2e8f0' }}>
-                  运行参数 Operating Parameters
-                </h3>
-                <button
-                  onClick={handleReset}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: '5px',
-                    padding: '5px 10px', borderRadius: '7px',
-                    background: 'rgba(255,255,255,0.05)',
-                    border: '1px solid rgba(255,255,255,0.08)',
-                    color: '#64748b', fontSize: '11px', cursor: 'pointer',
-                    transition: 'all 0.2s',
-                  }}
-                  onMouseEnter={e => e.currentTarget.style.color = '#94a3b8'}
-                  onMouseLeave={e => e.currentTarget.style.color = '#64748b'}
-                >
-                  <RefreshCw size={11} /> 重置 Reset
-                </button>
-              </div>
-
-              {/* Omega 滑块 */}
-              <ParamSlider
-                label="转速 Ω · Rotational Speed"
-                value={features.Omega}
-                min={stats.Omega.min}
-                max={stats.Omega.max}
-                step={1}
-                unit="rad/s"
-                color="#818cf8"
-                onChange={v => handleChange('Omega', v)}
-                hint={{
-                  cn: '转子转速，决定压气机运行点与叶片相对速度场。转速越高，单位质量流量与压比通常越高。',
-                  en: 'Rotor speed; sets the operating point and the blade relative velocity field. Higher speed generally raises mass flow and pressure ratio.',
-                }}
-              />
-
-              {/* P 滑块 */}
-              <ParamSlider
-                label="进口总压 P · Inlet Pressure"
-                value={features.P}
-                min={stats.P.min}
-                max={stats.P.max}
-                step={100}
-                unit="Pa"
-                color="#22d3ee"
-                onChange={v => handleChange('P', v)}
-                hint={{
-                  cn: '进口总压（背压工况），与转速共同决定级压比与流量。背压越高，压比越高而流量越小。',
-                  en: 'Inlet total pressure (back-pressure condition); together with speed it sets stage pressure ratio and flow. Higher back pressure raises ratio but lowers flow.',
-                }}
-              />
-
-              {/* 分隔线 */}
-              <div style={{
-                height: '1px',
-                background: 'rgba(255,255,255,0.05)',
-                margin: '20px 0',
-              }} />
-
-              {/* 关键几何特征 */}
-              <div style={{ marginBottom: '12px' }}>
-                <div style={{
-                  display: 'flex', alignItems: 'center', gap: '6px',
-                  marginBottom: '16px',
-                }}>
-                  <span style={{ fontSize: '12px', fontWeight: 600, color: '#64748b' }}>
-                    关键统计特征 Key Statistical Features
-                  </span>
-                  <div style={{ position: 'relative', display: 'inline-flex' }}
-                    title="叶片表面气动与几何场的统计特征 Statistical properties of blade surface fields">
-                    <Info size={12} color="#475569" style={{ cursor: 'help' }} />
-                  </div>
-                </div>
-
-                {[
-                  { key: 'Pressure_mean',    label: '表面压力均值 Surface Pressure Mean', color: '#fb923c', unit: 'Pa'  },
-                  { key: 'Pressure_std',     label: '表面压力标准差 Surface Pressure Std', color: '#f87171', unit: 'Pa'  },
-                  { key: 'Temperature_mean', label: '表面温度均值 Surface Temp Mean', color: '#fbbf24', unit: 'K'   },
-                  { key: 'CoordinateY_mean', label: '径向位置均值 Radial Position Mean', color: '#34d399', unit: 'm'   },
-                ].map(({ key, label, color, unit }) => {
-                  if (!stats[key]) return null
-                  const hints = {
-                    Pressure_mean:    { cn: '叶片表面压力场的统计均值，反映整体气动载荷水平。', en: 'Mean of the blade surface pressure field; overall aerodynamic loading.' },
-                    Pressure_std:     { cn: '表面压力标准差。分布越宽，载荷梯度越陡，流动越易分离。', en: 'Std of surface pressure. Wider spread means steeper loading gradients and higher separation risk.' },
-                    Temperature_mean: { cn: '叶片表面温度场的统计均值，与热负荷及状态方程直接相关。', en: 'Mean surface temperature; tied to thermal load and the equation of state.' },
-                    CoordinateY_mean: { cn: '叶片表面径向坐标的统计均值，是展向几何位置的代表量。', en: 'Mean radial coordinate of the blade surface; representative of spanwise geometry.' },
-                  }
-                  return (
-                    <ParamSlider
-                      key={key}
-                      label={label}
-                      value={features[key]}
-                      min={stats[key].min}
-                      max={stats[key].max}
-                      step={(stats[key].max - stats[key].min) / 100}
-                      unit={unit}
-                      color={color}
-                      onChange={v => handleChange(key, v)}
-                      hint={hints[key]}
-                    />
-                  )
-                })}
-              </div>
-
-              {/* UQ 开关 */}
-              <div style={{
-                display: 'flex', alignItems: 'center',
-                justifyContent: 'space-between',
-                padding: '12px 14px', borderRadius: '10px',
-                background: 'rgba(255,255,255,0.03)',
-                border: '1px solid rgba(255,255,255,0.06)',
-              }}>
-                <div>
-                  <div style={{ fontSize: '12px', fontWeight: 600, color: '#94a3b8' }}>
-                    不确定性量化 UQ
-                  </div>
-                  <div style={{ fontSize: '11px', color: '#475569', marginTop: '2px' }}>
-                    σ 统计量（训练期 MC Dropout）
-                  </div>
-                </div>
-                <button
-                  onClick={() => setWithUQ(!withUQ)}
-                  role="switch"
-                  aria-checked={withUQ}
-                  aria-label="切换不确定性量化 Toggle uncertainty quantification"
-                  style={{
-                    width: '40px', height: '22px', borderRadius: '11px',
-                    background: withUQ ? '#4f46e5' : 'rgba(255,255,255,0.1)',
-                    border: 'none', cursor: 'pointer',
-                    position: 'relative', transition: 'background 0.2s',
-                  }}
-                >
-                  <div style={{
-                    position: 'absolute', top: '3px',
-                    left: withUQ ? '21px' : '3px',
-                    width: '16px', height: '16px', borderRadius: '50%',
-                    background: 'white', transition: 'left 0.2s',
-                  }} />
-                </button>
-              </div>
+        <div style={{ display: 'grid', gridTemplateColumns: isNarrow ? '1fr' : '320px minmax(0,1fr)', gap: 14, alignItems: 'start' }}>
+          <motion.aside initial={{ opacity: 0, x: -15 }} animate={{ opacity: 1, x: 0 }} className="surface-card" style={{ padding: 20, position: isNarrow ? 'relative' : 'sticky', top: 92 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 22 }}><div style={{ color: 'var(--faint)', font: '10px var(--mono)', letterSpacing: '.13em' }}>输入控制面 · INPUTS</div><button onClick={handleReset} style={{ border: '1px solid var(--line)', background: 'transparent', color: 'var(--muted)', padding: '6px 9px', borderRadius: 5, cursor: 'pointer', fontSize: 11 }}><RefreshCw size={11} style={{ verticalAlign: 'middle', marginRight: 4 }} />重置</button></div>
+            <ParamSlider label="转速 Ω · Rotational Speed" value={features.Omega} min={stats.Omega.min} max={stats.Omega.max} step={1} unit="rad/s" color="#86b9aa" onChange={v => handleChange('Omega', v)} hint={{ cn: '转子转速，决定压气机运行点与叶片相对速度场。', en: 'Rotor speed sets the operating point.' }} />
+            <ParamSlider label="进口总压 P · Inlet Pressure" value={features.P} min={stats.P.min} max={stats.P.max} step={100} unit="Pa" color="#b5ded0" onChange={v => handleChange('P', v)} hint={{ cn: '进口总压与转速共同决定级压比与流量。', en: 'Inlet total pressure sets the stage condition.' }} />
+            <div style={{ borderTop: '1px solid var(--line)', margin: '22px 0 18px', paddingTop: 18 }}><div style={{ color: 'var(--faint)', font: '10px var(--mono)', letterSpacing: '.1em', marginBottom: 17 }}>关键统计特征 · FEATURE CONTROLS</div>
+              {[['Pressure_mean','表面压力均值','Pa','#c5684a'],['Pressure_std','表面压力标准差','Pa','#ad5038'],['Temperature_mean','表面温度均值','K','#e7c85b'],['CoordinateY_mean','径向位置均值','m','#86b9aa']].map(([key,label,unit,color]) => stats[key] ? <ParamSlider key={key} label={label} value={features[key]} min={stats[key].min} max={stats[key].max} step={(stats[key].max-stats[key].min)/100} unit={unit} color={color} onChange={v => handleChange(key,v)} hint={{ cn: `用于描述${label}的输入统计量。`, en: `Input statistic: ${label}.` }} /> : null)}
             </div>
-          </motion.div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 16, borderTop: '1px solid var(--line)' }}><div><div style={{ color: 'var(--paper)', fontSize: 12 }}>不确定性量化 UQ</div><div style={{ color: 'var(--faint)', font: '10px var(--mono)', marginTop: 3 }}>训练期 σ 指示器</div></div><button onClick={() => setWithUQ(!withUQ)} role="switch" aria-checked={withUQ} style={{ width: 40, height: 22, borderRadius: 99, border: 0, background: withUQ ? 'var(--teal)' : 'var(--faint)', cursor: 'pointer', padding: 3, textAlign: withUQ ? 'right' : 'left' }}><span style={{ display: 'inline-block', width: 16, height: 16, borderRadius: '50%', background: 'var(--paper)' }} /></button></div>
+          </motion.aside>
 
-          {/* ── 右侧：预测结果 ─────────────────────────── */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.15 }}
-          >
-
-            {/* 加载指示器 */}
-            {loading && (
-              <div style={{
-                marginBottom: '12px', padding: '8px 14px', borderRadius: '8px',
-                background: 'rgba(99,102,241,0.08)',
-                border: '1px solid rgba(99,102,241,0.15)',
-                display: 'flex', alignItems: 'center', gap: '8px',
-                fontSize: '12px', color: '#818cf8',
-              }}>
-                <RefreshCw size={12} style={{ animation: 'spin 0.8s linear infinite' }} />
-                代理模型推理中… Computing…
-              </div>
-            )}
-    
-            {/* 3D 叶片可视化 */}
-            <motion.div
-            initial={{ opacity: 0, scale: 0.97 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2 }}
-            style={{ marginBottom: '16px' }}
-            >
-            <BladeViewer3D
-                params={features}
-                efficiency={getPredVal('Efficiency')}
-                pressureRatio={getPredVal('Compression_ratio')}
-                massflow={getPredVal('Massflow')}
-                height={300}
-            />
-            </motion.div>
-            {/* 三个结果卡片 */}
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-              gap: '14px', marginBottom: '20px',
-            }}>
-              <ResultCard
-                label="总压比 Pressure Ratio"
-                value={getPredVal('Compression_ratio')}
-                sigma={getPredSigma('Compression_ratio')}
-                unit="π"
-                color="primary"
-                icon={Gauge}
-                baseline={baseline?.true_performance?.Compression_ratio}
-              />
-              <ResultCard
-                label="等熵效率 Efficiency"
-                value={getPredVal('Efficiency')}
-                sigma={getPredSigma('Efficiency')}
-                unit="η"
-                color="cyan"
-                icon={TrendingUp}
-                baseline={baseline?.true_performance?.Efficiency}
-              />
-              <ResultCard
-                label="质量流量 Mass Flow"
-                value={getPredVal('Massflow')}
-                sigma={getPredSigma('Massflow')}
-                unit="kg/s"
-                color="green"
-                icon={Wind}
-                baseline={baseline?.true_performance?.Massflow}
-              />
+          <motion.section initial={{ opacity: 0, x: 15 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: .08 }}>
+            {loading && <div style={{ padding: '10px 14px', marginBottom: 12, border: '1px solid rgba(134,185,170,.25)', color: 'var(--teal-bright)', borderRadius: 6, font: '11px var(--mono)' }}><RefreshCw size={12} className="spin" style={{ verticalAlign: 'middle', marginRight: 7 }} />代理模型推理中</div>}
+            <div style={{ marginBottom: 14 }}><BladeViewer3D params={features} efficiency={getPredVal('Efficiency')} pressureRatio={getPredVal('Compression_ratio')} massflow={getPredVal('Massflow')} height={300} /></div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 10, marginBottom: 14 }}>
+              <ResultCard label="总压比 π" value={getPredVal('Compression_ratio')} sigma={getPredSigma('Compression_ratio')} unit="π" color="primary" icon={Gauge} baseline={baseline?.true_performance?.Compression_ratio} />
+              <ResultCard label="等熵效率 η" value={getPredVal('Efficiency')} sigma={getPredSigma('Efficiency')} unit="η" color="cyan" icon={TrendingUp} baseline={baseline?.true_performance?.Efficiency} />
+              <ResultCard label="质量流量 ṁ" value={getPredVal('Massflow')} sigma={getPredSigma('Massflow')} unit="kg/s" color="green" icon={Wind} baseline={baseline?.true_performance?.Massflow} />
             </div>
-
-            {/* 当前参数摘要 */}
-            <div className="glass-card" style={{ padding: '16px 20px', marginBottom: '20px' }}>
-              <div style={{
-                fontSize: '11px', fontWeight: 600, color: '#475569',
-                textTransform: 'uppercase', letterSpacing: '0.05em',
-                marginBottom: '12px',
-              }}>
-                当前参数 Current Parameters
-              </div>
-              <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
-                {[
-                  { label: 'Ω', value: features.Omega?.toFixed(0), unit: 'rad/s', color: '#818cf8' },
-                  { label: 'P', value: features.P?.toFixed(0),     unit: 'Pa',  color: '#22d3ee' },
-                  { label: 'P_mean', value: features.Pressure_mean?.toFixed(0), unit: 'Pa', color: '#fb923c' },
-                  { label: 'T_mean', value: features.Temperature_mean?.toFixed(1), unit: 'K', color: '#fbbf24' },
-                ].map(({ label, value, unit, color }) => (
-                  <div key={label}>
-                    <span style={{ fontSize: '11px', color: '#475569' }}>{label} </span>
-                    <span className="num" style={{ fontSize: '13px', fontWeight: 700, color }}>
-                      {value}
-                    </span>
-                    <span style={{ fontSize: '10px', color: '#475569', marginLeft: '2px' }}>{unit}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* 历史记录 */}
-            {history.length > 0 && (
-              <div className="glass-card" style={{ padding: '16px 20px' }}>
-                <div style={{
-                  fontSize: '11px', fontWeight: 600, color: '#475569',
-                  textTransform: 'uppercase', letterSpacing: '0.05em',
-                  marginBottom: '12px',
-                }}>
-                  预测历史 Prediction History
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  {history.map((h, i) => {
-                    const eff = h.result?.predictions?.Efficiency?.mean
-                      ?? h.result?.predictions?.Efficiency?.value
-                    const comp = h.result?.predictions?.Compression_ratio?.mean
-                      ?? h.result?.predictions?.Compression_ratio?.value
-                    return (
-                      <div
-                        key={i}
-                        style={{
-                          display: 'flex', alignItems: 'center',
-                          justifyContent: 'space-between',
-                          padding: '8px 12px', borderRadius: '7px',
-                          background: i === 0 ? 'rgba(99,102,241,0.08)' : 'rgba(255,255,255,0.02)',
-                          border: i === 0 ? '1px solid rgba(99,102,241,0.15)' : '1px solid transparent',
-                          fontSize: '12px',
-                        }}
-                      >
-                        <span style={{ color: '#475569', fontFamily: 'monospace' }}>
-                          {h.timestamp}
-                        </span>
-                        <span style={{ color: '#64748b' }}>
-                          Ω={h.omega?.toFixed(0)} · P={h.p?.toFixed(0)}
-                        </span>
-                        <span className="num" style={{ color: '#22d3ee' }}>
-                          η={eff?.toFixed(4)}
-                        </span>
-                        <span className="num" style={{ color: '#818cf8' }}>
-                          π={comp?.toFixed(4)}
-                        </span>
-                        {i === 0 && (
-                          <span style={{
-                            fontSize: '10px', padding: '1px 6px', borderRadius: '4px',
-                            background: 'rgba(99,102,241,0.15)', color: '#818cf8',
-                          }}>
-                            最新
-                          </span>
-                        )}
-                      </div>
-                    )
-                  })}
-                </div>
-              </div>
-            )}
-          </motion.div>
+            <div className="surface-card" style={{ padding: 19 }}><div style={{ color: 'var(--faint)', font: '10px var(--mono)', letterSpacing: '.12em', marginBottom: 15 }}>当前输入 · CURRENT INPUT STATE</div><div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10 }}>{[['Ω',features.Omega?.toFixed(0),'rad/s'],['P',features.P?.toFixed(0),'Pa'],['P mean',features.Pressure_mean?.toFixed(0),'Pa'],['T mean',features.Temperature_mean?.toFixed(1),'K']].map(([label,value,unit]) => <div key={label} style={{ padding: 11, background: 'var(--ink)', border: '1px solid var(--line)', borderRadius: 6 }}><div style={{ color: 'var(--faint)', font: '10px var(--mono)' }}>{label}</div><div className="num" style={{ color: 'var(--teal-bright)', fontSize: 14, marginTop: 5 }}>{value}</div><div style={{ color: 'var(--faint)', font: '9px var(--mono)' }}>{unit}</div></div>)}</div></div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginTop: 14 }}><div className="surface-card" style={{ padding: 19 }}><div style={{ color: 'var(--faint)', font: '10px var(--mono)', letterSpacing: '.12em' }}>如何阅读结果</div><p style={{ color: 'var(--muted)', fontSize: 12, lineHeight: 1.8, marginTop: 14 }}>数值来自代理模型的快速预测。UQ 区间用于提示模型信心，不是严格的统计保证。若要下物理结论，需要真实几何和收敛 RANS。</p></div><div className="surface-card" style={{ padding: 19 }}><div style={{ color: 'var(--faint)', font: '10px var(--mono)', letterSpacing: '.12em' }}>当前证据 · EVIDENCE</div><div style={{ display: 'grid', gap: 9, marginTop: 14, color: 'var(--muted)', fontSize: 12 }}><div><span style={{ color: 'var(--teal-bright)' }}>●</span> 生产 ONNX 本地推理</div><div><span style={{ color: 'var(--teal-bright)' }}>●</span> 留出集 R² 已复现</div><div><span style={{ color: 'var(--yellow)' }}>●</span> RANS 最终验证待完成</div></div></div></div>
+          </motion.section>
         </div>
       </div>
-
-      {/* CSS for spin animation */}
-      <style>{`
-        @keyframes spin {
-          from { transform: rotate(0deg); }
-          to   { transform: rotate(360deg); }
-        }
-      `}</style>
-    </div>
+    </main>
   )
 }
