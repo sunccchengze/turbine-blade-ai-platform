@@ -268,7 +268,25 @@ backend/scripts/audit_su2_surface.py
 
 它不调用 SU2 求解器，只检查原始 QUAD_4 表面的节点、边、边界边、非流形边、连通分量和包围盒，确认原始拓扑是否完整以及是否适合进入体网格准备。
 
-## 15. 下一步建议
+## 15. 原始 SU2 表面拓扑 Gate 结果
+
+用户本机审计 `sample_0000_surface.su2`：
+
+```text
+vertices = 29773
+quads = 29664
+edges = 59436
+boundary_edges = 216
+nonmanifold_edges = 0
+connected_components = 1
+used_vertices = 29773
+```
+
+**判定：原始表面拓扑 Gate 通过。** 它是单连通、无非流形边、无未使用节点的真实 QUAD_4 表面；216 条边界边需要进一步解释，但远好于 BPA 的 20 个边界分量/454 条边界边。当前仍是 surface-only，不是体网格，也没有证明可以直接运行 RANS。
+
+这次结果证明：后续应以 PLAID 原始 `ElementConnectivity` 为几何拓扑来源，BPA 只保留为可视化/重建对照，不再作为 CFD 拓扑来源。
+
+## 16. 下一步建议
 
 ### 方案 A：已有 Rotor37 资产
 

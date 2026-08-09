@@ -54,8 +54,9 @@
 - [ ] 同步最新代码后运行 `extract_raw_mesh_p4.py --index 0`
 - [x] 审阅 PLAID 原始 meshes：29773 节点、29664 QUAD_4、ElementConnectivity、Rotor37 PointList
 - [ ] 运行 `convert_raw_mesh_to_su2_surface.py` 导出原始拓扑表面
-- [ ] 同步后运行 `audit_su2_surface.py` 审计原始 QUAD_4 表面
-- [ ] 从原始表面继续确认体网格/边界/多排信息
+- [x] 同步后运行 `audit_su2_surface.py`：单连通、0 非流形、29773 节点全部使用、216 边界边
+- [ ] 解释原始表面 216 条边界边的物理语义
+- [ ] 确认原始数据是否含体网格/流体域/多排信息
 - [ ] 寻找正式表面重建/原始 CGNS/SU2 网格路径
 - [ ] P4 Rotor37 正式表面拓扑/网格/SU2 输入链路
 - [ ] η 专项物理派生特征消融

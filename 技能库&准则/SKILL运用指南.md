@@ -243,7 +243,7 @@ cd /d D:\turbine-blade-ai-platform
 git pull --ff-only origin arena/019fe072-turbine-blade-ai-platform
 ```
 
-随后才提供 `python ...`、训练、Open3D 或前端命令。同步后必须给出预期提交或 `dir` 文件存在检查；如果 `git status --short` 有本地改动，不得让用户盲目 pull/reset，应先让其保存或反馈状态。
+随后才提供 `python ...`、训练、Open3D 或前端命令。**面向孙承泽的 Windows 执行指令默认只给单行版本**，除非他主动要求多行命令；这样可避免 CMD 的 `^` 续行和 Markdown 链接复制造成歧义。同步后必须给出预期提交或 `dir` 文件存在检查；如果 `git status --short` 有本地改动，不得让用户盲目 pull/reset，应先让其保存或反馈状态。
 
 原因：本仓库包含持续新增的脚本、技能和文档；本地分支可能停留在旧提交。文件名复制问题只能在脚本已经同步且存在之后再判断，不能把“文件不存在”优先归因于 Markdown 链接。
 
