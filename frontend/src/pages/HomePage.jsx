@@ -197,6 +197,24 @@ export default function HomePage() {
             </Link>
           </motion.div>
 
+          {/* 证据状态：把代理预测与物理验证明确分层 */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.38 }}
+            style={{
+              marginTop: '24px', padding: '12px 16px', borderRadius: '10px',
+              background: 'rgba(251,191,36,0.06)',
+              border: '1px solid rgba(251,191,36,0.18)',
+              color: '#cbd5e1', fontSize: '12px', lineHeight: 1.7,
+              textAlign: 'left',
+            }}
+          >
+            <strong style={{ color: '#fbbf24' }}>证据状态：</strong>
+            当前 Pareto 结果是代理模型预测候选；真实 SU2/RANS 物理通路已启动，但最终收敛 CFD 验证仍待服务器/HPC 条件。
+            <span style={{ color: '#64748b' }}> The Pareto results are surrogate predictions; final converged RANS validation remains pending.</span>
+          </motion.div>
+
         </div>
       </section>
 

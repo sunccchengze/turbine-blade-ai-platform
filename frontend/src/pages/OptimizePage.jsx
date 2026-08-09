@@ -340,15 +340,25 @@ export default function OptimizePage() {
               </span>
             </h1>
           </div>
+          <div style={{
+            display: 'inline-flex', alignItems: 'center', gap: '8px',
+            marginBottom: '14px', padding: '7px 11px', borderRadius: '8px',
+            background: 'rgba(251,191,36,0.07)',
+            border: '1px solid rgba(251,191,36,0.2)',
+            color: '#fbbf24', fontSize: '11px', lineHeight: 1.4,
+          }}>
+            <Info size={13} />
+            <span><strong>结果状态：</strong>代理模型预测 · RANS 最终收敛验证待完成</span>
+          </div>
           <p style={{ fontSize: '14px', color: '#64748b', maxWidth: '700px', lineHeight: 1.7 }}>
             NSGA-II 多目标优化算法找到{' '}
             <span style={{ color: '#22d3ee', fontWeight: 500 }}>
-              {paretoData?.n_solutions} 个 Pareto 最优
+              {paretoData?.n_solutions} 个代理预测 Pareto 候选
             </span>
             {' '}叶片设计方案，点击任意点查看其气动性能。全部设计满足约束：π ≥ 1.8，η ≥ 0.84。
             <br />
             <span style={{ fontSize: '12px', color: '#475569' }}>
-              NSGA-II found {paretoData?.n_solutions} Pareto-optimal blade designs — click any point to inspect its performance. All designs satisfy: π ≥ 1.8, η ≥ 0.84.
+              NSGA-II found {paretoData?.n_solutions} surrogate-predicted Pareto candidates — click any point to inspect its predicted performance. All candidates satisfy: π ≥ 1.8, η ≥ 0.84.
             </span>
           </p>
         </motion.div>

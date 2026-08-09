@@ -414,6 +414,41 @@ export default function MethodologyPage() {
         </ScrollSection>
       </section>
 
+      {/* 6.5 物理验证状态 */}
+      <section style={{ padding: '32px 0 0' }}>
+        <ScrollSection>
+          <SectionHeader
+            tag="Step 6.5 · Physics Gate"
+            title="真实物理验证：通路已打通，最终收敛待完成"
+            subtitle="Physics validation: the SU2 route is live; final converged RANS remains outstanding."
+          />
+          <motion.div
+            variants={fadeUp(0)}
+            style={{
+              padding: '24px', borderRadius: '14px',
+              background: 'rgba(30,41,59,0.4)',
+              border: '1px solid rgba(251,191,36,0.18)',
+            }}
+          >
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '10px' }}>
+              {[
+                ['已完成', '外部 Rotor37 SU2 体网格读取、周期面匹配、入口 profile 和 RANS 启动'],
+                ['已有证据', 'coarse 一阶 SA 的 Stage Performance 非收敛趋势；fine 网格 preprocessing 与 solver 启动'],
+                ['尚未完成', '最终收敛 RANS、Pareto 候选逐个 CFD 对照、代理误差的物理校验'],
+              ].map(([label, text], i) => (
+                <div key={label} style={{ padding: '13px', borderRadius: '10px', background: i === 2 ? 'rgba(251,191,36,0.06)' : 'rgba(255,255,255,0.025)', border: `1px solid ${i === 2 ? 'rgba(251,191,36,0.16)' : 'rgba(255,255,255,0.06)'}` }}>
+                  <div style={{ fontSize: '11px', fontWeight: 700, color: i === 2 ? '#fbbf24' : '#34d399', marginBottom: '6px' }}>{label}</div>
+                  <div style={{ fontSize: '12px', color: '#94a3b8', lineHeight: 1.7 }}>{text}</div>
+                </div>
+              ))}
+            </div>
+            <div style={{ marginTop: '14px', fontSize: '12px', color: '#64748b', lineHeight: 1.75 }}>
+              本地电脑无法承受 fine 网格长时间 RANS 求解，因此不把早期性能输出写成最终 CFD 结果。未来获得服务器或 HPC 后，可在相同 manifest 和 cfg 版本下恢复该实验。
+            </div>
+          </motion.div>
+        </ScrollSection>
+      </section>
+
       {/* 7. 局限总结 */}
       <section style={{ padding: '32px 0 0' }}>
         <ScrollSection>
