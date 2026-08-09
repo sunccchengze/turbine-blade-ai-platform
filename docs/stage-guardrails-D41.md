@@ -26,6 +26,17 @@
 
 ---
 
+## 2.0 Windows 本地执行硬规约
+
+任何新脚本、训练命令或 Open3D 命令交给用户前，必须先给出：
+
+```bat
+cd /d D:\turbine-blade-ai-platform
+git pull --ff-only origin arena/019fe072-turbine-blade-ai-platform
+```
+
+并说明预期提交/文件检查。不能在未同步的旧工作树上诊断“文件不存在”，也不能把路径错误优先归因于 Markdown 复制。
+
 ## 2. 当前阶段的硬性禁令
 
 ### 禁止 1：没有真实 RANS 前宣称“找到最优叶片”
