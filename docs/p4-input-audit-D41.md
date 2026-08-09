@@ -317,7 +317,7 @@ used_vertices = 29773
 backend/scripts/audit_external_su2_case.py
 ```
 
-它只读审计 SU2 ASCII 网格的 NELEM/NPOIN、体单元/表面单元、marker 和 cfg 的关键参数，不运行求解器。优先审计 coarse mesh，确认它确实是体网格且 marker/cfg 一致后，再处理 fine mesh。
+它只读审计 SU2 ASCII 网格的 NELEM/NPOIN、体单元/表面单元、marker 和 cfg 的关键参数，并自动检查 `MESH_FILENAME` 是否与实际文件一致、cfg marker 是否存在于网格、网格 marker 是否被 cfg 覆盖；不运行求解器。优先审计 coarse mesh，确认它确实是体网格且 marker/cfg 一致后，再处理 fine mesh。
 
 ## 18. 下一步建议
 

@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from collections import Counter
 from pathlib import Path
 
@@ -106,6 +107,18 @@ def parse_cfg(path: Path | None) -> dict:
     return {"path": str(path), "settings": {k: values[k] for k in wanted if k in values}}
 
 
+def cfg_marker_names(settings: dict[str, str]) -> set[str]:
+    names: set[str] = set()
+    for key, value in settings.items():
+        if not key.startswith("MARKER_"):
+            continue
+        # Marker names are the first token in each parenthesized tuple; this
+        # intentionally remains conservative and only extracts known marker ids.
+        for item in re.findall(r"\(\s*([A-Za-z0-9_]+)", value):
+            names.add(item)
+    return names
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--mesh", type=Path, required=True)
@@ -113,8 +126,18 @@ def main() -> None:
     ap.add_argument("--out", type=Path, default=None)
     args = ap.parse_args()
     result = {"mesh": parse_mesh(args.mesh), "cfg": parse_cfg(args.cfg)}
+    mesh_name = Path(result["mesh"]["path"]).name
+    settings = result["cfg"].get("settings", {})
+    cfg_mesh = Path(settings["MESH_FILENAME"]).name if "MESH_FILENAME" in settings else None
+    mesh_markers = set(result["mesh"]["marker_tags"])
+    cfg_markers = cfg_marker_names(settings)
     result["verdict"] = {
         "volume_mesh_present": result["mesh"]["has_volume_elements"],
+        "mesh_filename_matches_cfg": cfg_mesh == mesh_name if cfg_mesh else None,
+        "cfg_mesh_filename": cfg_mesh,
+        "actual_mesh_filename": mesh_name,
+        "cfg_markers_missing_from_mesh": sorted(cfg_markers - mesh_markers),
+        "mesh_markers_not_referenced_by_cfg": sorted(mesh_markers - cfg_markers),
         "next_gate": "boundary/cfg consistency and SU2 preprocessing" if result["mesh"]["has_volume_elements"] else "not a volume CFD mesh",
     }
     out = args.out or args.mesh.with_suffix(".case_audit.json")
