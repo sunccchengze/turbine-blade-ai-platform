@@ -28,7 +28,7 @@ export default function HomePage() {
         <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1.05fr) minmax(300px,.95fr)', gap: 70, alignItems: 'end' }}>
           <motion.div initial="hidden" animate="visible" variants={fade}>
             <Eyebrow>AI-ENABLED TURBOMACHINERY / RESEARCH PLATFORM</Eyebrow>
-            <h1 style={{ color: 'var(--paper)', font: '600 clamp(46px,7vw,88px)/1.12 var(--display)', letterSpacing: '-.045em', maxWidth: 760, marginTop: 19 }}>Surrogate explores<br /><span style={{ color: 'var(--teal-bright)' }}>Physics decides</span><br /><span style={{ color: 'var(--faint)', font: '500 clamp(18px,2.5vw,30px)/1.3 var(--body)', letterSpacing: '-.02em' }}>模型探路<br />物理定音</span></h1>
+            <h1 style={{ color: 'var(--paper)', font: '600 clamp(40px,5.8vw,72px)/1.14 var(--display)', letterSpacing: '-.045em', maxWidth: 760, marginTop: 19 }}>Surrogate explores<br /><span style={{ color: 'var(--teal-bright)' }}>Physics decides</span><br /><span style={{ color: 'var(--faint)', font: '500 clamp(18px,2.5vw,30px)/1.3 var(--body)', letterSpacing: '-.02em' }}>模型探路·物理定音</span></h1>
             <p style={{ color: 'var(--muted)', fontSize: 16, lineHeight: 1.8, maxWidth: 570, marginTop: 26 }}>用代理模型先筛选 74 维设计空间，再把值得计算的候选交给真实物理验证。现在，预测和探索都在浏览器本地运行。</p>
             <p style={{ color: 'var(--faint)', font: '11px var(--mono)', maxWidth: 570, lineHeight: 1.7, marginTop: 10 }}>Surrogate screening for NASA Rotor 37 compressor data. Pareto results are predictions, not converged RANS facts.</p>
             <div style={{ display: 'flex', gap: 10, marginTop: 32, flexWrap: 'wrap' }}>
