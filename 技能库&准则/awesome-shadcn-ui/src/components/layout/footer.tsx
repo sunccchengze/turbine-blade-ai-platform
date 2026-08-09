@@ -1,0 +1,140 @@
+"use client";
+
+import { Separator } from "@/components/ui/separator";
+import { GitHubStars } from "@/components/github-stars";
+import { ArrowRight, ExternalLink } from "lucide-react";
+import { motion, useInView } from "motion/react";
+import Link from "next/link";
+import { useRef } from "react";
+
+/** Static category links for footer navigation */
+const FOOTER_CATEGORIES = [
+  { title: "Libs and Components", slug: "libs-and-components" },
+  { title: "Boilerplates / Templates", slug: "boilerplates-templates" },
+  { title: "Plugins and Extensions", slug: "plugins-and-extensions" },
+  { title: "Colors and Customizations", slug: "colors-and-customizations" },
+  { title: "Animations", slug: "animations" },
+  { title: "Tools", slug: "tools" },
+];
+
+export function Footer() {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, amount: 0.3 });
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.2,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 },
+  };
+
+  const quickLinks = [
+    { name: "Home", href: "/" },
+    { name: "Categories", href: "/categories" },
+    {
+      name: "GitHub",
+      href: "https://github.com/birobirobiro/awesome-shadcn-ui",
+      external: true,
+    },
+  ];
+
+  return (
+    <footer className="border-t bg-background">
+      <motion.div
+        ref={ref}
+        variants={containerVariants}
+        initial="hidden"
+        animate={isInView ? "visible" : "hidden"}
+        className="container mx-auto max-w-7xl px-4 py-6 md:py-8"
+      >
+        {/* Main Footer Content */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+          {/* Brand Section */}
+          <motion.div variants={itemVariants} className="lg:col-span-2">
+            <Link href="/" className="flex items-center space-x-2 mb-4 group">
+              <img
+                src="/logo.svg"
+                alt="logo"
+                className="h-8 w-auto transition-transform group-hover:scale-105"
+              />
+              <span className="text-lg font-bold">awesome-shadcn/ui</span>
+            </Link>
+            <p className="text-sm text-muted-foreground mb-4 max-w-sm">
+              A curated list of awesome things related to shadcn/ui. Discover,
+              contribute, and grow the community.
+            </p>
+            <GitHubStars />
+          </motion.div>
+
+          {/* Quick Links */}
+          <motion.div variants={itemVariants}>
+            <h4 className="font-semibold mb-4">Quick Links</h4>
+            <ul className="space-y-2">
+              {quickLinks.map((link) => (
+                <li key={link.name}>
+                  <Link
+                    href={link.href}
+                    target={link.external ? "_blank" : undefined}
+                    rel={link.external ? "noopener noreferrer" : undefined}
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2 group"
+                  >
+                    {link.name}
+                    {link.external && (
+                      <ExternalLink className="h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
+                    )}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </motion.div>
+
+          {/* Categories Preview */}
+          <motion.div variants={itemVariants}>
+            <h4 className="font-semibold mb-4">Categories</h4>
+            <ul className="space-y-2">
+              {FOOTER_CATEGORIES.map((category) => (
+                <li key={category.slug}>
+                  <Link
+                    href={`/categories/${category.slug}`}
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2 group"
+                  >
+                    {category.title}
+                    <ArrowRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </motion.div>
+        </div>
+
+        <Separator className="mb-6" />
+
+        {/* Bottom Section */}
+        <motion.div
+          variants={itemVariants}
+          className="flex flex-col md:flex-row justify-between items-center gap-4"
+        >
+          <div className="flex flex-col md:flex-row items-center gap-4 text-xs text-muted-foreground font-mono">
+            <p>
+              © {new Date().getFullYear()} awesome-shadcn/ui. All rights
+              reserved.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-4 text-xs text-muted-foreground font-mono">
+            <span>Built with Next.js & shadcn/ui</span>
+          </div>
+        </motion.div>
+      </motion.div>
+    </footer>
+  );
+}
