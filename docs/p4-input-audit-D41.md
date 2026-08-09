@@ -192,7 +192,17 @@ backend/scripts/prototype_open3d_reconstruction.py
 
 该脚本支持 Open3D Poisson 和 Ball Pivoting 两条实验路径，先统一法向方向，再输出 PLY 和网格质量报告。它仍然是表面候选，不是 SU2/CGNS 网格；Poisson 的水密倾向也不能替代真实边界、周期面和多排装配定义。
 
-## 10. 下一步建议
+## 10. 表面候选保真审计入口
+
+已新增：
+
+```text
+backend/scripts/audit_surface_candidate.py
+```
+
+它计算原始点云→表面、表面→原始点云的双向最近距离，P95/最大误差、法向一致性、边界边、非流形边和包围盒偏差。只有通过保真审计，才值得继续讨论边界修复或网格化；通过仍不等于 CFD 网格。
+
+## 11. 下一步建议
 
 ### 方案 A：已有 Rotor37 资产
 
