@@ -16,8 +16,8 @@
 
 - [x] 接入并审计 `data/processed/pointcloud/rotor37_pc.npz`（1000×2048×9，sample_id 完全对齐）
 - [x] 追踪 Pareto 候选到几何/网格的文件级数据流
-- [ ] 确认 Rotor37 几何、网格和边界条件是否实际存在
-- [ ] 向用户索取缺失的本地 SU2/Rotor37 网格资产
+- [x] 确认 Rotor37 样本含真实表面拓扑，但不含体网格/流体域/入口出口
+- [ ] 寻找官方/外部 Rotor37 流体域网格与边界条件
 - [x] 输出 P4 输入审计报告
 
 ## 下一项：P1 无泄漏输入消融
@@ -51,13 +51,13 @@
 - [x] BPA/Poisson 双向表面保真审计：BPA 初筛通过，Poisson 淘汰
 - [x] 运行 `audit_mesh_boundaries.py`：20 个边界分量，主要分量位于内部，倾向重建孔洞/碎片
 - [x] BPA 边界语义 Gate 不通过，停止任意补洞路线
-- [ ] 同步最新代码后运行 `extract_raw_mesh_p4.py --index 0`
+- [x] 同步后运行 `extract_raw_mesh_p4.py --index 0`
 - [x] 审阅 PLAID 原始 meshes：29773 节点、29664 QUAD_4、ElementConnectivity、Rotor37 PointList
-- [ ] 运行 `convert_raw_mesh_to_su2_surface.py` 导出原始拓扑表面
+- [x] 运行 `convert_raw_mesh_to_su2_surface.py` 导出原始拓扑表面
 - [x] 同步后运行 `audit_su2_surface.py`：单连通、0 非流形、29773 节点全部使用、216 边界边
-- [ ] 解释原始表面 216 条边界边的物理语义
-- [ ] 确认原始数据是否含体网格/流体域/多排信息
-- [ ] 寻找正式表面重建/原始 CGNS/SU2 网格路径
+- [x] 解释原始表面 216 条边界边的物理语义边界：不能证明是天然边界
+- [x] 确认原始数据不含体网格/流体域/多排装配
+- [ ] 寻找正式流体域网格/边界条件；若找不到，P4 降级为表面可实现性 + 独立 SU2 通路验证
 - [ ] P4 Rotor37 正式表面拓扑/网格/SU2 输入链路
 - [ ] η 专项物理派生特征消融
 

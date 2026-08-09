@@ -284,7 +284,19 @@ used_vertices = 29773
 
 **判定：原始表面拓扑 Gate 通过。** 它是单连通、无非流形边、无未使用节点的真实 QUAD_4 表面；216 条边界边需要进一步解释，但远好于 BPA 的 20 个边界分量/454 条边界边。当前仍是 surface-only，不是体网格，也没有证明可以直接运行 RANS。
 
-这次结果证明：后续应以 PLAID 原始 `ElementConnectivity` 为几何拓扑来源，BPA 只保留为可视化/重建对照，不再作为 CFD 拓扑来源。
+### CFD 域完整性结论
+
+用户提取的原始 CGNS 树中只发现：
+
+- `Elements_QUAD_4`：29664 个四边形表面单元；
+- `ElementConnectivity`：118656 个连接索引；
+- `GridCoordinates`：29773 个节点；
+- `PointData` / `CellData`：Pressure、Density、Temperature、Normals；
+- `ZoneBC/Rotor37/PointList`：表面边界标记。
+
+未发现 TETRA/HEXA/PRISM 等体单元，也未发现入口、出口、周期面或流体域装配。因此 PLAID 当前样本是**叶片表面拓扑 + 表面场量数据**，不是可直接交给 SU2_CFD 的三维流体域网格。不能通过把这个 surface-only 文件改名或补一个 cfg 来伪装完成 RANS。
+
+这次结果证明：后续应以 PLAID 原始 `ElementConnectivity` 作为叶片表面几何来源；要完成真实 RANS，仍需另行获取/构造流体域网格和边界条件。BPA 只保留为可视化/重建对照，不再作为 CFD 拓扑来源。
 
 ## 16. 下一步建议
 
