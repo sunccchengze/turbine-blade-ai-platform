@@ -258,7 +258,17 @@ backend/scripts/convert_raw_mesh_to_su2_surface.py
 
 它将 `sample_0000_meshes.pkl` 中的原始坐标和 1-based QUAD_4 连接关系转换为 0-based SU2 code 9 表面文件，并写入元数据。输出明确标记为 surface-only，不是体网格，不直接运行 RANS。
 
-## 14. 下一步建议
+## 14. 原始 SU2 表面拓扑审计入口
+
+已新增：
+
+```text
+backend/scripts/audit_su2_surface.py
+```
+
+它不调用 SU2 求解器，只检查原始 QUAD_4 表面的节点、边、边界边、非流形边、连通分量和包围盒，确认原始拓扑是否完整以及是否适合进入体网格准备。
+
+## 15. 下一步建议
 
 ### 方案 A：已有 Rotor37 资产
 
