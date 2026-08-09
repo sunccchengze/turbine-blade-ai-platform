@@ -51,6 +51,13 @@ def main() -> None:
         updated += "\nRESTART_SOL= NO\n"
     if n == 0:
         updated += f"\nITER= {args.iter}\n"
+    # Ensure the full-machine analysis marker survives every derived cfg.
+    updated, analyze_n = re.subn(
+        r"^\s*MARKER_ANALYZE\s*=.*$",
+        "MARKER_ANALYZE= ( INLET, OUTLET )",
+        updated, count=1, flags=re.M)
+    if analyze_n == 0:
+        updated += "\nMARKER_ANALYZE= ( INLET, OUTLET )\n"
     cfl_replacements = []
     if args.fixed_cfl and args.bounded_cfl:
         raise SystemExit("--fixed-cfl 与 --bounded-cfl 不能同时使用")
