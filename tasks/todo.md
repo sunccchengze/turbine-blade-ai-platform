@@ -45,7 +45,7 @@
 - [x] 失败 restart 路线已停止
 - [x] 新增隔离 SU2 运行目录和 SHA256 manifest 机制
 - [x] 独立目录重新运行一阶 coarse baseline，复现 relrms=-3.39242
-- [ ] clean working cfg 复核新增 MARKER_ANALYZE=(INLET,OUTLET)
+- [x] clean working cfg 复核新增 MARKER_ANALYZE=(INLET,OUTLET)
 - [ ] clean case 重新运行后审阅 stage performance 时间序列
 - [ ] 收敛后再逐步恢复二阶/正式收敛
 - [ ] 核验外部网格版本、边界、许可证和与项目工况的对应关系
