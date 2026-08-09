@@ -33,10 +33,10 @@
 - [x] 一阶 500 iteration 稳定运行但未收敛（relrms=-3.38664）
 - [x] 运行 `audit_su2_marker_geometry.py`：INLET→OUTLET 主轴为 Z
 - [ ] 审计 `inlet_kw_new.dat` 的列定义和速度分量
-- [ ] 读取 history.csv 表头和末尾，确认残差/CFL/性能列含义
-- [ ] 进一步核对 inlet_kw_new.dat 与 cfg 的入口物理语义
-- [ ] 审阅 forces_breakdown.dat / CFL 演化
-- [ ] 根据轴向/边界审计调整一阶数值稳定配置并重新试跑
+- [x] 读取 history.csv 表头和末尾，确认残差/CFL/性能列含义
+- [x] 进一步核对 inlet_kw_new.dat 与 cfg 的入口物理语义
+- [x] 审阅 forces_breakdown.dat / CFL 演化
+- [ ] 生成 `--fixed-cfl` 的一阶 500 iteration 对照并审阅残差
 - [ ] 收敛后再逐步恢复二阶/正式收敛
 - [ ] 核验外部网格版本、边界、许可证和与项目工况的对应关系
 - [x] 输出 P4 输入审计报告

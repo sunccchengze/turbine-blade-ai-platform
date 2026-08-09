@@ -15,6 +15,8 @@ def main() -> None:
     ap.add_argument("--cfg", type=Path, required=True)
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--iter", type=int, default=20)
+    ap.add_argument("--fixed-cfl", action="store_true",
+                    help="关闭 CFL 自适应并固定 CFL_NUMBER=1，适合 RANS 稳定性诊断")
     args = ap.parse_args()
     text = args.cfg.read_text(encoding="utf-8", errors="replace")
     if not re.search(r"^\s*SOLVER\s*=\s*RANS", text, flags=re.M):
@@ -41,6 +43,11 @@ def main() -> None:
         updated += "\nRESTART_SOL= NO\n"
     if n == 0:
         updated += f"\nITER= {args.iter}\n"
+    cfl_replacements = []
+    if args.fixed_cfl:
+        updated, _ = re.subn(r"^\s*CFL_ADAPT\s*=.*$", "CFL_ADAPT= NO", updated, count=1, flags=re.M)
+        updated, _ = re.subn(r"^\s*CFL_NUMBER\s*=.*$", "CFL_NUMBER= 1.0", updated, count=1, flags=re.M)
+        cfl_replacements = ["CFL_ADAPT -> NO", "CFL_NUMBER -> 1.0"]
     updated += "\n% Generated smoke-only config: do not use for scientific performance claims.\n"
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(updated, encoding="utf-8", newline="")
@@ -48,6 +55,8 @@ def main() -> None:
         "source_cfg": str(args.cfg),
         "smoke_cfg": str(args.out),
         "iterations": args.iter,
+        "fixed_cfl": args.fixed_cfl,
+        "cfl_replacements": cfl_replacements,
         "purpose": "SU2 mesh/marker/profile/initialization smoke only",
         "scientific_result": False,
     }
