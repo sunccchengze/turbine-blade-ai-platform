@@ -15,6 +15,8 @@ import re
 from collections import Counter
 from pathlib import Path
 
+import numpy as np
+
 VOLUME_CODES = {10: "TETRAHEDRON", 12: "HEXAHEDRON", 13: "PRISM", 14: "PYRAMID"}
 SURFACE_CODES = {3: "LINE", 5: "TRIANGLE", 9: "QUADRILATERAL"}
 
@@ -30,6 +32,8 @@ def header_value(lines: list[str], key: str) -> int | None:
 def parse_mesh(path: Path) -> dict:
     element_counts: Counter[str] = Counter()
     marker_tags: list[str] = []
+    coord_min = np.full(3, np.inf)
+    coord_max = np.full(3, -np.inf)
     marker_counts: dict[str, int] = {}
     headers: list[str] = []
     nelem = npoin = nmark = None
@@ -58,7 +62,11 @@ def parse_mesh(path: Path) -> dict:
             raise ValueError(f"NELEM 后未找到 NPOIN：{line}")
         npoin = int(line.split("=", 1)[1])
         for _ in range(npoin):
-            f.readline()
+            point_line = f.readline().split()
+            if len(point_line) >= 3:
+                xyz = np.asarray([float(point_line[0]), float(point_line[1]), float(point_line[2])])
+                coord_min = np.minimum(coord_min, xyz)
+                coord_max = np.maximum(coord_max, xyz)
         line = f.readline().strip()
         if line.startswith("NMARK="):
             nmark = int(line.split("=", 1)[1])
@@ -83,6 +91,9 @@ def parse_mesh(path: Path) -> dict:
         "nmark": nmark,
         "marker_tags": marker_tags,
         "marker_element_counts": marker_counts,
+        "coordinate_bbox_min": coord_min.tolist(),
+        "coordinate_bbox_max": coord_max.tolist(),
+        "coordinate_extent": (coord_max - coord_min).tolist(),
         "has_volume_elements": any(name in element_counts for name in VOLUME_CODES.values()),
     }
 
