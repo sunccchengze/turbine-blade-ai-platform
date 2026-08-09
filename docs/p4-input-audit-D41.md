@@ -325,6 +325,10 @@ backend/scripts/audit_external_su2_case.py
 
 加入 `MARKER_ANALYZE` 后的全新隔离 case 仍得到 `relrms[Rho]=-3.39242`、`Converged=No`、`Exit Success`。因此 `MARKER_ANALYZE` 没有改变当前数值收敛平台；下一步保存完整 stdout，确认 SU2 是否在运行中更新 stage performance，以及性能是否能从日志/TURBOMACHINERY 输出独立提取。
 
+### Fine mesh Gate
+
+用户本机审计通过 `R37_fine.su2`：3,557,497 节点、3,474,432 个 HEXAHEDRON、9 个 marker、`MARKER_ANALYZE=(INLET,OUTLET)`、cfg/mesh 文件名一致、无 cfg marker 缺失。fine mesh 已达到进入 preprocessing smoke 的条件，但规模约为 coarse 的 26 倍，必须先做 5 iteration 隔离 smoke，不能直接运行长时间 RANS。
+
 ## 18. 外部 coarse case 工作配置入口
 
 已新增：

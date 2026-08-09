@@ -18,7 +18,9 @@
 - [x] 追踪 Pareto 候选到几何/网格的文件级数据流
 - [x] 确认 Rotor37 样本含真实表面拓扑，但不含体网格/流体域/入口出口
 - [x] 用户已获得 R37_coarse.su2、R37_fine.su2、CGNS、cfg、inlet.dat 资源
+- [x] fine mesh 审计：3557497 节点、3474432 HEXAHEDRON、9 markers、cfg 一致
 - [x] 新增外部 SU2 case 只读审计脚本
+- [ ] fine mesh 隔离 5 iteration preprocessing smoke
 - [x] 用户审计 coarse mesh + cfg：130432 HEXAHEDRON、140201 节点、9 markers
 - [x] 坐标 extent 显示 Z 轴最大，轴向与 cfg 基本一致
 - [x] 新增工作 cfg 生成脚本，不修改原始 cfg
