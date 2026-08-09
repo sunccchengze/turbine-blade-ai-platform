@@ -44,8 +44,9 @@
 - [x] pointcloud-only 固定 lr=3e-4 的 `lam_field=0` 标量专项诊断
 - [x] pointcloud-only 损失权重权衡已完成，停止无限网格搜索
 - [ ] 回到 combined 主模型的正式冻结/导出评估
-- [ ] 运行 `audit_geometry_feasibility.py` 并审阅 flagged samples
-- [ ] P4 Rotor37 表面拓扑/网格/SU2 输入链路
+- [x] 用户本机运行 `audit_geometry_feasibility.py`，全部几何质量 flags 为 0
+- [ ] 用户本机运行 `prototype_surface_reconstruction.py`，审阅 OBJ 和拓扑报告
+- [ ] P4 Rotor37 正式表面拓扑/网格/SU2 输入链路
 - [ ] η 专项物理派生特征消融
 
 ## 禁止越级

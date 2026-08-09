@@ -132,7 +132,17 @@ backend/scripts/audit_geometry_feasibility.py
 
 它对 `rotor37_pc.npz` 做逐样本有限性、坐标跨度、协方差秩、坐标重复率、法向单位性和工况范围审计，并输出 JSON + 人读报告。它不生成 SU2 网格，也不替代网格质量和 RANS 验证。
 
-## 6. 下一步建议
+## 6. 实验性表面拓扑重建入口
+
+已新增：
+
+```text
+backend/scripts/prototype_surface_reconstruction.py
+```
+
+它用点云坐标和法向量构造局部切平面三角扇，输出 OBJ 预览和边界/非流形/退化三角形报告。该输出只用于判断点云是否值得继续做正式拓扑重建，明确不是 SU2/CGNS 网格。
+
+## 7. 下一步建议
 
 ### 方案 A：已有 Rotor37 资产
 
