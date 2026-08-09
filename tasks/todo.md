@@ -26,7 +26,10 @@
 - [ ] 同步后生成 `R37_from_scratch_smoke.cfg`
 - [x] SU2 v8.5 preprocessing 读取 coarse mesh 成功
 - [x] 网格方向、周期点匹配和质量统计输出成功
-- [ ] 重新生成 `RESTART_SOL=NO` 的 smoke cfg 并运行 20 iteration
+- [x] SU2 真实启动并读入 coarse R37 case
+- [x] 记录二阶/RANS smoke 在 inner iter 3 NaN 发散
+- [ ] 用 `R37_from_scratch_1stOrder.cfg` 生成工作 smoke cfg 并运行 20 iteration
+- [ ] 一阶稳定后再逐步恢复二阶/正式收敛
 - [ ] 核验外部网格版本、边界、许可证和与项目工况的对应关系
 - [x] 输出 P4 输入审计报告
 

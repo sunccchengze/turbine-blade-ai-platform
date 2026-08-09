@@ -354,7 +354,20 @@ backend/scripts/prepare_su2_smoke_cfg.py
 
 求解尚未进入迭代，唯一错误是 smoke cfg 继承了 `RESTART_SOL=YES`，要求不存在的 `restart_flow_1storder.dat`。已修复 smoke 配置生成器，下一次生成会强制 `RESTART_SOL=NO`，从初始场开始。
 
-## 21. 下一步建议
+## 21. SU2 coarse smoke 首次真实运行结果
+
+用户本机 SU2 v8.5.0 已真实进入旋转框架 RANS 求解：
+
+- mesh/marker/periodic preprocessing 成功；
+- turbomachinery inlet/outlet summary 成功打印；
+- `INNER_ITER=0,1,2` 成功开始；
+- `INNER_ITER=3` 出现 `NaN`，SU2 报 `diverged (NaN detected)`。
+
+初始阶段打印的性能值（如 `Efi_ts=195.915%`、负的 `Efi_tt`）属于未收敛初始场诊断，不能作为性能结果。
+
+当前判定：**SU2 通路已打通，但 RANS 数值稳定 Gate 未通过。** 这不是路径/文件/marker 失败，而是当前二阶 Roe + SST/旋转框架从初始场启动时的数值发散。下一步先使用课程提供的 `R37_from_scratch_1stOrder.cfg`，同样替换 mesh 文件名并关闭 restart，优先让一阶格式稳定推进。
+
+## 22. 下一步建议
 
 ### 方案 A：已有 Rotor37 资产
 
