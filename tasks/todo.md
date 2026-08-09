@@ -48,7 +48,8 @@
 - [x] 用户本机运行实验性拓扑原型并审阅结果：k=6/8/12 均大量非流形，Gate 不通过
 - [x] Open3D Poisson/Ball Pivoting 表面重建原型入口
 - [x] 用户本机运行 Open3D Poisson/BPA：BPA 非流形边 0，454 边界边；Poisson 非流形边 8，存在外扩
-- [ ] 运行 `audit_surface_candidate.py` 审查 BPA 表面候选保真度、边界与法向
+- [x] BPA/Poisson 双向表面保真审计：BPA 初筛通过，Poisson 淘汰
+- [ ] BPA 454 条边界边的语义解释/边界修复可行性
 - [ ] 寻找正式表面重建/原始 CGNS/SU2 网格路径
 - [ ] P4 Rotor37 正式表面拓扑/网格/SU2 输入链路
 - [ ] η 专项物理派生特征消融

@@ -283,3 +283,59 @@ Huashu Design 只改变表达和交互质量，不改变数据、模型、物理
 - 小改动优先：字体和色彩、交互状态、间距布局、加载/空/错状态，最后才是高风险重构。
 
 **组合总纲**：Taste 决定“应该像什么”，DESIGN.md 记录“具体怎么像”，shadcn 索引提供“哪些组件可复用”，Impeccable 审计“是否真的做到且没有破坏功能”。四者都不能越过事实、物理和 API 契约。
+
+## 11. gstack：从 CEO 到 QA 的完整交付回路
+
+本目录新增 `gstack/`，包含 59 个可路由的 `SKILL.md`。它的核心不是多装几个命令，而是把软件交付拆成互相检查的角色和 Gate：
+
+- **CEO/产品**：`plan-ceo-review`、`spec`，确认问题、范围、用户价值和完成定义；
+- **设计**：`plan-design-review`、`design-consultation`、`design-review`、`design-shotgun`、`design-html`，先做设计判断再做实现；
+- **工程管理**：`plan-eng-review`、`plan-devex-review`、`review`，检查架构、数据流、测试、开发体验和隐藏假设；
+- **调试与 QA**：`investigate`、`qa`、`qa-only`、`browse`、`benchmark`、`canary`，真实运行、定位根因、回归和性能验证；
+- **发布与文档**：`ship`、`land-and-deploy`、`document-release`、`document-generate`、`make-pdf`、`diagram`；
+- **长期记忆与安全**：`learn`、`context-save/restore`、`careful`、`freeze`、`guard`、`cso`。
+
+本仓库采用 gstack 的三条核心原则：
+
+1. **Boil the Ocean，但先 Search Before Building**：AI 边际成本低时做完整方案，但先查现有实现、官方接口和仓库上下文，避免完整地重造一个已有工具。
+2. **用户主权**：AI 可以给建议、第二意见和反方论证，但孙承泽做最终方向决策；模型一致不等于事实成立。
+3. **生成—验证闭环**：每个结论都要有命令、来源、截图、报告或实验日志；开发完成、设计完成、部署完成和科研完成不能混成一个状态。
+
+### 本项目的 gstack 路由
+
+```text
+前端收口：plan-design-review → design-review → browse/qa → benchmark
+P4 方案：plan-ceo-review → plan-eng-review → spec → investigate → qa
+实验发布：review → document-release → ship（不自动合并）
+科研文档：document-generate → research-paper-writing → independent red-team
+```
+
+gstack 的浏览器 daemon、远程配对、遥测和发布命令不自动接入本项目；只吸收其流程、审计和角色分工，避免未经授权改变部署或上传数据。
+
+## 12. 技能库完整装载索引（补全）
+
+除前述主要技能外，当前「技能库&准则」还包含以下已装载来源。调用前必须读取对应入口文件，不以目录名猜能力：
+
+| 目录 | 能力定位 |
+|---|---|
+| `ECC/` | Everything Claude Code：工程规范、记忆、代理、评审和安全工作流 |
+| `addyosmani-agent-skills/` | Define → Plan → Build → Verify → Review → Ship 的生产工程流程 |
+| `agent-browser/` | Rust 浏览器自动化 CLI |
+| `anysearch-skill/` | 统一实时搜索、垂直搜索和全文提取 |
+| `boraoztunc-skills/` | 文案、SEO、设计和界面技能集合 |
+| `browser-use/` | AI 浏览器操作与网页任务自动化 |
+| `frontend-slides/` | HTML 原生演示文稿、零依赖幻灯片和“先看视觉再定方向”流程 |
+| `gsap-skills/` | GSAP timeline、ScrollTrigger、MotionPath、Flip 和前端动画 |
+| `karpathy-skills/` | 不猜测、简单优先、精确改动、验证闭环的编码准则 |
+| `obra-superpowers/` | 另一套软件开发方法论与可组合技能 |
+| `playwright/` | 官方浏览器自动化和 E2E 测试框架资料 |
+| `ui-ux-pro-max/` | 设计风格、推理规则、组件和跨平台 UI/UX 参考 |
+| `DeepTutor/` | 终身个性化辅导、知识库、记忆、Mastery Path 和学习反馈闭环 |
+| `huashu-design/` | HTML 原生设计、视觉叙事、动效、PPT/视频导出和设计 Gate |
+| `taste-skill/` | 反模板腔、设计品味、Design Read 和设计拨杆 |
+| `awesome-design-md/` | 品牌设计系统 DESIGN.md 样本集合 |
+| `awesome-shadcn-ui/` | shadcn/ui 组件与生态索引 |
+| `impeccable/` | surface 模式、设计审计、反模式检测和设计文档体系 |
+| `gstack/` | CEO、设计、工程、QA、发布、文档和浏览器验证的全套交付角色 |
+
+这份索引不意味着所有技能同时激活。技能必须按任务路由，且仓库宪法、用户要求、项目事实和科研证据优先于任何第三方技能。
