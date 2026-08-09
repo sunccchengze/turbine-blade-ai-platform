@@ -87,9 +87,9 @@ function buildBladeGeometry(params) {
         ? 0.20 + xc * 0.30
         : 0.55 + xc * 0.20
       const pFinal   = basePres + pMeanN * 0.15
-      const hue      = Math.max(0, 0.68 - pFinal * 0.42)
-      const light    = 0.38 + tMeanN * 0.18 + t * 0.08
-      const col      = new THREE.Color().setHSL(hue, 0.88, light)
+      const hue      = Math.max(0.28, 0.46 - pFinal * 0.12)
+      const light    = 0.40 + tMeanN * 0.14 + t * 0.06
+      const col      = new THREE.Color().setHSL(hue, 0.38, light)
       colors.push(col.r, col.g, col.b)
     }
   }
@@ -163,12 +163,12 @@ function BladeMesh({ params }) {
           vertexColors
           side={THREE.DoubleSide}
           shininess={70}
-          specular={new THREE.Color(0x445566)}
+          specular={new THREE.Color(0x6d887b)}
         />
       </mesh>
       <mesh geometry={geometry}>
         <meshBasicMaterial
-          color="#1e3a5f"
+          color="#49675d"
           wireframe
           transparent
           opacity={0.05}
@@ -200,7 +200,7 @@ function ParticleField() {
   return (
     <points ref={ref} geometry={geo}>
       <pointsMaterial
-        color="#818cf8" size={0.0012}
+        color="#86b9aa" size={0.0012}
         transparent opacity={0.4} sizeAttenuation
       />
     </points>
@@ -211,9 +211,9 @@ function Lights() {
   return (
     <>
       <ambientLight intensity={0.5} />
-      <directionalLight position={[0.15, 0.30, 0.12]} intensity={1.4} color="#f0f4ff" />
-      <directionalLight position={[-0.15, 0.22, -0.10]} intensity={0.6} color="#818cf8" />
-      <pointLight position={[0.05, 0.25, 0.10]} intensity={0.8} color="#22d3ee" distance={0.4} />
+      <directionalLight position={[0.15, 0.30, 0.12]} intensity={1.4} color="#f3eee0" />
+      <directionalLight position={[-0.15, 0.22, -0.10]} intensity={0.6} color="#86b9aa" />
+      <pointLight position={[0.05, 0.25, 0.10]} intensity={0.8} color="#e7c85b" distance={0.4} />
     </>
   )
 }
