@@ -268,7 +268,18 @@ backend/scripts/audit_su2_surface.py
 
 它不调用 SU2 求解器，只检查原始 QUAD_4 表面的节点、边、边界边、非流形边、连通分量和包围盒，确认原始拓扑是否完整以及是否适合进入体网格准备。
 
-## 15. 原始 SU2 表面拓扑 Gate 结果
+## 15. 外部 Rotor37 流体域网格线索
+
+公开的 SU2 Foundation《Flow simulation in axial compressors》Summer School 材料明确列出了 Rotor 37 流体域资源：粗/细 SU2 mesh、CGNS mesh、配置文件和入口 profile；材料说明 fine mesh 是 Cadence/Autogrid 生成的 structured multi-block mesh，约 3.5 million grid points，轴向为 Z 轴，并采用周期性 36。该资源与当前 PLAID 样本的 29773 节点 QUAD_4 表面不同，可能正是 P4 需要的流体域网格来源。
+
+参考材料：
+
+- https://su2foundation.org/wp-content/uploads/2025/10/3_Flow-simulation-in-axial-compressors.pdf
+- SU2 官方 Mesh File 文档：https://su2code.github.io/docs/Mesh-File/
+
+当前行动：优先定位并获取 SU2 Foundation 的 coarse/fine Rotor37 mesh、cfg 和 inlet profile；在未核验文件来源、版本、边界和许可证前，不下载/提交大网格到仓库。
+
+## 16. 原始 SU2 表面拓扑 Gate 结果
 
 用户本机审计 `sample_0000_surface.su2`：
 
@@ -298,7 +309,7 @@ used_vertices = 29773
 
 这次结果证明：后续应以 PLAID 原始 `ElementConnectivity` 作为叶片表面几何来源；要完成真实 RANS，仍需另行获取/构造流体域网格和边界条件。BPA 只保留为可视化/重建对照，不再作为 CFD 拓扑来源。
 
-## 16. 下一步建议
+## 17. 下一步建议
 
 ### 方案 A：已有 Rotor37 资产
 

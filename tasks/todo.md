@@ -17,7 +17,8 @@
 - [x] 接入并审计 `data/processed/pointcloud/rotor37_pc.npz`（1000×2048×9，sample_id 完全对齐）
 - [x] 追踪 Pareto 候选到几何/网格的文件级数据流
 - [x] 确认 Rotor37 样本含真实表面拓扑，但不含体网格/流体域/入口出口
-- [ ] 寻找官方/外部 Rotor37 流体域网格与边界条件
+- [ ] 定位 SU2 Foundation Rotor37 coarse/fine mesh、CGNS、cfg、inlet profile
+- [ ] 核验外部网格版本、边界、许可证和与项目工况的对应关系
 - [x] 输出 P4 输入审计报告
 
 ## 下一项：P1 无泄漏输入消融
