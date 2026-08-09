@@ -339,7 +339,22 @@ backend/scripts/prepare_su2_smoke_cfg.py
 
 它从已审计的工作 cfg 生成有限迭代配置，只验证 SU2 网格读取、marker、周期、入口 profile 和 RANS 初始化；冒烟输出不计入任何 π/η/ṁ 科研结果。
 
-## 20. 下一步建议
+## 20. SU2 preprocessing smoke 结果
+
+用户本机以 SU2 v8.5.0 Harrier 运行 smoke cfg，网格读取和 preprocessing 成功：
+
+- 140201 grid points；
+- 130432 volume elements，全部为 hexahedra；
+- 9 个 surface markers；
+- 所有 volume elements orientation 正确；
+- PER1/PER2 匹配 7650 个点，最大距离 1.30339e-09；
+- 最小正交角 23.7461°；
+- 最大 CV face aspect ratio 13117.4；
+- 最大 CV sub-volume ratio 34.3578。
+
+求解尚未进入迭代，唯一错误是 smoke cfg 继承了 `RESTART_SOL=YES`，要求不存在的 `restart_flow_1storder.dat`。已修复 smoke 配置生成器，下一次生成会强制 `RESTART_SOL=NO`，从初始场开始。
+
+## 21. 下一步建议
 
 ### 方案 A：已有 Rotor37 资产
 

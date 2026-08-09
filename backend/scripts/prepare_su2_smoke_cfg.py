@@ -28,6 +28,17 @@ def main() -> None:
         count=1,
         flags=re.M,
     )
+    # Smoke must initialize from the configured freestream, never require an
+    # external restart artifact that may not exist on a clean machine.
+    updated, restart_n = re.subn(
+        r"^\s*RESTART_SOL\s*=.*$",
+        "RESTART_SOL= NO",
+        updated,
+        count=1,
+        flags=re.M,
+    )
+    if restart_n == 0:
+        updated += "\nRESTART_SOL= NO\n"
     if n == 0:
         updated += f"\nITER= {args.iter}\n"
     updated += "\n% Generated smoke-only config: do not use for scientific performance claims.\n"

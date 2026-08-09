@@ -24,7 +24,9 @@
 - [x] 新增工作 cfg 生成脚本，不修改原始 cfg
 - [x] 生成并审阅 `R37_from_scratch_work.cfg`
 - [ ] 同步后生成 `R37_from_scratch_smoke.cfg`
-- [ ] Windows 原生 SU2 运行 20 iteration smoke
+- [x] SU2 v8.5 preprocessing 读取 coarse mesh 成功
+- [x] 网格方向、周期点匹配和质量统计输出成功
+- [ ] 重新生成 `RESTART_SOL=NO` 的 smoke cfg 并运行 20 iteration
 - [ ] 核验外部网格版本、边界、许可证和与项目工况的对应关系
 - [x] 输出 P4 输入审计报告
 
