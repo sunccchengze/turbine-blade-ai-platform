@@ -301,7 +301,7 @@ export default function PredictPage() {
   }
 
   return (
-    <div style={{ background: '#0f172a', minHeight: '100vh', padding: '32px 24px' }}>
+    <div style={{ background: 'var(--ink)', minHeight: '100vh', padding: '54px 24px 80px' }}>
       <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
 
         {/* 页面标题 */}

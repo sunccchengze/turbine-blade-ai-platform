@@ -2,9 +2,9 @@ import { useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, useInView } from 'framer-motion'
 import {
-  GraduationCap, Rocket, Database, Brain, BookOpen,
+  GraduationCap, Rocket, Database, BookOpen,
   GitCommit, FlaskConical, Target, ChevronRight, Sparkles,
-  ShieldCheck, ArrowRight, GitBranch,
+  ShieldCheck, ArrowRight, GitBranch, Orbit,
 } from 'lucide-react'
 
 const fadeUp = (delay = 0) => ({
@@ -40,7 +40,7 @@ function SectionHeader({ tag, title, subtitle }) {
           padding: '4px 12px', borderRadius: '9999px',
           background: 'rgba(99,102,241,0.1)',
           border: '1px solid rgba(99,102,241,0.2)',
-          fontSize: '11px', fontWeight: 600, color: '#818cf8',
+          fontSize: '11px', fontWeight: 600, color: 'var(--teal)',
           letterSpacing: '0.04em',
         }}>
           {tag}
@@ -50,14 +50,14 @@ function SectionHeader({ tag, title, subtitle }) {
         variants={fadeUp(0.08)}
         style={{
           fontSize: 'clamp(1.6rem, 3vw, 2rem)',
-          fontWeight: 700, color: '#f1f5f9', lineHeight: 1.2,
+          fontWeight: 700, color: 'var(--paper)', lineHeight: 1.2,
           marginBottom: '10px',
         }}
       >
         {title}
       </motion.h2>
       {subtitle && (
-        <motion.p variants={fadeUp(0.12)} style={{ color: '#94a3b8', maxWidth: '720px', lineHeight: 1.7, fontSize: '14px' }}>
+        <motion.p variants={fadeUp(0.12)} style={{ color: 'var(--muted)', maxWidth: '720px', lineHeight: 1.7, fontSize: '14px' }}>
           {subtitle}
         </motion.p>
       )}
@@ -67,11 +67,11 @@ function SectionHeader({ tag, title, subtitle }) {
 
 // 时间线里程碑（与 docs/devlog 一一对应）
 const milestones = [
-  { day: '01–04', icon: Database,  title: '数据与特征',  en: 'Data & Features',     desc: 'PLAID NASA Rotor 37 公开基准：1,000 组 CFD 样本 → 74 维统计特征矩阵。' },
-  { day: '05–08', icon: Brain,     title: '代理模型',    en: 'Surrogate Model',     desc: '残差网络 + 物理约束损失（R² 全部 > 0.95），MC Dropout UQ，NSGA-II 100 个 Pareto 解。' },
-  { day: '09–13', icon: Rocket,    title: '全栈与上线',  en: 'Full Stack & Deploy', desc: 'FastAPI + React + Three.js；PyTorch → ONNX，Docker 容器部署，端到端毫秒级推理。' },
-  { day: '14–17', icon: ShieldCheck, title: '可靠性与双语', en: 'Reliability & i18n', desc: '冷启动提示、错误兜底、代码分割（首屏 6 MB → 440 kB）、全站逐句中英双语。' },
-  { day: '18–19', icon: FlaskConical, title: '验收与门面', en: 'Acceptance & Polish', desc: '线上总验收（双端验证通过）；README 双语重制，R² 统一为留出测试集口径并可复现。' },
+  { day: '01–08', icon: Database, title: '数据、模型、优化', en: 'Data · Surrogate · NSGA-II', desc: 'PLAID / NASA Rotor 37：1,000 组公开压气机 CFD 样本，压缩为 74 维特征，完成残差代理、UQ 和 NSGA-II。' },
+  { day: '09–18', icon: Rocket, title: '平台上线', en: 'Full Stack · Deploy · i18n', desc: 'FastAPI + React + Three.js + Plotly，ONNX 生产推理，Predict、Explore、Optimize、UQ 页面上线并完成双语化。' },
+  { day: '19–37', icon: ShieldCheck, title: '口径与可靠性', en: 'Evidence · Audit · Acceptance', desc: '修正 R² 和 NSGA-II 数字口径，补齐 Pareto 证据链、移动端、方法论、答辩稿和项目终验收文档。' },
+  { day: '39–41', icon: FlaskConical, title: '真实数据与几何', en: 'Point Cloud · Geometry · Mesh', desc: '接入 1000×2048×9 点云，完成几何 Gate、原始表面拓扑审计、BPA 对照，并确认表面数据不等于流体体网格。' },
+  { day: '42–43', icon: Orbit, title: 'SU2 与本地推理', en: 'RANS Route · Browser WASM · Redesign', desc: '真实 Rotor37 SU2 通路启动；fine 网格受本机内存限制冻结；公开演示切换为浏览器 ONNX Runtime Web，并开始全站重设计。' },
 ]
 
 export default function AboutPage() {
@@ -89,7 +89,7 @@ export default function AboutPage() {
               padding: '4px 12px', borderRadius: '9999px',
               background: 'rgba(99,102,241,0.1)',
               border: '1px solid rgba(99,102,241,0.2)',
-              fontSize: '11px', fontWeight: 600, color: '#818cf8',
+              fontSize: '11px', fontWeight: 600, color: 'var(--teal)',
               letterSpacing: '0.04em',
             }}>
               <Sparkles size={11} /> ABOUT · 关于
@@ -100,13 +100,13 @@ export default function AboutPage() {
             variants={fadeUp(0.08)}
             style={{
               fontSize: 'clamp(1.8rem, 4vw, 2.6rem)',
-              fontWeight: 800, color: '#f1f5f9', lineHeight: 1.25,
+              fontWeight: 800, color: 'var(--paper)', lineHeight: 1.25,
               marginBottom: '14px',
             }}
           >
             AI 赋能的叶轮机械多学科设计优化平台
             <br />
-            <span style={{ fontSize: 'clamp(0.9rem, 2vw, 1.1rem)', fontWeight: 500, color: '#64748b' }}>
+            <span style={{ fontSize: 'clamp(0.9rem, 2vw, 1.1rem)', fontWeight: 500, color: 'var(--faint)' }}>
               AI-Enabled Multidisciplinary Design Optimization Platform for Turbomachinery
             </span>
           </motion.h1>
@@ -121,16 +121,16 @@ export default function AboutPage() {
               border: '1px solid rgba(99,102,241,0.25)',
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '16px', fontWeight: 700, color: '#f1f5f9' }}>
-              <GraduationCap size={20} color="#818cf8" />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '16px', fontWeight: 700, color: 'var(--paper)' }}>
+              <GraduationCap size={20} color="var(--teal)" />
               孙承泽 · 本科二年级 · 独立完成
             </div>
-            <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '6px' }}>
+            <div style={{ fontSize: '12px', color: 'var(--muted)', marginTop: '6px' }}>
               Sun Chengze · Undergraduate (Year 2) · Independent Project
             </div>
           </motion.div>
 
-          <motion.p variants={fadeUp(0.22)} style={{ color: '#64748b', fontSize: '13px', marginTop: '18px' }}>
+          <motion.p variants={fadeUp(0.22)} style={{ color: 'var(--faint)', fontSize: '13px', marginTop: '18px' }}>
             从新闻启发到独立交付的全栈项目 —— 数据、模型、平台、部署，一人完成。
             <br />
             <span style={{ fontSize: '12px' }}>
@@ -176,10 +176,10 @@ export default function AboutPage() {
                   transition: 'border-color 0.25s',
                 }}
               >
-                <card.icon size={18} color="#818cf8" style={{ marginBottom: '12px' }} />
-                <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#f1f5f9', marginBottom: '4px' }}>{card.title}</h3>
-                <div style={{ fontSize: '11px', color: '#475569', marginBottom: '10px' }}>{card.en}</div>
-                <p style={{ fontSize: '13px', color: '#94a3b8', lineHeight: 1.75 }}>{card.text}</p>
+                <card.icon size={18} color="var(--teal)" style={{ marginBottom: '12px' }} />
+                <h3 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--paper)', marginBottom: '4px' }}>{card.title}</h3>
+                <div style={{ fontSize: '11px', color: 'var(--faint)', marginBottom: '10px' }}>{card.en}</div>
+                <p style={{ fontSize: '13px', color: 'var(--muted)', lineHeight: 1.75 }}>{card.text}</p>
               </motion.div>
             ))}
           </div>
@@ -192,7 +192,7 @@ export default function AboutPage() {
           <SectionHeader
             tag="The Journey"
             title="技术旅程"
-            subtitle="37 个开发日、77 次提交：从零到线上。完整逐日记录见 docs/devlog。The journey — 37 development days, 77 commits, from zero to production. Full day-by-day log in docs/devlog."
+            subtitle="从公开数据到真实 SU2 通路，再到浏览器本地推理。以下时间线按项目实际阶段更新，细节见 docs/devlog 与 D42 终验收。From public data to the SU2 route and browser-local inference, with the current evidence boundary kept visible."
           />
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             {milestones.map((m, i) => (
@@ -213,23 +213,23 @@ export default function AboutPage() {
                     border: '1px solid rgba(99,102,241,0.25)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                   }}>
-                    <m.icon size={17} color="#818cf8" />
+                    <m.icon size={17} color="var(--teal)" />
                   </div>
                 </div>
                 <div style={{ flex: 1 }}>
                   <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', flexWrap: 'wrap' }}>
                     <span style={{
-                      fontSize: '11px', fontWeight: 700, color: '#22d3ee',
+                      fontSize: '11px', fontWeight: 700, color: 'var(--teal)',
                       padding: '2px 8px', borderRadius: '6px',
                       background: 'rgba(34,211,238,0.08)',
                       border: '1px solid rgba(34,211,238,0.15)',
                     }}>
                       Day {m.day}
                     </span>
-                    <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#f1f5f9' }}>{m.title}</h3>
-                    <span style={{ fontSize: '11px', color: '#475569' }}>{m.en}</span>
+                    <h3 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--paper)' }}>{m.title}</h3>
+                    <span style={{ fontSize: '11px', color: 'var(--faint)' }}>{m.en}</span>
                   </div>
-                  <p style={{ fontSize: '13px', color: '#94a3b8', lineHeight: 1.75, marginTop: '8px' }}>{m.desc}</p>
+                  <p style={{ fontSize: '13px', color: 'var(--muted)', lineHeight: 1.75, marginTop: '8px' }}>{m.desc}</p>
                 </div>
               </motion.div>
             ))}
@@ -254,12 +254,12 @@ export default function AboutPage() {
                 border: '1px solid rgba(255,255,255,0.06)',
               }}
             >
-              <BookOpen size={18} color="#818cf8" style={{ marginBottom: '12px' }} />
-              <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#f1f5f9', marginBottom: '10px' }}>模型性能 Model Accuracy</h3>
-              <p style={{ fontSize: '13px', color: '#94a3b8', lineHeight: 1.8 }}>
+              <BookOpen size={18} color="var(--teal)" style={{ marginBottom: '12px' }} />
+              <h3 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--paper)', marginBottom: '10px' }}>模型性能 Model Accuracy</h3>
+              <p style={{ fontSize: '13px', color: 'var(--muted)', lineHeight: 1.8 }}>
                 留出测试集（n=100, random_state=42，训练时未见）实测：总压比 π R² 0.9844 · 效率 η R² 0.9561 · 质量流量 ṁ R² 0.9827。
                 <br />
-                <span style={{ fontSize: '11px', color: '#475569' }}>
+                <span style={{ fontSize: '11px', color: 'var(--faint)' }}>
                   Held-out test set (n=100): π 0.9844 · η 0.9561 · ṁ 0.9827.
                 </span>
                 <br />
@@ -274,12 +274,12 @@ export default function AboutPage() {
                 border: '1px solid rgba(255,255,255,0.06)',
               }}
             >
-              <Database size={18} color="#818cf8" style={{ marginBottom: '12px' }} />
-              <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#f1f5f9', marginBottom: '10px' }}>数据说明 About the Data</h3>
-              <p style={{ fontSize: '13px', color: '#94a3b8', lineHeight: 1.8 }}>
+              <Database size={18} color="var(--teal)" style={{ marginBottom: '12px' }} />
+              <h3 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--paper)', marginBottom: '10px' }}>数据说明 About the Data</h3>
+              <p style={{ fontSize: '13px', color: 'var(--muted)', lineHeight: 1.8 }}>
                 NASA Rotor 37 压气机公开基准（PLAID 数据集，1,000 组 CFD 样本），特征工程为 74 维统计特征。
                 <br />
-                <span style={{ fontSize: '11px', color: '#475569' }}>
+                <span style={{ fontSize: '11px', color: 'var(--faint)' }}>
                   NASA Rotor 37 public benchmark (PLAID, 1,000 CFD samples), engineered into 74-dim features.
                 </span>
                 <br />
@@ -301,10 +301,10 @@ export default function AboutPage() {
               border: '1px solid rgba(99,102,241,0.2)',
             }}
           >
-            <h2 style={{ fontSize: 'clamp(1.3rem, 2.5vw, 1.7rem)', fontWeight: 700, color: '#f1f5f9', marginBottom: '8px' }}>
+            <h2 style={{ fontSize: 'clamp(1.3rem, 2.5vw, 1.7rem)', fontWeight: 700, color: 'var(--paper)', marginBottom: '8px' }}>
               去看看它在 74 维设计空间里能找到什么
             </h2>
-            <p style={{ fontSize: '13px', color: '#94a3b8', marginBottom: '20px' }}>
+            <p style={{ fontSize: '13px', color: 'var(--muted)', marginBottom: '20px' }}>
               See what it finds in a 74-dimensional design space.
             </p>
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -326,7 +326,7 @@ export default function AboutPage() {
                   padding: '10px 20px', borderRadius: '10px',
                   background: 'rgba(30,41,59,0.6)',
                   border: '1px solid rgba(255,255,255,0.1)',
-                  color: '#e2e8f0', fontSize: '14px', fontWeight: 600,
+                  color: 'var(--paper)', fontSize: '14px', fontWeight: 600,
                   textDecoration: 'none',
                 }}
               >
@@ -338,13 +338,13 @@ export default function AboutPage() {
               marginTop: '32px', paddingTop: '24px',
               borderTop: '1px solid rgba(255,255,255,0.06)',
             }}>
-              <div style={{ fontSize: '17px', fontWeight: 800, color: '#f1f5f9' }}>
+              <div style={{ fontSize: '17px', fontWeight: 800, color: 'var(--paper)' }}>
                 孙承泽 · 本科二年级 · 独立完成
               </div>
-              <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '6px' }}>
+              <div style={{ fontSize: '12px', color: 'var(--muted)', marginTop: '6px' }}>
                 Sun Chengze · Undergraduate (Year 2) · Independent Project
               </div>
-              <div style={{ fontSize: '11px', color: '#475569', marginTop: '14px' }}>
+              <div style={{ fontSize: '11px', color: 'var(--faint)', marginTop: '14px' }}>
                 灵感源自 KIT 无压气机燃气轮机突破 (2026.02) · Inspired by KIT's compressorless gas turbine breakthrough (Feb 2026)
               </div>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', marginTop: '10px', color: '#334155', fontSize: '11px' }}>
@@ -353,7 +353,7 @@ export default function AboutPage() {
                   href="https://github.com/sunccchengze/turbine-blade-ai-platform/tree/main/docs/devlog"
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{ color: '#818cf8', textDecoration: 'underline' }}
+                  style={{ color: 'var(--teal)', textDecoration: 'underline' }}
                 >
                   docs/devlog
                 </a>
@@ -365,7 +365,7 @@ export default function AboutPage() {
 
       {/* 底部导航提示 */}
       <div style={{ textAlign: 'center', marginTop: '36px' }}>
-        <Link to="/" style={{ color: '#64748b', fontSize: '13px', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+        <Link to="/" style={{ color: 'var(--faint)', fontSize: '13px', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
           <ChevronRight size={14} style={{ transform: 'rotate(180deg)' }} /> 返回首页 Back to Home
         </Link>
       </div>

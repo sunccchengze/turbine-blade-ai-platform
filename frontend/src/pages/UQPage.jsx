@@ -260,7 +260,7 @@ export default function UQPage() {
   )
 
   return (
-    <div style={{ background: '#0f172a', minHeight: '100vh', padding: '32px 24px' }}>
+    <div style={{ background: 'var(--ink)', minHeight: '100vh', padding: '54px 24px 80px' }}>
       <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
 
         {/* 页面标题 */}
@@ -284,7 +284,7 @@ export default function UQPage() {
               </span>
             </h1>
           </div>
-          <p style={{ fontSize: '14px', color: '#64748b', maxWidth: '700px', lineHeight: 1.7 }}>
+          <p style={{ fontSize: '13px', color: 'var(--muted)', maxWidth: '700px', lineHeight: 1.8 }}>
             训练/验证阶段每次预测执行{' '}
             <span style={{ color: '#a78bfa', fontWeight: 500 }}>100 次 MC Dropout 随机前向传播</span>
             ，阴影带为名义 95% 区间（生产 API 的 UQ 模式使用预计算 σ 统计量，见 README）。
@@ -369,7 +369,7 @@ export default function UQPage() {
         </div>
 
         {/* 校准曲线（Day 39 新增：P2 Conformal 校准的覆盖率检查） */}
-        <div style={{ marginTop: '32px', background: '#1e293b', borderRadius: '16px', padding: '24px' }}>
+        <div style={{ marginTop: '32px', background: 'var(--panel)', borderRadius: '16px', padding: '24px' }}>
           <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#e2e8f0', marginBottom: '4px' }}>
             校准曲线 Calibration Curve
             <span style={{ fontSize: '11px', color: '#475569', fontWeight: 600, marginLeft: '8px' }}>

@@ -38,7 +38,7 @@ function SectionHeader({ tag, title, subtitle }) {
           padding: '4px 12px', borderRadius: '9999px',
           background: 'rgba(99,102,241,0.1)',
           border: '1px solid rgba(99,102,241,0.2)',
-          fontSize: '11px', fontWeight: 600, color: '#818cf8',
+          fontSize: '11px', fontWeight: 600, color: 'var(--teal)',
           letterSpacing: '0.04em',
         }}>
           {tag}
@@ -48,14 +48,14 @@ function SectionHeader({ tag, title, subtitle }) {
         variants={fadeUp(0.08)}
         style={{
           fontSize: 'clamp(1.6rem, 3vw, 2rem)',
-          fontWeight: 700, color: '#f1f5f9', lineHeight: 1.2,
+          fontWeight: 700, color: 'var(--paper)', lineHeight: 1.2,
           marginBottom: '10px',
         }}
       >
         {title}
       </motion.h2>
       {subtitle && (
-        <motion.p variants={fadeUp(0.12)} style={{ color: '#94a3b8', maxWidth: '760px', lineHeight: 1.7, fontSize: '14px' }}>
+        <motion.p variants={fadeUp(0.12)} style={{ color: 'var(--muted)', maxWidth: '760px', lineHeight: 1.7, fontSize: '14px' }}>
           {subtitle}
         </motion.p>
       )}
@@ -85,13 +85,13 @@ function StepCard({ index, icon: Icon, title, en, desc, children }) {
         }}>
           {index}
         </div>
-        <Icon size={16} color="#818cf8" style={{ flexShrink: 0 }} />
+        <Icon size={16} color="var(--teal)" style={{ flexShrink: 0 }} />
         <div>
-          <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#f1f5f9' }}>{title}</h3>
-          <div style={{ fontSize: '11px', color: '#475569' }}>{en}</div>
+          <h3 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--paper)' }}>{title}</h3>
+          <div style={{ fontSize: '11px', color: 'var(--faint)' }}>{en}</div>
         </div>
       </div>
-      <p style={{ fontSize: '13px', color: '#94a3b8', lineHeight: 1.8 }}>{desc}</p>
+      <p style={{ fontSize: '13px', color: 'var(--muted)', lineHeight: 1.8 }}>{desc}</p>
       {children}
     </motion.div>
   )
@@ -127,7 +127,7 @@ export default function MethodologyPage() {
               padding: '4px 12px', borderRadius: '9999px',
               background: 'rgba(99,102,241,0.1)',
               border: '1px solid rgba(99,102,241,0.2)',
-              fontSize: '11px', fontWeight: 600, color: '#818cf8',
+              fontSize: '11px', fontWeight: 600, color: 'var(--teal)',
               letterSpacing: '0.04em',
             }}>
               <BookOpen size={11} /> METHODOLOGY · 方法论
@@ -137,21 +137,21 @@ export default function MethodologyPage() {
             variants={fadeUp(0.08)}
             style={{
               fontSize: 'clamp(1.8rem, 4vw, 2.4rem)',
-              fontWeight: 800, color: '#f1f5f9', lineHeight: 1.25,
+              fontWeight: 800, color: 'var(--paper)', lineHeight: 1.25,
               marginBottom: '12px',
             }}
           >
             从 1,000 组 CFD 样本到毫秒级代理模型
             <br />
-            <span style={{ fontSize: 'clamp(0.9rem, 2vw, 1.05rem)', fontWeight: 500, color: '#64748b' }}>
+            <span style={{ fontSize: 'clamp(0.9rem, 2vw, 1.05rem)', fontWeight: 500, color: 'var(--faint)' }}>
               From 1,000 CFD samples to a millisecond surrogate model
             </span>
           </motion.h1>
-          <motion.p variants={fadeUp(0.16)} style={{ color: '#94a3b8', lineHeight: 1.8, fontSize: '14px', maxWidth: '760px' }}>
+          <motion.p variants={fadeUp(0.16)} style={{ color: 'var(--muted)', lineHeight: 1.8, fontSize: '14px', maxWidth: '760px' }}>
             完整管线：数据 → 特征工程 → 残差代理模型 → 物理约束 → 不确定性量化 → 多目标优化。
             每一步都公开、可复现；本页同时诚实说明每一步的边界与局限。
             <br />
-            <span style={{ fontSize: '12px', color: '#475569' }}>
+            <span style={{ fontSize: '12px', color: 'var(--faint)' }}>
               Full pipeline: data → feature engineering → residual surrogate → physics constraints → UQ → NSGA-II.
               Every step is public and reproducible; limitations are stated honestly.
             </span>
@@ -171,7 +171,7 @@ export default function MethodologyPage() {
             index={1} icon={Database} title="NASA Rotor 37 · PLAID 数据集" en="PLAID dataset"
             desc="使用公开的 PLAID / NASA Rotor 37 压气机基准数据集：1,000 组三维 CFD RANS 仿真样本，每组含 29,773 个叶片表面节点。选择公开基准是为了可复现 —— 任何人下载同一份数据都能跑出同样的结果。"
           >
-            <div style={{ fontSize: '12px', color: '#475569', lineHeight: 1.7, marginTop: '10px' }}>
+            <div style={{ fontSize: '12px', color: 'var(--faint)', lineHeight: 1.7, marginTop: '10px' }}>
               Public PLAID/NASA Rotor 37 benchmark: 1,000 3-D CFD RANS samples, 29,773 surface nodes each —
               reproducibility by construction.
             </div>
@@ -230,11 +230,11 @@ export default function MethodologyPage() {
   → 残差块 ×2 (128→128)
   → Linear(128→3)
 残差块: x → Linear → BN → ReLU → Dropout → Linear → BN → (+x) → ReLU`}</CodeBlock>
-            <div style={{ marginTop: '12px', fontSize: '12px', color: '#64748b', lineHeight: 1.75 }}>
+            <div style={{ marginTop: '12px', fontSize: '12px', color: 'var(--faint)', lineHeight: 1.75 }}>
               损失 = Σ wᵢ·MSEᵢ + λ·物理惩罚（w=[1.0, 3.0, 1.5]，效率权重最高因其变化范围仅 ~0.045；λ=0.1）。
               物理惩罚对违反边界的预测施加 ReLU(·)² 惩罚：η ≤ 1.0（热力学第二定律）、η ≥ 0.5、π ≥ 1.0、ṁ ≥ 0。
               <br />
-              <span style={{ color: '#475569' }}>
+              <span style={{ color: 'var(--faint)' }}>
                 Loss = Σ wᵢ·MSEᵢ + λ·phys-penalty; η gets 3× weight as its range is only ~0.045.
               </span>
             </div>
@@ -258,34 +258,34 @@ export default function MethodologyPage() {
               border: '1px solid rgba(255,255,255,0.06)',
             }}
           >
-            <p style={{ fontSize: '13px', color: '#94a3b8', lineHeight: 1.8, marginBottom: '16px' }}>
-              所有数字均在<strong style={{ color: '#e2e8f0' }}>留出测试集</strong>（n=100, random_state=42，训练时完全未见）上，
+            <p style={{ fontSize: '13px', color: 'var(--muted)', lineHeight: 1.8, marginBottom: '16px' }}>
+              所有数字均在<strong style={{ color: 'var(--paper)' }}>留出测试集</strong>（n=100, random_state=42，训练时完全未见）上，
               由部署中的 ONNX 模型实测，可通过 README「快速复现」一键重跑验证。
               <br />
-              <span style={{ fontSize: '11px', color: '#475569' }}>
+              <span style={{ fontSize: '11px', color: 'var(--faint)' }}>
                 All figures measured on the held-out test set (n=100, random_state=42) with the deployed ONNX model — reproducible via README §Reproduce.
               </span>
             </p>
             {[
-              { label: '总压比 π', en: 'Compression ratio', r2: '0.9844', color: '#818cf8' },
-              { label: '等熵效率 η', en: 'Efficiency', r2: '0.9561', color: '#22d3ee' },
-              { label: '质量流量 ṁ', en: 'Mass flow', r2: '0.9827', color: '#34d399' },
+              { label: '总压比 π', en: 'Compression ratio', r2: '0.9844', color: 'var(--teal)' },
+              { label: '等熵效率 η', en: 'Efficiency', r2: '0.9561', color: 'var(--teal)' },
+              { label: '质量流量 ṁ', en: 'Mass flow', r2: '0.9827', color: 'var(--teal-bright)' },
             ].map(row => (
               <div key={row.label} style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                 padding: '12px 14px', borderRadius: '10px', marginBottom: '8px',
                 background: `${row.color}08`, border: `1px solid ${row.color}18`,
               }}>
-                <span style={{ fontSize: '13px', fontWeight: 600, color: '#e2e8f0' }}>
+                <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--paper)' }}>
                   {row.label}
-                  <span style={{ fontSize: '11px', fontWeight: 400, color: '#64748b', marginLeft: '8px' }}>{row.en}</span>
+                  <span style={{ fontSize: '11px', fontWeight: 400, color: 'var(--faint)', marginLeft: '8px' }}>{row.en}</span>
                 </span>
                 <span className="num" style={{ fontSize: '16px', fontWeight: 700, color: row.color }}>
                   R² = {row.r2}
                 </span>
               </div>
             ))}
-            <div style={{ fontSize: '11px', color: '#475569', marginTop: '8px' }}>
+            <div style={{ fontSize: '11px', color: 'var(--faint)', marginTop: '8px' }}>
               三个输出全部 R² &gt; 0.95。训练集 R²（0.99 级）高于测试集属正常过拟合迹象，README 以折叠块列出三套划分，避免误读。
             </div>
           </motion.div>
@@ -315,11 +315,11 @@ export default function MethodologyPage() {
                 style={{ width: '100%', borderRadius: '10px', display: 'block' }}
                 loading="lazy"
               />
-              <div style={{ marginTop: '12px', fontSize: '13px', color: '#94a3b8', lineHeight: 1.7 }}>
-                <strong style={{ color: '#e2e8f0' }}>基线 MLP Baseline MLP</strong> —— 三个输出的预测 vs 真实散点
+              <div style={{ marginTop: '12px', fontSize: '13px', color: 'var(--muted)', lineHeight: 1.7 }}>
+                <strong style={{ color: 'var(--paper)' }}>基线 MLP Baseline MLP</strong> —— 三个输出的预测 vs 真实散点
                 （测试集 n=100，红色虚线为完美预测 y=x）。
                 <br />
-                <span style={{ fontSize: '11px', color: '#475569' }}>
+                <span style={{ fontSize: '11px', color: 'var(--faint)' }}>
                   Baseline MLP: predicted vs true scatter on the test set; dashed line = perfect prediction.
                 </span>
               </div>
@@ -338,11 +338,11 @@ export default function MethodologyPage() {
                 style={{ width: '100%', borderRadius: '10px', display: 'block' }}
                 loading="lazy"
               />
-              <div style={{ marginTop: '12px', fontSize: '13px', color: '#94a3b8', lineHeight: 1.7 }}>
-                <strong style={{ color: '#e2e8f0' }}>残差网络 Residual Network</strong> —— 上排预测 vs 真实，
+              <div style={{ marginTop: '12px', fontSize: '13px', color: 'var(--muted)', lineHeight: 1.7 }}>
+                <strong style={{ color: 'var(--paper)' }}>残差网络 Residual Network</strong> —— 上排预测 vs 真实，
                 下排残差分布（均值接近 0，说明无系统性偏差）。
                 <br />
-                <span style={{ fontSize: '11px', color: '#475569' }}>
+                <span style={{ fontSize: '11px', color: 'var(--faint)' }}>
                   Residual network: predicted vs true (top) and residual histograms (bottom) — means near zero, no systematic bias.
                 </span>
               </div>
@@ -401,13 +401,13 @@ export default function MethodologyPage() {
                   background: 'rgba(255,255,255,0.02)',
                   border: '1px solid rgba(255,255,255,0.06)',
                 }}>
-                  <div style={{ fontSize: '10px', color: '#475569', marginBottom: '4px' }}>{x.label}</div>
-                  <div className="num" style={{ fontSize: '15px', fontWeight: 700, color: '#22d3ee' }}>{x.value}</div>
-                  <div style={{ fontSize: '10px', color: '#34d399', marginTop: '2px' }}>{x.sub}</div>
+                  <div style={{ fontSize: '10px', color: 'var(--faint)', marginBottom: '4px' }}>{x.label}</div>
+                  <div className="num" style={{ fontSize: '15px', fontWeight: 700, color: 'var(--teal)' }}>{x.value}</div>
+                  <div style={{ fontSize: '10px', color: 'var(--teal-bright)', marginTop: '2px' }}>{x.sub}</div>
                 </div>
               ))}
             </div>
-            <div style={{ fontSize: '11px', color: '#475569', marginTop: '10px' }}>
+            <div style={{ fontSize: '11px', color: 'var(--faint)', marginTop: '10px' }}>
               代理模型毫秒级评估使 20,000 次评估（200 代 × 100 个体）仅需数秒 —— 同样的搜索若用 CFD 是数月量级。
             </div>
           </StepCard>
@@ -437,12 +437,12 @@ export default function MethodologyPage() {
                 ['尚未完成', '最终收敛 RANS、Pareto 候选逐个 CFD 对照、代理误差的物理校验'],
               ].map(([label, text], i) => (
                 <div key={label} style={{ padding: '13px', borderRadius: '10px', background: i === 2 ? 'rgba(251,191,36,0.06)' : 'rgba(255,255,255,0.025)', border: `1px solid ${i === 2 ? 'rgba(251,191,36,0.16)' : 'rgba(255,255,255,0.06)'}` }}>
-                  <div style={{ fontSize: '11px', fontWeight: 700, color: i === 2 ? '#fbbf24' : '#34d399', marginBottom: '6px' }}>{label}</div>
-                  <div style={{ fontSize: '12px', color: '#94a3b8', lineHeight: 1.7 }}>{text}</div>
+                  <div style={{ fontSize: '11px', fontWeight: 700, color: i === 2 ? 'var(--yellow)' : 'var(--teal-bright)', marginBottom: '6px' }}>{label}</div>
+                  <div style={{ fontSize: '12px', color: 'var(--muted)', lineHeight: 1.7 }}>{text}</div>
                 </div>
               ))}
             </div>
-            <div style={{ marginTop: '14px', fontSize: '12px', color: '#64748b', lineHeight: 1.75 }}>
+            <div style={{ marginTop: '14px', fontSize: '12px', color: 'var(--faint)', lineHeight: 1.75 }}>
               本地电脑无法承受 fine 网格长时间 RANS 求解，因此不把早期性能输出写成最终 CFD 结果。未来获得服务器或 HPC 后，可在相同 manifest 和 cfg 版本下恢复该实验。
             </div>
           </motion.div>
@@ -476,10 +476,10 @@ export default function MethodologyPage() {
                 display: 'flex', gap: '10px', padding: '10px 0',
                 borderBottom: i < 4 ? '1px solid rgba(255,255,255,0.04)' : 'none',
               }}>
-                <span style={{ color: '#fbbf24', fontSize: '13px', flexShrink: 0 }}>{i + 1}.</span>
-                <div style={{ fontSize: '13px', color: '#cbd5e1', lineHeight: 1.7 }}>
+                <span style={{ color: 'var(--yellow)', fontSize: '13px', flexShrink: 0 }}>{i + 1}.</span>
+                <div style={{ fontSize: '13px', color: 'var(--muted)', lineHeight: 1.7 }}>
                   <strong>{title}</strong>
-                  <span style={{ color: '#94a3b8' }}> —— {desc}</span>
+                  <span style={{ color: 'var(--muted)' }}> —— {desc}</span>
                 </div>
               </div>
             ))}
@@ -509,7 +509,7 @@ export default function MethodologyPage() {
                 padding: '10px 20px', borderRadius: '10px',
                 background: 'rgba(30,41,59,0.6)',
                 border: '1px solid rgba(255,255,255,0.1)',
-                color: '#e2e8f0', fontSize: '14px', fontWeight: 600,
+                color: 'var(--paper)', fontSize: '14px', fontWeight: 600,
                 textDecoration: 'none',
               }}
             >
@@ -517,7 +517,7 @@ export default function MethodologyPage() {
             </a>
           </motion.div>
           <div style={{ marginTop: '20px' }}>
-            <Link to="/" style={{ color: '#64748b', fontSize: '13px', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+            <Link to="/" style={{ color: 'var(--faint)', fontSize: '13px', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
               <ChevronRight size={14} style={{ transform: 'rotate(180deg)' }} /> 返回首页 Back to Home
             </Link>
           </div>

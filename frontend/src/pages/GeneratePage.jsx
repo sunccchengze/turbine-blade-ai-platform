@@ -57,25 +57,25 @@ export default function GeneratePage() {
   }
 
   return (
-    <div style={{ background: '#0f172a', minHeight: '100vh', padding: '32px 24px' }}>
+    <div style={{ background: 'var(--ink)', minHeight: '100vh', padding: '32px 24px' }}>
       <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} style={{ marginBottom: '24px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
             <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(52,211,153,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Wand2 size={18} color="#34d399" />
+              <Wand2 size={18} color="var(--teal-bright)" />
             </div>
-            <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#f1f5f9' }}>
+            <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--paper)' }}>
               生成式设计
-              <span style={{ fontSize: '11px', color: '#475569', fontWeight: 600, marginLeft: '10px', letterSpacing: '0.08em' }}>
+              <span style={{ fontSize: '11px', color: 'var(--faint)', fontWeight: 600, marginLeft: '10px', letterSpacing: '0.08em' }}>
                 GENERATIVE DESIGN · INVERSE
               </span>
             </h1>
           </div>
-          <p style={{ fontSize: '14px', color: '#64748b', maxWidth: '820px', lineHeight: 1.7 }}>
+          <p style={{ fontSize: '14px', color: 'var(--faint)', maxWidth: '820px', lineHeight: 1.7 }}>
             输入目标性能，AI 在代理模型上做逆设计：从 1000 组 Rotor 37 设计库中检索最接近方案，
             并对最优候选做局部精修。改目标 → 结果会变（不再是固定基准预测）。
             <br />
-            <span style={{ fontSize: '12px', color: '#475569' }}>
+            <span style={{ fontSize: '12px', color: 'var(--faint)' }}>
               Inverse design on the ONNX surrogate (library nearest-neighbor + L-BFGS-B).
               P3 diffusion generator will replace the solver after full training.
             </span>
@@ -83,9 +83,9 @@ export default function GeneratePage() {
         </motion.div>
 
         {/* 目标输入 */}
-        <div style={{ background: '#1e293b', borderRadius: '16px', padding: '20px', marginBottom: '20px' }}>
-          <h3 style={{ fontSize: '14px', fontWeight: 700, color: '#e2e8f0', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <Target size={15} color="#34d399" /> 目标性能 Target Performance
+        <div style={{ background: 'var(--panel)', borderRadius: '16px', padding: '20px', marginBottom: '20px' }}>
+          <h3 style={{ fontSize: '14px', fontWeight: 700, color: 'var(--paper)', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <Target size={15} color="var(--teal-bright)" /> 目标性能 Target Performance
           </h3>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
             {[
@@ -94,7 +94,7 @@ export default function GeneratePage() {
               { key: 'Compression_ratio', label: '压比 π', min: 1.85, max: 2.10, step: 0.01 },
             ].map(({ key, label, min, max, step }) => (
               <div key={key}>
-                <label style={{ fontSize: '12px', color: '#94a3b8' }}>{label}</label>
+                <label style={{ fontSize: '12px', color: 'var(--muted)' }}>{label}</label>
                 <input
                   type="number" min={min} max={max} step={step}
                   value={targets[key]}
@@ -102,9 +102,9 @@ export default function GeneratePage() {
                     const v = parseFloat(e.target.value)
                     setTargets({ ...targets, [key]: Number.isFinite(v) ? v : targets[key] })
                   }}
-                  style={{ width: '100%', marginTop: '6px', background: '#0f172a', border: '1px solid #334155', borderRadius: '8px', padding: '8px 10px', color: '#e2e8f0', fontSize: '14px' }}
+                  style={{ width: '100%', marginTop: '6px', background: 'var(--ink)', border: '1px solid #334155', borderRadius: '8px', padding: '8px 10px', color: 'var(--paper)', fontSize: '14px' }}
                 />
-                <div style={{ fontSize: '10px', color: '#475569', marginTop: '4px' }}>
+                <div style={{ fontSize: '10px', color: 'var(--faint)', marginTop: '4px' }}>
                   建议范围 {min} – {max}（训练分布内）
                 </div>
               </div>
@@ -126,10 +126,10 @@ export default function GeneratePage() {
         {result && pred && (
           <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.2fr) minmax(280px, 0.8fr)', gap: '16px' }}
             className="gen-result-grid">
-            <div style={{ background: '#1e293b', borderRadius: '16px', padding: '20px' }}>
-              <h3 style={{ fontSize: '14px', fontWeight: 700, color: '#e2e8f0', marginBottom: '14px' }}>
+            <div style={{ background: 'var(--panel)', borderRadius: '16px', padding: '20px' }}>
+              <h3 style={{ fontSize: '14px', fontWeight: 700, color: 'var(--paper)', marginBottom: '14px' }}>
                 设计结果 Design Result
-                <span style={{ fontSize: '11px', color: '#64748b', fontWeight: 500, marginLeft: '10px' }}>
+                <span style={{ fontSize: '11px', color: 'var(--faint)', fontWeight: 500, marginLeft: '10px' }}>
                   {result.mode || 'inverse-design'}
                 </span>
               </h3>
@@ -141,15 +141,15 @@ export default function GeneratePage() {
                   const gap = val != null && tgt != null ? val - tgt : null
                   const ok = gap == null ? true : (k === 'Massflow' ? gap >= -0.05 : Math.abs(gap) < 0.01)
                   return (
-                    <div key={k} style={{ background: '#0f172a', borderRadius: '10px', padding: '14px', border: `1px solid ${ok ? 'rgba(52,211,153,0.2)' : 'rgba(251,191,36,0.25)'}` }}>
-                      <div style={{ fontSize: '11px', color: '#64748b' }}>{metricLabel[k]}</div>
-                      <div style={{ fontSize: '20px', fontWeight: 700, color: ok ? '#34d399' : '#fbbf24' }}>
+                    <div key={k} style={{ background: 'var(--ink)', borderRadius: '10px', padding: '14px', border: `1px solid ${ok ? 'rgba(52,211,153,0.2)' : 'rgba(251,191,36,0.25)'}` }}>
+                      <div style={{ fontSize: '11px', color: 'var(--faint)' }}>{metricLabel[k]}</div>
+                      <div style={{ fontSize: '20px', fontWeight: 700, color: ok ? 'var(--teal-bright)' : 'var(--yellow)' }}>
                         {val != null ? val.toFixed(k === 'Massflow' ? 2 : 4) : '—'}
                       </div>
-                      <div style={{ fontSize: '11px', color: '#475569' }}>
+                      <div style={{ fontSize: '11px', color: 'var(--faint)' }}>
                         目标 {k === 'Massflow' ? tgt.toFixed(1) : tgt.toFixed(k === 'Efficiency' ? 3 : 2)}
                         {gap != null && (
-                          <span style={{ marginLeft: 6, color: gap >= 0 ? '#34d399' : '#fbbf24' }}>
+                          <span style={{ marginLeft: 6, color: gap >= 0 ? 'var(--teal-bright)' : 'var(--yellow)' }}>
                             ({gap >= 0 ? '+' : ''}{gap.toFixed(k === 'Massflow' ? 2 : 4)})
                           </span>
                         )}
@@ -161,7 +161,7 @@ export default function GeneratePage() {
 
               {candidates.length > 1 && (
                 <div style={{ marginBottom: '14px' }}>
-                  <div style={{ fontSize: '12px', color: '#94a3b8', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: 6 }}>
                     <Layers size={13} /> 候选方案（点击切换）
                   </div>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
@@ -170,10 +170,10 @@ export default function GeneratePage() {
                       return (
                         <button key={c.rank} onClick={() => setSelectedRank(c.rank)}
                           style={{
-                            background: active ? 'rgba(16,185,129,0.15)' : '#0f172a',
+                            background: active ? 'rgba(16,185,129,0.15)' : 'var(--ink)',
                             border: `1px solid ${active ? '#10b981' : '#334155'}`,
                             borderRadius: '8px', padding: '8px 12px', cursor: 'pointer',
-                            color: active ? '#6ee7b7' : '#94a3b8', fontSize: '12px', textAlign: 'left',
+                            color: active ? '#6ee7b7' : 'var(--muted)', fontSize: '12px', textAlign: 'left',
                           }}>
                           <div style={{ fontWeight: 700 }}>#{c.rank}{c.refined ? ' · 精修' : ''}</div>
                           <div style={{ fontSize: '11px', opacity: 0.85 }}>
@@ -191,19 +191,19 @@ export default function GeneratePage() {
               </div>
             </div>
 
-            <div style={{ background: '#1e293b', borderRadius: '16px', padding: '16px', minHeight: '320px' }}>
-              <div style={{ fontSize: '12px', color: '#94a3b8', marginBottom: '10px' }}>3D 叶型预览（参数化）</div>
+            <div style={{ background: 'var(--panel)', borderRadius: '16px', padding: '16px', minHeight: '320px' }}>
+              <div style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '10px' }}>3D 叶型预览（参数化）</div>
               {geom ? (
-                <div style={{ height: '300px', borderRadius: '12px', overflow: 'hidden', background: '#0f172a' }}>
+                <div style={{ height: '300px', borderRadius: '12px', overflow: 'hidden', background: 'var(--ink)' }}>
                   <BladeViewer3D params={geom} />
                 </div>
               ) : (
-                <div style={{ height: '300px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#475569', fontSize: '13px' }}>
+                <div style={{ height: '300px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--faint)', fontSize: '13px' }}>
                   无几何参数
                 </div>
               )}
               {selected && (
-                <div style={{ marginTop: '10px', fontSize: '11px', color: '#64748b', lineHeight: 1.6 }}>
+                <div style={{ marginTop: '10px', fontSize: '11px', color: 'var(--faint)', lineHeight: 1.6 }}>
                   sample_id={selected.sample_id} · dist={selected.distance?.toFixed?.(4) ?? selected.distance}
                   <br />
                   {selected.method}

@@ -316,7 +316,7 @@ export default function OptimizePage() {
   }
 
   return (
-    <div style={{ background: '#0f172a', minHeight: '100vh', padding: '32px 24px' }}>
+    <div style={{ background: 'var(--ink)', minHeight: '100vh', padding: '54px 24px 80px' }}>
       <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
 
         {/* 页面标题 */}
@@ -333,7 +333,7 @@ export default function OptimizePage() {
             }}>
               <Target size={18} color="#22d3ee" />
             </div>
-            <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#f1f5f9' }}>
+            <h1 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.6rem)', fontWeight: 600, color: 'var(--paper)', fontFamily: 'var(--display)', letterSpacing: '-.05em' }}>
               多目标设计优化
               <span style={{ fontSize: '11px', color: '#475569', fontWeight: 600, marginLeft: '10px', letterSpacing: '0.08em' }}>
                 MULTI-OBJECTIVE OPTIMIZATION
