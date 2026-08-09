@@ -396,7 +396,7 @@ export default function OptimizePage() {
             icon={BarChart3}
           />
           <MetricCard
-            label="Pareto 最优解 Solutions"
+            label="代理 Pareto 候选 Candidates"
             value={paretoData.n_solutions}
             sub="非支配设计 non-dominated"
             color="#fbbf24"

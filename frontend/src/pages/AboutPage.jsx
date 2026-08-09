@@ -158,7 +158,7 @@ export default function AboutPage() {
               {
                 icon: Rocket, title: '暑假自主立项',
                 en: 'Self-initiated summer project',
-                text: '受此启发，在暑假自主立项：用深度学习代理模型替代 CFD 做前端筛选，把叶片性能评估从小时级压到毫秒级，并用 NSGA-II 搜索 Pareto 最优设计。',
+                text: '受此启发，在暑假自主立项：用深度学习代理模型替代 CFD 做前端筛选，把叶片性能评估从小时级压到毫秒级，并用 NSGA-II 生成代理模型预测的 Pareto 候选；最终候选仍需真实 RANS 复核。',
               },
               {
                 icon: GraduationCap, title: '独立完成',

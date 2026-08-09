@@ -416,8 +416,8 @@ export default function HomePage() {
                         icon: Target, color: '#fbbf24',
                         bg: 'rgba(251,191,36,0.08)',
                         label: 'NSGA-II Optimization',
-                        desc: <>100 个 Pareto 最优设计 · 效率 +5.40%（可复现，见 README）<br />
-                          <span style={{ color: '#475569' }}>100 Pareto-optimal designs · +5.40% efficiency (reproducible, see README)</span></>,
+                        desc: <>100 个代理预测 Pareto 候选 · 效率 +5.40%（需 RANS 复核）<br />
+                          <span style={{ color: '#475569' }}>100 surrogate-predicted candidates · +5.40% efficiency (RANS validation pending)</span></>,
                       },
                     ].map(({ icon: Icon, color, bg, label, desc }) => (
                       <div

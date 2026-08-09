@@ -3,7 +3,7 @@
 **AI-Enabled Multidisciplinary Design Optimization Platform for Turbomachinery**
 
 > 用深度学习代理模型替代 CFD 做前端筛选，把叶片气动性能评估从「小时级」压到「毫秒级」，
-> 并用 NSGA-II 在 74 维设计空间里找出 Pareto 最优解。
+> 并用 NSGA-II 在 74 维设计空间里生成代理模型预测的 Pareto 候选；最终候选仍需真实 RANS 复核。
 >
 > A deep-learning surrogate replaces CFD for front-end design screening — cutting blade aerodynamic
 > evaluation from hours to milliseconds — with NSGA-II searching a 74-dimensional design space for

@@ -287,8 +287,8 @@ export default function UQPage() {
           <p style={{ fontSize: '14px', color: '#64748b', maxWidth: '700px', lineHeight: 1.7 }}>
             训练/验证阶段每次预测执行{' '}
             <span style={{ color: '#a78bfa', fontWeight: 500 }}>100 次 MC Dropout 随机前向传播</span>
-            ，阴影带为 95% 置信区间（生产 API 的 UQ 模式使用预计算 σ 统计量，见 README）。
-            可靠的不确定性量化（UQ）意味着真实值稳定落在置信带内——这是代理模型工程可信度的直接证据。
+            ，阴影带为名义 95% 区间（生产 API 的 UQ 模式使用预计算 σ 统计量，见 README）。
+            实测覆盖率并不总达到 95%，因此这里的 UQ 是相对置信度指示器，而不是严格统计保证。
             <br />
             <span style={{ fontSize: '12px', color: '#475569' }}>
               100 stochastic forward passes per prediction during training/validation; the shaded band is the 95%
