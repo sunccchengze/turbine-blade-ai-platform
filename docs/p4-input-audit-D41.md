@@ -417,6 +417,10 @@ backend/scripts/prepare_su2_restart_cfg.py
 
 它从已审计的一阶 cfg 生成 `RESTART_SOL=YES` 的续算配置，并指向 `restart_flow_2ndorder.dat`；原始 cfg 和 restart 文件不修改。续算后仍需重新检查 residual、CFL、turbomachinery spanwise 输出和性能稳定性。
 
+### 续算结果
+
+用户本机使用 `SOLUTION_FILENAME=restart_flow_2ndorder.dat` 续算 1000 iteration 后，末尾 `relrms[Rho]=-0.221601`，显著劣于续算前的 `-3.39242`。判定：当前 restart 续算没有保持部分收敛状态，不能继续沿用；必须先审阅续算 history 起始行和 restart 写入版本/配置一致性。
+
 ## 24. 下一步建议
 
 ### 方案 A：已有 Rotor37 资产

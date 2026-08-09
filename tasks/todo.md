@@ -42,7 +42,8 @@
 - [x] 生成 bounded-CFL max=20 一阶 500 iteration：relrms=-3.21966
 - [x] bounded-CFL max=20 一阶 1000 iteration：relrms=-3.39242，平台未达收敛
 - [ ] 审阅 TURBOMACHINERY 输出和阶段性能平台
-- [ ] 从 restart_flow_2ndorder.dat 续算一阶 RANS
+- [x] restart 续算尝试失败：relrms 从 -3.39242 退化到 -0.221601
+- [ ] 读取续算 history 起始行，核对 restart 文件/配置一致性
 - [ ] 收敛后再逐步恢复二阶/正式收敛
 - [ ] 核验外部网格版本、边界、许可证和与项目工况的对应关系
 - [x] 输出 P4 输入审计报告
