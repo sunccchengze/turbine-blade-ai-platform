@@ -26,7 +26,7 @@ def main() -> None:
     args = ap.parse_args()
     text = args.cfg.read_text(encoding="utf-8", errors="replace")
     updated = set_or_add(text, "RESTART_SOL", "YES")
-    updated = set_or_add(updated, "SOLUTION_FLOW_FILENAME", args.restart)
+    updated = set_or_add(updated, "SOLUTION_FILENAME", args.restart)
     updated = set_or_add(updated, "ITER", str(args.iter))
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(updated, encoding="utf-8", newline="")
@@ -36,6 +36,7 @@ def main() -> None:
         "restart_file": args.restart,
         "additional_iterations": args.iter,
         "purpose": "continue partially converged SU2 state; not yet a convergence claim",
+        "su2_restart_key": "SOLUTION_FILENAME",
     }
     report = args.out.with_suffix(".changes.json")
     report.write_text(json.dumps(meta, ensure_ascii=False, indent=2), encoding="utf-8")
