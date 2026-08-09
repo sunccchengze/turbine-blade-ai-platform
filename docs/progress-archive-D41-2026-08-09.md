@@ -169,3 +169,10 @@ docs/DeepTutor学习路径-燃气轮机叶轮机械-D41.md
 ### 当前决策
 
 项目不再被本机 fine mesh 计算阻塞，转入阶段性交付和 DeepTutor 学习准备。若没有新的服务器/HPC 资源，不继续进行 fine 长跑或无边界 CFL 调参。
+
+### 纯前端部署决策
+
+- 由于 SnapDeploy 冷启动影响公开演示，前端数据层已切换为静态资源 + 浏览器 ONNX Runtime Web。
+- Pareto、演化、UQ、训练统计和特征数据随 Cloudflare Pages 部署；预测与 sweep 在浏览器本地运行。
+- FastAPI 保留为研究复现/未来 HPC 服务，不再是公开演示的必需依赖。
+- 纯前端部署只改变运行位置，不提高证据等级；Pareto 仍是代理预测候选，RANS 仍待收敛验证。

@@ -25,6 +25,7 @@
 - ✅ README、项目一页纸、答辩稿同步记录当前 RANS 边界。
 - ✅ 前端 `npm run build` 通过。
 - ✅ 前端 `npm run lint` 通过，0 warnings、0 errors。
+- ✅ 纯前端数据层：静态 JSON + 浏览器 ONNX Runtime Web；公开演示不依赖 SnapDeploy 冷启动。
 - ✅ Vite hosted preview 已允许 Arena preview host。
 - ✅ 运行目录、cfg、mesh、inlet profile、stdout、history、manifest 具备追溯机制。
 

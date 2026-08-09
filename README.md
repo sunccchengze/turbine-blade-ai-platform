@@ -260,7 +260,7 @@ Predict          Explore           不确定性量化      100 Pareto 解
 | 优化算法 | NSGA-II（pymoo 0.6.1） |
 | 后端 API | FastAPI 0.110 + uvicorn |
 | 前端 | React 19 + Vite + Three.js（3D 叶片） + Plotly.js（图表） + Framer Motion |
-| 部署 | Cloudflare Pages（前端） + SnapDeploy 容器（后端） |
+| 部署 | Cloudflare Pages 静态站点（浏览器内 ONNX Runtime Web；无冷启动后端依赖） |
 | 数据 | PLAID / NASA Rotor 37（Hugging Face `PLAID-datasets/Rotor37`） |
 
 ---
@@ -282,6 +282,18 @@ Predict          Explore           不确定性量化      100 Pareto 解
 
 > `output` 只接受 `Compression_ratio` / `Efficiency` / `Massflow` 三个值。
 > `base_features` 必须严格按 `/baseline-features` 返回的 `feature_names` 顺序排列。
+
+### 纯前端部署 Frontend-only deployment
+
+当前公开演示默认采用 **Cloudflare Pages + 浏览器内 ONNX Runtime Web**：
+
+- Pareto、演化轨迹、UQ 和训练统计随静态资源部署；
+- 预测与二维设计空间扫描在用户浏览器本地执行；
+- 首次进入预测/探索页面会下载约 2.1 MB ONNX 模型和 WASM runtime，之后由浏览器缓存；
+- 不再等待 SnapDeploy 冷启动，也不把浏览器暴露给 localhost；
+- FastAPI 保留为训练/研究复现和未来 HPC 服务，不是公开演示的必需依赖。
+
+因此“纯前端”解决的是**演示可用性与冷启动**，不改变科研证据等级：浏览器仍运行同一个代理模型，Pareto 仍是代理预测候选，最终 RANS 仍待验证。
 
 ---
 
