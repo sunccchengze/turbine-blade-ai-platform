@@ -114,7 +114,24 @@ docs/DeepTutor学习路径-燃气轮机叶轮机械-D41.md
 诊断 → 分层讲解 → 项目映射 → 小测 → 错误归因 → 费曼复述 → 间隔复习
 ```
 
-## 9. DeepTutor 方法在本项目中的应用原则
+## 9. 今晨 P4 几何 Gate
+
+用户本机运行 `audit_geometry_feasibility.py` 成功：
+
+- `nonfinite_samples=0`
+- `near_degenerate_samples_extent_lt_1e-4=0`
+- `low_unique_ratio_samples_lt_0.95=0`
+- `normals_not_mostly_unit_samples_lt_0.90=0`
+- `normal_variability_high_samples_std_gt_0.10=0`
+- `rank_collapsed_samples_smallest_cov_eig_lt_1e-8=0`
+
+结论：真实点云通过几何质量 Gate，可进入表面/拓扑重建；仍没有 SU2/CGNS 网格、边界条件和真实 RANS 性能提取。
+
+## 10. 新增 Huashu Design
+
+已装载 `技能库&准则/huashu-design/`，核心应用原则已补入 `技能库&准则/SKILL运用指南.md`：事实先于视觉、从现有上下文出发、先假设再变体、内容优先于动画、反 AI slop、五维设计审查。它将用于前端收口、可视化和讲座材料，不得改变科研证据等级。
+
+## 11. DeepTutor 方法在本项目中的应用原则
 
 明早继续时，对任何知识教学/项目讲解任务采用：
 
