@@ -389,6 +389,15 @@ backend/scripts/audit_su2_marker_geometry.py
 
 它计算 INLET/OUTLET/PER1/PER2/HUB/BLADE/SHROUD 等 marker 的空间中心、包围盒和入口到出口主方向，用于核对 cfg 的 Z 轴流向与实际网格坐标；不运行求解器。
 
+### 用户本机结果
+
+```text
+INLET → OUTLET delta = [-0.00425193, 0.04712439, 0.14860000]
+dominant_axis = Z
+```
+
+**轴向 Gate 通过**：网格主流向与 cfg 的 Z 轴设置一致；下一步不再把整体轴向错置作为首要假设。
+
 ## 23. 下一步建议
 
 ### 方案 A：已有 Rotor37 资产

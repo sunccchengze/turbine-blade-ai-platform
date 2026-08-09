@@ -31,7 +31,8 @@
 - [x] 用 `R37_from_scratch_1stOrder.cfg` 生成工作 smoke cfg 并运行 20 iteration
 - [x] 一阶 smoke Exit Success，无 NaN，但未收敛
 - [x] 一阶 500 iteration 稳定运行但未收敛（relrms=-3.38664）
-- [ ] 运行 `audit_su2_marker_geometry.py`，核对 INLET→OUTLET 实际主轴
+- [x] 运行 `audit_su2_marker_geometry.py`：INLET→OUTLET 主轴为 Z
+- [ ] 审计 `inlet_kw_new.dat` 的列定义和速度分量
 - [ ] 审阅 history.csv / forces_breakdown.dat / CFL 演化
 - [ ] 根据轴向/边界审计调整一阶数值稳定配置并重新试跑
 - [ ] 收敛后再逐步恢复二阶/正式收敛
