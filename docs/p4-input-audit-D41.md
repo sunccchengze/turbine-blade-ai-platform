@@ -380,7 +380,8 @@ backend/scripts/prepare_su2_smoke_cfg.py
 - 需要先审阅 `history.csv`、`forces_breakdown.dat` 和 CFL/边界设置，再决定数值调整。
 - history 表头和前几行显示 `CFL_ADAPT=YES`，Max CFL 从 1→2→4→8 并会继续抬升至 50；这与后期残差回升相符。已给 smoke 配置增加 `--fixed-cfl`，用于固定 CFL=1 的对照。
 - 固定 CFL=1 的 500 iteration 对照末尾 `relrms[Rho]=-1.54914`，比自适应上限50的 `-3.38664` 更差，说明固定 CFL=1 推进过于保守；
-- bounded-CFL 上限5、增长1.2、下降0.5 的 500 iteration 末尾 `relrms[Rho]=-2.71473`，优于固定1但仍低于原上限50；下一步参数化测试上限10。
+- bounded-CFL 上限5、增长1.2、下降0.5 的 500 iteration 末尾 `relrms[Rho]=-2.71473`，优于固定1但仍低于原上限50；
+- bounded-CFL 上限10 的 500 iteration 末尾 `relrms[Rho]=-3.10767`，比上限5继续改善但仍未达到 `< -4`；下一步测试上限20。
 - `inlet_kw_new.dat`：`NMARK=1`、`MARKER_TAG=INLET`、`NROW=18`、`NCOL=7`；SU2 按 `ALPHA_PHI` 成功读取并提示流向为 Z。该文件是 Rotor37 turbomachinery profile，不能仅凭 7 列数值把它解释为普通 X/Y/Z 速度表；入口物理含义需结合 history 表头和完整 cfg 的 `INLET_TYPE`/`MACH_MOTION`/Giles 设置确认。
 
 ## 22. SU2 marker 几何轴向审计入口

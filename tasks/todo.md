@@ -38,7 +38,8 @@
 - [x] 审阅 forces_breakdown.dat / CFL 演化
 - [x] 生成 `--fixed-cfl` 一阶 500 iteration 对照：relrms=-1.54914，过于保守
 - [x] 生成 bounded-CFL max=5 一阶 500 iteration：relrms=-2.71473
-- [ ] 生成 bounded-CFL max=10、up=1.2、down=0.5 一阶 500 iteration 对照
+- [x] 生成 bounded-CFL max=10 一阶 500 iteration：relrms=-3.10767
+- [ ] 生成 bounded-CFL max=20、up=1.2、down=0.5 一阶 500 iteration 对照
 - [ ] 收敛后再逐步恢复二阶/正式收敛
 - [ ] 核验外部网格版本、边界、许可证和与项目工况的对应关系
 - [x] 输出 P4 输入审计报告
