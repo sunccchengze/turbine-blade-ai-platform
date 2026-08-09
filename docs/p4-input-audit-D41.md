@@ -248,7 +248,17 @@ backend/scripts/extract_raw_mesh_p4.py
 
 它以 streaming 方式从 `PLAID-datasets/Rotor37` 读取单个样本，审计原始 `meshes` 树中的坐标、单元连接、边界和 CGNS 相关数组，并把一个样本的 meshes 保存到被忽略的 `data/processed/p4/raw_mesh/`。该入口优先于从下采样点云猜测拓扑。
 
-## 13. 下一步建议
+## 13. 原始 QUAD_4 表面导出入口
+
+原始样本已确认包含 29773 个节点、29664 个 QUAD_4 单元和 `ElementConnectivity`。已新增：
+
+```text
+backend/scripts/convert_raw_mesh_to_su2_surface.py
+```
+
+它将 `sample_0000_meshes.pkl` 中的原始坐标和 1-based QUAD_4 连接关系转换为 0-based SU2 code 9 表面文件，并写入元数据。输出明确标记为 surface-only，不是体网格，不直接运行 RANS。
+
+## 14. 下一步建议
 
 ### 方案 A：已有 Rotor37 资产
 
