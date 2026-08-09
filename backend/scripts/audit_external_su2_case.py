@@ -104,7 +104,11 @@ def parse_cfg(path: Path | None) -> dict:
         "FREESTREAM_PRESSURE", "FREESTREAM_TEMPERATURE", "MACH_NUMBER",
         "INLET_FILENAME", "SPECIFIED_INLET_PROFILE", "OUTPUT_FILES",
     ]
-    return {"path": str(path), "settings": {k: values[k] for k in wanted if k in values}}
+    selected = {k: values[k] for k in wanted if k in values}
+    # Preserve every marker declaration (e.g. MARKER_GILES / MARKER_OUTLET)
+    # so boundary coverage is not hidden by the summary allow-list.
+    selected.update({k: v for k, v in values.items() if k.startswith("MARKER_")})
+    return {"path": str(path), "settings": selected}
 
 
 def cfg_marker_names(settings: dict[str, str], known_markers: set[str]) -> set[str]:
