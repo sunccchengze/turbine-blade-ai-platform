@@ -107,16 +107,12 @@ def parse_cfg(path: Path | None) -> dict:
     return {"path": str(path), "settings": {k: values[k] for k in wanted if k in values}}
 
 
-def cfg_marker_names(settings: dict[str, str]) -> set[str]:
-    names: set[str] = set()
-    for key, value in settings.items():
-        if not key.startswith("MARKER_"):
-            continue
-        # Marker names are the first token in each parenthesized tuple; this
-        # intentionally remains conservative and only extracts known marker ids.
-        for item in re.findall(r"\(\s*([A-Za-z0-9_]+)", value):
-            names.add(item)
-    return names
+def cfg_marker_names(settings: dict[str, str], known_markers: set[str]) -> set[str]:
+    # Marker tuples contain different shapes: periodic has two names, heatflux
+    # interleaves marker names and values, and some BCs use a single name. Use
+    # the mesh marker vocabulary to avoid misclassifying numeric tokens.
+    text = " ".join(value for key, value in settings.items() if key.startswith("MARKER_"))
+    return {marker for marker in known_markers if re.search(rf"(?<![A-Za-z0-9_]){re.escape(marker)}(?![A-Za-z0-9_])", text)}
 
 
 def main() -> None:
@@ -130,7 +126,7 @@ def main() -> None:
     settings = result["cfg"].get("settings", {})
     cfg_mesh = Path(settings["MESH_FILENAME"]).name if "MESH_FILENAME" in settings else None
     mesh_markers = set(result["mesh"]["marker_tags"])
-    cfg_markers = cfg_marker_names(settings)
+    cfg_markers = cfg_marker_names(settings, mesh_markers)
     result["verdict"] = {
         "volume_mesh_present": result["mesh"]["has_volume_elements"],
         "mesh_filename_matches_cfg": cfg_mesh == mesh_name if cfg_mesh else None,
