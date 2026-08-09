@@ -146,3 +146,26 @@ docs/DeepTutor学习路径-燃气轮机叶轮机械-D41.md
 ```
 
 但它不能改变科研证据优先级：教学体验可以个性化，实验事实仍须由脚本、数据、日志和来源支持。
+
+---
+
+## 8. D42 终验收更新（2026-08-09）
+
+### P4 真实 SU2 状态
+
+- coarse Rotor37 外部体网格已完成 preprocessing、真实 RANS 启动、一阶 SA 对照和 Stage Performance 提取；residual 最终约 `-3.39242`，未达到 `< -4`。
+- fine Rotor37 外部体网格已完成 preprocessing 并进入 solver；用户本机内存达到约 99%，电脑几乎卡死后主动中止。该中止是正确的资源安全决策，不是 SU2 自然收敛或新的物理失败证据。
+- fine 不再在当前个人电脑上执行长时间 RANS；未来服务器/HPC 恢复。
+- P4 当前冻结口径：`真实 SU2 物理通路验证 + 未收敛 Stage Performance 趋势`。
+
+### 展示与交付状态
+
+- 首页、Optimize、Methodology、UQ、About 已统一使用“代理模型预测候选”及“最终 RANS 待完成”口径。
+- README、`docs/report-one-pager-D37.md`、`docs/defense-pitch-D40.md` 已同步当前证据等级。
+- 新增 `docs/final-acceptance-D42.md` 作为阶段性交付验收清单。
+- 前端 build/lint 通过：build 成功，lint 0 warnings/0 errors。
+- Vite preview 已允许 Arena hosted preview host。
+
+### 当前决策
+
+项目不再被本机 fine mesh 计算阻塞，转入阶段性交付和 DeepTutor 学习准备。若没有新的服务器/HPC 资源，不继续进行 fine 长跑或无边界 CFL 调参。

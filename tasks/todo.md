@@ -54,6 +54,15 @@
 - [x] 决定停止本机 fine 长运行，冻结 P4 为真实 SU2 通路 + 未收敛 Stage Performance 趋势
 - [ ] 如确有必要，仅在 coarse 上做一次受控数值诊断；不再盲目增加迭代
 - [ ] 未来获得服务器/HPC 后，再独立恢复 fine/二阶正式收敛
+
+## 阶段性交付收口 D42
+
+- [x] 全站代理预测 / RANS 待完成口径扫描
+- [x] README、项目一页纸、答辩稿同步当前 CFD 证据等级
+- [x] 新增 `docs/final-acceptance-D42.md`
+- [x] 前端 build 与 lint 最终验证
+- [ ] 用户线上人工验收主页面与 Optimize/Methodology/UQ
+- [ ] 用户确认是否进入 DeepTutor 系统教学
 - [ ] 核验外部网格版本、边界、许可证和与项目工况的对应关系
 - [x] 输出 P4 输入审计报告
 
