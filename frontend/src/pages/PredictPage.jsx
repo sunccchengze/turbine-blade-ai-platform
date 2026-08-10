@@ -55,7 +55,7 @@ function ResultCard({ label, value, sigma, unit, color, icon: Icon, baseline }) 
       {sigma !== null && sigma !== undefined && (
         <div style={{ fontSize: '12px', color: '#64748b', marginBottom: '8px' }}>
           ± {sigma.toFixed(4)}{' '}
-          <span style={{ color: '#475569' }}>95% CI</span>
+          <span style={{ color: '#475569', fontSize: '11px' }} title="训练期 MC Dropout 相对置信度提示（非严格95%保证）">名义 95% CI (±1.96σ)</span>
         </div>
       )}
 

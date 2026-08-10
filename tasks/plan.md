@@ -2,7 +2,7 @@
 
 ## Overview
 
-在保留 `arena/019fc539-turbine-blade-ai-platform` 全部工作和完整技能库的基础上，先锁定现有基线，再以风险优先方式打通最小真实 SU2/RANS 验证链路。所有结果按 `docs/stage-guardrails-D41.md` 的 E0–E4 证据等级标注，禁止把代理预测、dry-run 或教程算例包装成 Rotor37 物理结论。
+在保留 `arena/019feb03-turbine-blade-ai-platform` 全部工作和完整技能库的基础上，先锁定现有基线，再以风险优先方式打通最小真实 SU2/RANS 验证链路。所有结果按 `docs/stage-guardrails-D41.md` 的 E0–E4 证据等级标注，禁止把代理预测、dry-run 或教程算例包装成 Rotor37 物理结论。
 
 ## 技能编排
 

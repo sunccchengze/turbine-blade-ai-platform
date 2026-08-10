@@ -3,7 +3,7 @@
 > 本文件把“当前阶段最应该避免的事情”固化为持续检查项。每推进一个阶段，必须回看并更新状态；任何新增结论、页面文案和实验报告都不得绕过本文件。
 >
 > **建立日期**：2026-08-08  
-> **当前分支**：`arena/019fe072-turbine-blade-ai-platform`  
+> **当前分支**：`arena/019feb03-turbine-blade-ai-platform`  
 > **阶段目标**：从“代理模型平台已成型”推进到“代理预测—真实几何—RANS 验证”的最小科研闭环。
 
 ---
@@ -32,7 +32,7 @@
 
 ```bat
 cd /d D:\turbine-blade-ai-platform
-git pull --ff-only origin arena/019fe072-turbine-blade-ai-platform
+git pull --ff-only origin arena/019feb03-turbine-blade-ai-platform
 ```
 
 并说明预期提交/文件检查。不能在未同步的旧工作树上诊断“文件不存在”，也不能把路径错误优先归因于 Markdown 复制。

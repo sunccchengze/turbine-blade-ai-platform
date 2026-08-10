@@ -94,7 +94,7 @@ patch 备份方式失效（`handoff/` 不随 clone 过来）→ 若再遇「提�
 
 ```
 工作区: /home/user/turbine-blade-ai-platform
-分支:   arena/019fb778-turbine-blade-ai-platform（本会话分支，PR #4 已开）
+分支:   arena/019feb03-turbine-blade-ai-platform（本会话分支，PR #4 已开）
 71b6c56  ← HEAD：docs 修正（预热模板说明）等，共 10 个提交在 PR #4
 3b4ba54  ← Day 30: preheat 模板 + 启动脚本
 2d92da5  ← devlog D34/36/37
@@ -118,7 +118,7 @@ ca61c0f  ← Day 20 About + devlog
 16821b4  ← origin/main（PR #3 合并）
 ```
 
-- ✅ **PR #4 已合并**（HEAD=70f5e6c，即 main 最新）。本会话分支 `arena/019fb861-turbine-blade-ai-platform` 从该提交分出；新会话分支以系统提示为准，勿自创。
+- ✅ **PR #4 已合并**（HEAD=70f5e6c，即 main 最新）。本会话分支 `arena/019feb03-turbine-blade-ai-platform` 从该提交分出；新会话分支以系统提示为准，勿自创。
   ⚠️ PR #4 含后端改动（`optimize.py` + 2 个 CSV）→ 承泽需在 SnapDeploy **手动 Redeploy**，否则线上 /optimize 演化动画显示占位、3D 联动回退默认叶型。
 - 仓库为 **shallow（depth=1）** → 新会话先 `git fetch --unshallow origin` 再回溯 devlog。
 
