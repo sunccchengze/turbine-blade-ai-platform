@@ -1,0 +1,30 @@
+# Errors
+
+Command failures, integration errors, and critical precedent rollbacks.
+
+---
+
+## [ERR-20260810-01] 混淆压气机载体与涡轮概念 (Critical)
+- **Severity**: critical
+- **Context**: 论文摘要与答辩 Deck 撰写
+- **Error Description**: 容易将 NASA Rotor 37 压气机混淆为燃气涡轮透平叶片。
+- **Root Cause**: 未严格区分上位概念（叶轮机械）与验证载体（Rotor 37 压气机）。
+- **Resolution / Prevention**: 全站统一术语标准：上位叶轮机械，载体 Rotor 37 压气机，引子 KIT 无压气机燃气轮机。
+
+---
+
+## [ERR-20260810-02] 代理预测与物理验证混为一谈 (High)
+- **Severity**: high
+- **Context**: Pareto 前沿与代理模型能力宣称
+- **Error Description**: 在 RANS 未完全收敛的情况下直接宣称“找到性能提升 5.8% 的物理最优叶型”。
+- **Root Cause**: 缺乏科研证据分级意识，将代理模型推断等同于物理实验结论。
+- **Resolution / Prevention**: 严格执行 stage-guardrails-D41.md，所有数字明确标注来自代理预测 (E2) 还是 RANS 真实求解 (E3/E4)。
+
+---
+
+## [ERR-20260810-03] AI 模板腔与非工程化视觉污染 (High)
+- **Severity**: high
+- **Context**: 前端界面与 PPT 制作
+- **Error Description**: 出现大面积紫色渐变、带厚阴影的悬浮卡片、Emoji 符号（如火、齿轮、火箭等）等。
+- **Root Cause**: 未调用 Stop-slop.md、taste-skill 与 ui-ux-pro-max 规则库。
+- **Resolution / Prevention**: 严格执行 1px 发丝边框、等宽字体数据展示、标准三线表与 Swiss Grid 网格系统。
