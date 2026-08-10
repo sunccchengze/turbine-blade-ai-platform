@@ -326,7 +326,7 @@ export default function OptimizePage() {
               <span style={{ fontSize: 12, color: 'var(--muted)', fontFamily: 'var(--mono)' }}>kg/s</span>
             </div>
             <div style={{ marginTop: 14, paddingTop: 12, borderTop: '1px solid var(--line)', fontSize: '11px', fontFamily: 'var(--mono)', color: 'var(--muted)' }}>
-              CHOKING FLOW CAPACITY
+              CHOKING FLOW (ṁ &gt; 21.2 kg/s 临近堵塞边界)
             </div>
           </div>
 

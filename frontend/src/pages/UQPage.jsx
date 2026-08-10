@@ -396,9 +396,12 @@ export default function UQPage() {
               <p style={{ color: 'var(--muted)', fontSize: 12, lineHeight: 1.8, marginBottom: 12 }}>
                 在跨音速压气机流动中，等熵绝热效率 η 对叶表附面层分离、激波边界层干涉具有极高阶的非线性响应。
               </p>
-              <p style={{ color: 'var(--faint)', fontSize: 12, lineHeight: 1.8 }}>
-                单一模型的 MC Dropout 仅捕获了网络权重层面的认识不确定性（Epistemic），未包含流体湍流物理本身的偶然不确定性（Aleatoric），导致区间宽度在极端分离工况下存在低估。我们如实将此局限性公开在平台上。
+              <p style={{ color: 'var(--faint)', fontSize: 12, lineHeight: 1.8, marginBottom: 10 }}>
+                单一模型的 MC Dropout 仅捕获了网络权重层面的认识不确定性（Epistemic），未包含流体湍流物理本身的偶然不确定性（Aleatoric），导致区间宽度在极端分离工况下存在低估。
               </p>
+              <div style={{ padding: '8px 12px', background: 'var(--ink)', border: '1px solid var(--line)', borderRadius: 4, color: 'var(--yellow)', fontSize: '11px', fontFamily: 'var(--mono)', lineHeight: 1.6 }}>
+                💡 保留未人工拉宽的原始残差分布，旨在真实暴露激波分离盲区，为后续主动学习 (Active Learning) 智能采样提供高价值补点依据。
+              </div>
             </div>
 
             <div style={{

@@ -164,6 +164,45 @@ export default function MethodologyPage() {
           ))}
         </section>
 
+        {/* 热力学物理定义与控制方程 (老冯 A) */}
+        <section style={{
+          background: 'var(--panel)',
+          border: '1px solid var(--line)',
+          borderRadius: 6,
+          padding: '24px 22px',
+          marginBottom: 24
+        }}>
+          <div style={{ color: 'var(--yellow)', font: '10px var(--mono)', letterSpacing: '0.12em', marginBottom: 12 }}>
+            THERMODYNAMIC FORMULATION / 压气机热力学第一性原理
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 20, alignItems: 'center' }}>
+            <div>
+              <h4 style={{ color: 'var(--paper)', fontSize: 15, fontWeight: 700, marginBottom: 8 }}>
+                等熵绝热效率严格定义公式
+              </h4>
+              <p style={{ color: 'var(--muted)', fontSize: 12, lineHeight: 1.8 }}>
+                对于理想气体绝热压缩过程（绝热指数 γ=1.4），总压比 π 与总温比 τ 决定了气动膨胀/压缩的理想绝热功与实际耗功比值。
+              </p>
+            </div>
+            <div style={{
+              background: 'var(--ink)',
+              padding: '16px 20px',
+              borderRadius: 4,
+              border: '1px solid var(--line)',
+              fontFamily: 'var(--mono)',
+              fontSize: '13px',
+              color: 'var(--teal-bright)',
+              textAlign: 'center',
+              lineHeight: 1.8
+            }}>
+              <div>η_is = ( π^((γ - 1)/γ) - 1 ) / ( τ - 1 )</div>
+              <div style={{ fontSize: '11px', color: 'var(--faint)', marginTop: 4 }}>
+                其中 τ = T_02 / T_01 (级出口/进口总温比)，γ = 1.4
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* 03. 生产指标与物理边界对照 (严格水平对齐 2 列) */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 32 }}>
           {/* Card 1: 生产指标 */}
@@ -234,11 +273,11 @@ export default function MethodologyPage() {
               <div style={{ display: 'grid', gap: 10, color: 'var(--muted)', fontSize: 12, lineHeight: 1.7 }}>
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
                   <Check size={14} style={{ color: 'var(--teal-bright)', flexShrink: 0, marginTop: 3 }} />
-                  <span><strong>SU2 粗网格已跑通：</strong> 14 万节点六面体网格完成一阶 1000 步计算，提取 10 个 Stage 性能趋势节点 (relrms=-3.39)。</span>
+                  <span><strong>SU2 粗网格已跑通：</strong> 14 万节点网格完成一阶 1000 步计算，提取 10 个 Stage 性能趋势节点 (relrms=-3.39)。一阶迎风格式因数值人工耗散在粗网格达到平衡平台。</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
                   <Check size={14} style={{ color: 'var(--teal-bright)', flexShrink: 0, marginTop: 3 }} />
-                  <span><strong>SU2 细网格已就绪：</strong> 355 万节点细网格已完成预处理与 marker 校验，受限单机内存主动止步。</span>
+                  <span><strong>SU2 细网格已就绪：</strong> 355 万节点二阶 Roe/JST 格式已完成预处理与 marker 校验，留待高性能超算集群运行。</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
                   <CircleAlert size={14} style={{ color: 'var(--yellow)', flexShrink: 0, marginTop: 3 }} />

@@ -59,6 +59,9 @@ const getSession = async () => {
     sessionPromise = ort.InferenceSession.create(MODEL_URL, {
       executionProviders: ['wasm'],
       graphOptimizationLevel: 'all',
+    }).catch(err => {
+      sessionPromise = null // 容灾自愈：重置以允许网络恢复后自动重试
+      throw err
     })
   }
   return sessionPromise
@@ -110,6 +113,7 @@ export const getBaselineFeatures = async () => {
 }
 
 export const sweepDesignSpace = async payload => {
+  await new Promise(r => setTimeout(r, 10)) // 让出主线程，确保前端正在扫描动画立即渲染
   const { rows } = await loadData()
   const names = getFeatureNames(rows[0])
   const baseline = Object.fromEntries(names.map((name, i) => [name, payload.base_features[i]]))

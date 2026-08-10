@@ -170,6 +170,24 @@ export default function HomePage() {
                 从 74 维统计参数到 NASA Rotor 37 真实叶型拓扑。利用物理残差代理网络在浏览器本地进行毫秒级气动筛选，再把高价值候选提交至工业级 SU2 求解器完成物理验证。
               </p>
 
+              {/* 核心效能对比胶囊 */}
+              <div style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
+                padding: '8px 14px',
+                background: 'rgba(52,211,153,0.06)',
+                border: '1px solid rgba(52,211,153,0.2)',
+                borderRadius: 4,
+                color: 'var(--paper)',
+                fontSize: '11px',
+                fontFamily: 'var(--mono)',
+                marginBottom: 18,
+                lineHeight: 1.6
+              }}>
+                <span>效能对比：单工况 3D RANS 稳态计算需数十秒至数小时 ➔ 本平台物理代理网络实现 0.23 ms 瞬时初筛</span>
+              </div>
+
               <div style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -569,6 +587,9 @@ export default function HomePage() {
               <div>CFD: <strong style={{ color: 'var(--paper)' }}>30~60s</strong></div>
               <div>增益: <strong style={{ color: 'var(--paper)' }}>10⁵ 量级</strong></div>
             </div>
+            <div style={{ color: 'var(--faint)', font: '9px var(--mono)', marginTop: 8 }}>
+              * 单工况 3D RANS vs 单核 SIMD WASM，不含前置离线样本成本
+            </div>
           </div>
         </div>
       </section>
@@ -663,6 +684,31 @@ export default function HomePage() {
         >
           全站所有计算与图表均在浏览器端通过 WebAssembly 本地执行，无需等待后端服务器唤醒，支持毫秒级响应与多维联动。
         </SectionHead>
+
+        {/* 推荐研究动线引导 */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 10,
+          marginBottom: 20,
+          fontFamily: 'var(--mono)',
+          fontSize: '11px',
+          color: 'var(--muted)',
+          flexWrap: 'wrap',
+          padding: '10px 14px',
+          background: 'var(--panel)',
+          border: '1px solid var(--line)',
+          borderRadius: 4
+        }}>
+          <span style={{ color: 'var(--yellow)', fontWeight: 600 }}>推荐研究动线 / WORKFLOW:</span>
+          <span style={{ color: 'var(--teal-bright)' }}>01 实时预测 (单点推断)</span>
+          <span>➔</span>
+          <span style={{ color: 'var(--teal-bright)' }}>02 流场探索 (二维切片)</span>
+          <span>➔</span>
+          <span style={{ color: 'var(--yellow)' }}>03 帕累托寻优 (多目标前沿)</span>
+          <span>➔</span>
+          <span style={{ color: 'var(--rust)' }}>04 认知检验 (不确定性量化)</span>
+        </div>
 
         <div style={{
           display: 'grid',

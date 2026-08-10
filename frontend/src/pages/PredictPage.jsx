@@ -230,11 +230,15 @@ export default function PredictPage() {
     triggerPredict(newFeats)
   }
 
+  const [resetPulse, setResetPulse] = useState(false)
+
   const handleReset = () => {
     if (!baseline) return
     const resetFeats = { ...baseline.features }
     setFeatures(resetFeats)
     triggerPredict(resetFeats)
+    setResetPulse(true)
+    setTimeout(() => setResetPulse(false), 260)
   }
 
   // 首次进入自动预测
@@ -551,8 +555,15 @@ export default function PredictPage() {
               />
             </div>
 
-            {/* 3 大核心气动输出指标卡片 */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 14 }}>
+            {/* 3 大核心气动输出指标卡片 (带重置基准微光反馈) */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+              gap: 14,
+              transition: 'filter 0.25s, transform 0.25s',
+              filter: resetPulse ? 'brightness(1.18)' : 'none',
+              transform: resetPulse ? 'scale(1.01)' : 'none'
+            }}>
               <ResultCard
                 label="总压比"
                 symbol="π"
