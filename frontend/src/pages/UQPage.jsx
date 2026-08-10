@@ -361,11 +361,11 @@ export default function UQPage() {
             MC DROPOUT SAMPLING (100 ITERS)
           </span>
           <span style={{ color: 'var(--line-strong)' }}>|</span>
-          <span style={{ color: '#38bdf8' }}>总压比 π (冰蓝 · 覆盖率 89%)</span>
+          <span style={{ color: '#38bdf8' }}>总压比 π · 实测覆盖率 89.0%</span>
           <span style={{ color: 'var(--line-strong)' }}>|</span>
-          <span style={{ color: '#e7c85b' }}>等熵效率 η (暖金 · 覆盖率 65%)</span>
+          <span style={{ color: '#e7c85b' }}>等熵效率 η · 实测覆盖率 65.0%</span>
           <span style={{ color: 'var(--line-strong)' }}>|</span>
-          <span style={{ color: '#f97316' }}>质量流量 ṁ (暖橙 · 覆盖率 88%)</span>
+          <span style={{ color: '#f97316' }}>质量流量 ṁ · 实测覆盖率 88.0%</span>
         </div>
 
         {/* 02. 三大专属色彩 UQ 面板视口 */}
