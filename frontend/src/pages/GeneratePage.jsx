@@ -343,7 +343,8 @@ export default function GeneratePage() {
                 fontSize: '11px',
                 lineHeight: 1.6
               }}>
-                前置流体拓扑守恒：自动保证叶片壁面厚度非负与单连通网格几何有效性。
+                <div>前置流体拓扑守恒：自动保证叶片壁面厚度非负与单连通网格几何有效性。</div>
+                <div style={{ marginTop: 4 }}>算法架构：采用种子基因库最近邻映射 + 代理模型局部梯度精修，兼具全局多样性与局部高精度 (老高 3.3)。</div>
               </div>
             </div>
           </motion.aside>

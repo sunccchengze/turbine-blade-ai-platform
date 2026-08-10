@@ -164,6 +164,49 @@ export default function MethodologyPage() {
           ))}
         </section>
 
+        {/* 达·芬奇式 74 维翼型几何拓扑解构图 (老达 1.3) */}
+        <section style={{
+          background: 'var(--panel)',
+          border: '1px solid var(--line)',
+          borderRadius: 6,
+          padding: '24px 22px',
+          marginBottom: 24
+        }}>
+          <div style={{ color: 'var(--yellow)', font: '10px var(--mono)', letterSpacing: '0.12em', marginBottom: 12 }}>
+            AIRFOIL GEOMETRIC DECOMPOSITION / 达·芬奇式 74 维气动几何参数拓扑解构手稿
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 20, alignItems: 'center' }}>
+            <div>
+              <h4 style={{ color: 'var(--paper)', fontSize: 15, fontWeight: 700, marginBottom: 8 }}>
+                74 维统计特征与真实物理型面映射
+              </h4>
+              <p style={{ color: 'var(--muted)', fontSize: 12, lineHeight: 1.8 }}>
+                74 维特征并非抽象无序的矩阵，而是严格对应压气机叶片的弦长 (Chord)、中弧线弯度 (Camber)、最大厚度位置 (Max Thickness)、前缘半径 (LE Radius)、尾缘楔角 (Wedge Angle) 以及从轮毂到叶顶的展向扭曲安装角 (Stagger/Twist)。
+              </p>
+            </div>
+            
+            {/* SVG 翼型解构手稿 */}
+            <div style={{
+              background: 'var(--ink)',
+              padding: '16px',
+              borderRadius: 4,
+              border: '1px solid var(--line)',
+              display: 'grid',
+              placeItems: 'center'
+            }}>
+              <svg viewBox="0 0 320 110" style={{ width: '100%', maxHeight: 110 }}>
+                <line x1="20" y1="55" x2="300" y2="55" stroke="var(--line-strong)" strokeDasharray="3 3" strokeWidth="1" />
+                <path d="M 25 55 Q 120 28, 295 55" fill="none" stroke="var(--yellow)" strokeWidth="1.2" strokeDasharray="2 2" />
+                <path d="M 25 55 C 30 18, 120 12, 170 20 C 220 28, 280 48, 295 55 C 280 62, 210 74, 150 72 C 90 70, 30 65, 25 55 Z" fill="rgba(52,211,153,0.06)" stroke="var(--teal-bright)" strokeWidth="1.5" />
+                <text x="30" y="24" fill="var(--teal-bright)" fontSize="9" fontFamily="var(--mono)">吸力面 Suction Surface</text>
+                <text x="140" y="86" fill="var(--muted)" fontSize="9" fontFamily="var(--mono)">压力面 Pressure Surface</text>
+                <text x="110" y="46" fill="var(--yellow)" fontSize="9" fontFamily="var(--mono)">中弧线 Camber Line</text>
+                <text x="160" y="102" fill="var(--faint)" fontSize="8" fontFamily="var(--mono)">弦长 Chord c (38~46mm)</text>
+              </svg>
+            </div>
+          </div>
+        </section>
+
         {/* 热力学物理定义与控制方程 (老冯 A) */}
         <section style={{
           background: 'var(--panel)',

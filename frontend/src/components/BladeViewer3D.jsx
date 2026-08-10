@@ -136,6 +136,69 @@ function buildBladeGeometry(params) {
   return geo
 }
 
+function SpanwiseSlices({ params }) {
+  const isLight = typeof document !== 'undefined' && document.documentElement.dataset.theme === 'light'
+  const sliceGeometries = useMemo(() => {
+    const {
+      omega = 1710, pMean = 109000,
+      pStd  = 34000, rMean = 0.220,
+    } = params
+
+    const omegaN = Math.max(0, Math.min(1, (omega - 1620) / 180))
+    const pMeanN = Math.max(0, Math.min(1, (pMean - 50000)  / 100000))
+    const pStdN  = Math.max(0, Math.min(1, (pStd  - 10000)  / 50000))
+    const rMeanN = Math.max(0, Math.min(1, (rMean - 0.176)  / 0.075))
+
+    const chord      = 0.038 + omegaN * 0.008
+    const camber     = 0.06  + pMeanN * 0.12
+    const thickness  = 0.08  + pStdN  * 0.04
+    const twistRoot  = 55    + omegaN * 15
+    const twistTip   = 25    + omegaN * 8
+    const spanHeight = 0.068 + rMeanN * 0.018
+    const sweep      = omegaN * 0.008
+
+    const SPAN_FRACTIONS = [0.0, 0.25, 0.50, 0.75, 1.0]
+    const lines = []
+
+    SPAN_FRACTIONS.forEach(frac => {
+      const y = 0.176 + frac * spanHeight
+      const twist = (twistRoot + frac * (twistTip - twistRoot)) * (Math.PI / 180)
+      const xOffset = frac * frac * sweep
+      const zOffset = -frac * 0.004
+
+      const profile = airfoilProfile(camber * (1 - frac * 0.3), thickness * (1 - frac * 0.25), 45)
+      const points = []
+
+      profile.forEach(([px, py]) => {
+        const xRot = px * chord * Math.cos(twist) - py * chord * Math.sin(twist)
+        const zRot = px * chord * Math.sin(twist) + py * chord * Math.cos(twist)
+        points.push(new THREE.Vector3(xRot + xOffset, y, zRot + zOffset))
+      })
+      points.push(points[0]) // 闭合截面环线
+
+      const g = new THREE.BufferGeometry().setFromPoints(points)
+      lines.push(g)
+    })
+
+    return lines
+  }, [params])
+
+  return (
+    <group>
+      {sliceGeometries.map((g, i) => (
+        <lineLoop key={i} geometry={g}>
+          <lineBasicMaterial
+            color={isLight ? '#1e675c' : '#e7c85b'}
+            linewidth={1}
+            transparent
+            opacity={isLight ? 0.75 : 0.85}
+          />
+        </lineLoop>
+      ))}
+    </group>
+  )
+}
+
 function BladeMesh({ params }) {
   const groupRef = useRef()
 
@@ -174,6 +237,8 @@ function BladeMesh({ params }) {
           opacity={0.05}
         />
       </mesh>
+      {/* 达·芬奇 5 层展向等高翼型剖切线 (Hub to Tip · 老达 1.1) */}
+      <SpanwiseSlices params={params} />
     </group>
   )
 }
