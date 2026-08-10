@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import AerodynamicBackground from '../components/AerodynamicBackground'
 import { Link } from 'react-router-dom'
 import {
   ArrowUpRight,
@@ -113,8 +114,8 @@ export default function HomePage() {
 
       {/* Hero Section (主舞台) */}
       <section className="grid-bg" style={{ position: 'relative', overflow: 'hidden', borderBottom: '1px solid var(--line)' }}>
-        <div className="hero-glow" />
-        <div style={{ maxWidth: 1240, margin: '0 auto', padding: '72px 24px 64px', position: 'relative' }}>
+        <AerodynamicBackground />
+        <div style={{ maxWidth: 1240, margin: '0 auto', padding: '72px 24px 64px', position: 'relative', zIndex: 1 }}>
           <div style={{
             display: 'grid',
             gridTemplateColumns: 'minmax(0, 1.1fr) minmax(320px, 0.9fr)',
