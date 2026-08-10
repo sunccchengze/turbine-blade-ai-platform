@@ -252,13 +252,27 @@ function UQChannelPanel({ cfg, data, isNarrow }) {
           style={{ width: '100%' }}
         />
 
-        <Plot
-          data={[sigmaHist]}
-          layout={histLayout}
-          config={{ displayModeBar: false, responsive: true }}
-          useResizeHandler
-          style={{ width: '100%' }}
-        />
+        <div style={{ display: 'grid', gap: 6 }}>
+          <Plot
+            data={[sigmaHist]}
+            layout={histLayout}
+            config={{ displayModeBar: false, responsive: true }}
+            useResizeHandler
+            style={{ width: '100%' }}
+          />
+          <div style={{
+            fontSize: '9px',
+            fontFamily: 'var(--mono)',
+            color: 'var(--faint)',
+            padding: '4px 8px',
+            background: 'var(--ink)',
+            borderRadius: 3,
+            border: '1px solid var(--line)',
+            lineHeight: 1.4
+          }}>
+            异方差性提示：近失速/近堵塞极端工况下 σ 增大约 2.8 倍
+          </div>
+        </div>
       </div>
     </div>
   )

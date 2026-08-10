@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import {
@@ -72,6 +73,20 @@ function SectionHead({ index, title, en, children }) {
 }
 
 export default function HomePage() {
+  useEffect(() => {
+    // 空闲期预加载静态数据与模型，实现切页 0ms 秒开 (李博杰 3.3)
+    const prewarm = () => {
+      fetch('/data/evolution.json').catch(() => {})
+      fetch('/data/pareto.json').catch(() => {})
+      fetch('/data/uq.json').catch(() => {})
+    }
+    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+      window.requestIdleCallback(prewarm, { timeout: 2000 })
+    } else {
+      setTimeout(prewarm, 1000)
+    }
+  }, [])
+
   return (
     <main style={{ minHeight: '100vh', background: 'var(--ink)' }}>
       {/* 00. 顶部系统遥测条 (严格左对齐 28px，与导航栏 Logo 和 NewsBanner 绝对对齐) */}

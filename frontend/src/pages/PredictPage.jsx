@@ -606,12 +606,14 @@ export default function PredictPage() {
               <div style={{ color: 'var(--faint)', font: '10px var(--mono)', letterSpacing: '0.12em', marginBottom: 14 }}>
                 当前输入状态快照 · CURRENT INPUT STATE
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
+              {/* 5 格状态快照 (含欧拉级做功焓升 Δh₀ · 老贝 1.1) */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 10 }}>
                 {[
                   ['转速 Ω', features.Omega?.toFixed(0), 'rad/s'],
                   ['进口总压 P', features.P?.toFixed(0), 'Pa'],
                   ['静压均值 P_mean', features.Pressure_mean?.toFixed(0), 'Pa'],
                   ['温度均值 T_mean', features.Temperature_mean?.toFixed(1), 'K'],
+                  ['级做功焓升 Δh₀', (1.005 * 288.15 * (Math.pow(Math.max(1, getPredVal('Compression_ratio') || 2.05), 0.2857) - 1)).toFixed(1), 'kJ/kg'],
                 ].map(([label, value, unit]) => (
                   <div key={label} style={{
                     padding: '12px 14px',

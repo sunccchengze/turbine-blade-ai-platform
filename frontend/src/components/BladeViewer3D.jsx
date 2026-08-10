@@ -208,12 +208,13 @@ function ParticleField() {
 }
 
 function Lights() {
+  const isLight = typeof document !== 'undefined' && document.documentElement.dataset.theme === 'light'
   return (
     <>
-      <ambientLight intensity={0.5} />
-      <directionalLight position={[0.15, 0.30, 0.12]} intensity={1.4} color="#f3eee0" />
-      <directionalLight position={[-0.15, 0.22, -0.10]} intensity={0.6} color="#86b9aa" />
-      <pointLight position={[0.05, 0.25, 0.10]} intensity={0.8} color="#e7c85b" distance={0.4} />
+      <ambientLight intensity={isLight ? 0.75 : 0.5} />
+      <directionalLight position={[0.18, 0.35, 0.15]} intensity={isLight ? 1.7 : 1.4} color={isLight ? '#ffffff' : '#f3eee0'} />
+      <directionalLight position={[-0.18, 0.22, -0.12]} intensity={isLight ? 0.5 : 0.6} color="#86b9aa" />
+      <pointLight position={[0.05, 0.25, 0.10]} intensity={isLight ? 0.7 : 0.8} color="#e7c85b" distance={0.4} />
     </>
   )
 }
