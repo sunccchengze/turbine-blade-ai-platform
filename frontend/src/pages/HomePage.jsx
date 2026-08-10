@@ -1,5 +1,4 @@
 import { motion } from 'framer-motion'
-import AerodynamicBackground from '../components/AerodynamicBackground'
 import { Link } from 'react-router-dom'
 import {
   ArrowUpRight,
@@ -18,6 +17,7 @@ import {
   Terminal,
   Activity
 } from 'lucide-react'
+import AerodynamicBackground from '../components/AerodynamicBackground'
 
 const fade = {
   hidden: { opacity: 0, y: 14 },
@@ -75,47 +75,52 @@ function SectionHead({ index, title, en, children }) {
 export default function HomePage() {
   return (
     <main style={{ minHeight: '100vh', background: 'var(--ink)' }}>
-      {/* 00. 顶部系统遥测条 (中英交织，面向工科评审) */}
+      {/* 00. 顶部系统遥测条 (严格左对齐 28px，与导航栏 Logo 和 NewsBanner 绝对对齐) */}
       <div style={{
         borderBottom: '1px solid var(--line)',
         background: 'var(--panel)',
-        padding: '8px 24px',
         fontSize: '11px',
         fontFamily: 'var(--mono)'
       }}>
         <div style={{
           maxWidth: 1240,
           margin: '0 auto',
+          padding: '9px 28px',
           display: 'flex',
-          justifyContent: 'space-between',
           alignItems: 'center',
-          gap: 16,
+          justifyContent: 'flex-start',
+          gap: '10px 18px',
           flexWrap: 'wrap'
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, color: 'var(--muted)', flexWrap: 'wrap' }}>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: 'var(--teal-bright)', fontWeight: 600 }}>
-              <CircleDot size={8} className="spin" style={{ animationDuration: '4s' }} />
-              本地 WASM 引擎就绪 / Local Active
-            </span>
-            <span style={{ color: 'var(--line-strong)' }}>|</span>
-            <span>推理延迟: <strong style={{ color: 'var(--paper)' }}>0.23 ms</strong> (SIMD WASM)</span>
-            <span style={{ color: 'var(--line-strong)' }}>|</span>
-            <span>验证载体: <strong style={{ color: 'var(--paper)' }}>NASA Rotor 37 压气机</strong> (PLAID)</span>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 14, color: 'var(--faint)', flexWrap: 'wrap' }}>
-            <span>筛选加速: <strong style={{ color: 'var(--yellow)' }}>~100,000×</strong> (vs 3D RANS)</span>
-            <span style={{ color: 'var(--line-strong)' }}>|</span>
-            <span>证据等级: <strong style={{ color: 'var(--teal)' }}>E2 代理 / E3 求解器趋势</strong></span>
-            <span style={{ color: 'var(--line-strong)' }}>|</span>
-            <span>纯前端零冷启动</span>
-          </div>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: 'var(--teal-bright)', fontWeight: 600 }}>
+            <CircleDot size={8} className="spin" style={{ animationDuration: '4s' }} />
+            本地 WASM 引擎就绪 / Local Active
+          </span>
+          <span style={{ color: 'var(--line-strong)' }}>|</span>
+          <span style={{ color: 'var(--muted)' }}>
+            推理延迟: <strong style={{ color: 'var(--paper)' }}>0.23 ms</strong> (SIMD WASM)
+          </span>
+          <span style={{ color: 'var(--line-strong)' }}>|</span>
+          <span style={{ color: 'var(--muted)' }}>
+            验证载体: <strong style={{ color: 'var(--paper)' }}>NASA Rotor 37 压气机</strong> (PLAID)
+          </span>
+          <span style={{ color: 'var(--line-strong)' }}>|</span>
+          <span style={{ color: 'var(--muted)' }}>
+            筛选加速: <strong style={{ color: 'var(--yellow)' }}>~100,000×</strong> (vs 3D RANS)
+          </span>
+          <span style={{ color: 'var(--line-strong)' }}>|</span>
+          <span style={{ color: 'var(--muted)' }}>
+            证据等级: <strong style={{ color: 'var(--teal)' }}>E2 代理 / E3 趋势</strong>
+          </span>
+          <span style={{ color: 'var(--line-strong)' }}>|</span>
+          <span style={{ color: 'var(--faint)' }}>纯前端零冷启动</span>
         </div>
       </div>
 
       {/* Hero Section (主舞台) */}
       <section className="grid-bg" style={{ position: 'relative', overflow: 'hidden', borderBottom: '1px solid var(--line)' }}>
         <AerodynamicBackground />
-        <div style={{ maxWidth: 1240, margin: '0 auto', padding: '72px 24px 64px', position: 'relative', zIndex: 1 }}>
+        <div style={{ maxWidth: 1240, margin: '0 auto', padding: '72px 28px 64px', position: 'relative', zIndex: 1 }}>
           <div style={{
             display: 'grid',
             gridTemplateColumns: 'minmax(0, 1.1fr) minmax(320px, 0.9fr)',
@@ -128,10 +133,6 @@ export default function HomePage() {
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: 8,
-                padding: '3px 10px',
-                border: '1px solid var(--line-strong)',
-                borderRadius: 4,
-                background: 'var(--panel)',
                 color: 'var(--yellow)',
                 font: '10px var(--mono)',
                 letterSpacing: '0.12em',
@@ -246,7 +247,7 @@ export default function HomePage() {
               </div>
             </motion.div>
 
-            {/* 右侧：精密控制台 (Linear Precision Status Terminal，无分割线噪点) */}
+            {/* 右侧：精密控制台 (Linear Precision Status Terminal，无多余边框) */}
             <motion.div
               initial="hidden"
               animate="visible"
@@ -280,7 +281,7 @@ export default function HomePage() {
                     ROTOR 37 · REALTIME TELEMETRY
                   </span>
                 </div>
-                <span className="badge" style={{ color: 'var(--teal-bright)' }}>
+                <span style={{ font: '10px var(--mono)', color: 'var(--teal-bright)', display: 'inline-flex', alignItems: 'center', gap: 6, fontWeight: 600 }}>
                   <CircleDot size={8} /> E2 / E3 ACTIVE
                 </span>
               </div>
@@ -368,10 +369,8 @@ export default function HomePage() {
                       <span style={{
                         color,
                         font: '10px var(--mono)',
-                        padding: '3px 8px',
-                        border: '1px solid var(--line-strong)',
-                        borderRadius: 4,
-                        background: 'rgba(0,0,0,0.2)'
+                        letterSpacing: '0.06em',
+                        fontWeight: 600
                       }}>
                         {tag}
                       </span>
@@ -384,8 +383,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Section 01: 数量化留出测试集验证矩阵 (严格水平与基线对齐) */}
-      <section style={{ maxWidth: 1240, margin: '0 auto', padding: '64px 24px 24px' }}>
+      {/* Section 01: 数量化留出测试集验证矩阵 (严格水平与基线对齐，无丑边框) */}
+      <section style={{ maxWidth: 1240, margin: '0 auto', padding: '64px 28px 24px' }}>
         <SectionHead
           index="01"
           title="留出测试集严格评测指标"
@@ -415,7 +414,7 @@ export default function HomePage() {
                 <span style={{ font: '10px var(--mono)', color: 'var(--faint)', letterSpacing: '0.08em' }}>
                   01 / PRESSURE RATIO
                 </span>
-                <span className="badge" style={{ color: 'var(--teal-bright)' }}>
+                <span style={{ font: '10px var(--mono)', color: 'var(--teal-bright)', letterSpacing: '0.08em', fontWeight: 600 }}>
                   PRIMARY GOAL
                 </span>
               </div>
@@ -466,7 +465,7 @@ export default function HomePage() {
                 <span style={{ font: '10px var(--mono)', color: 'var(--faint)', letterSpacing: '0.08em' }}>
                   02 / EFFICIENCY
                 </span>
-                <span className="badge" style={{ color: 'var(--yellow)' }}>
+                <span style={{ font: '10px var(--mono)', color: 'var(--yellow)', letterSpacing: '0.08em', fontWeight: 600 }}>
                   AERO SENSITIVE
                 </span>
               </div>
@@ -517,7 +516,7 @@ export default function HomePage() {
                 <span style={{ font: '10px var(--mono)', color: 'var(--faint)', letterSpacing: '0.08em' }}>
                   03 / MASS FLOW
                 </span>
-                <span className="badge" style={{ color: 'var(--teal-bright)' }}>
+                <span style={{ font: '10px var(--mono)', color: 'var(--teal-bright)', letterSpacing: '0.08em', fontWeight: 600 }}>
                   CHOKING LIMIT
                 </span>
               </div>
@@ -568,7 +567,7 @@ export default function HomePage() {
                 <span style={{ font: '10px var(--mono)', color: 'var(--faint)', letterSpacing: '0.08em' }}>
                   04 / SPEEDUP
                 </span>
-                <span className="badge" style={{ color: 'var(--rust)' }}>
+                <span style={{ font: '10px var(--mono)', color: 'var(--rust)', letterSpacing: '0.08em', fontWeight: 600 }}>
                   CFD ACCELERATION
                 </span>
               </div>
@@ -606,7 +605,7 @@ export default function HomePage() {
       </section>
 
       {/* Section 02: 全流程科研闭环架构 (Closed-Loop Scientific Architecture) */}
-      <section style={{ maxWidth: 1240, margin: '0 auto', padding: '56px 24px 24px' }}>
+      <section style={{ maxWidth: 1240, margin: '0 auto', padding: '56px 28px 24px' }}>
         <SectionHead
           index="02"
           title="从参数空间到物理终审的四步闭环"
@@ -686,8 +685,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Section 03: 科研工作台核心系统入口 (Workspace Gateway) */}
-      <section style={{ maxWidth: 1240, margin: '0 auto', padding: '56px 24px 24px' }}>
+      {/* Section 03: 科研工作台核心系统入口 (Workspace Gateway，无多余边框) */}
+      <section style={{ maxWidth: 1240, margin: '0 auto', padding: '56px 28px 24px' }}>
         <SectionHead
           index="03"
           title="交互式科研工作台"
@@ -784,7 +783,7 @@ export default function HomePage() {
                   </span>
                   <Icon size={16} style={{ color: accent }} />
                 </div>
-                <span className="badge" style={{ color: accent }}>
+                <span style={{ font: '10px var(--mono)', color: accent, letterSpacing: '0.08em', fontWeight: 600 }}>
                   {badge}
                 </span>
               </div>
@@ -817,7 +816,7 @@ export default function HomePage() {
       </section>
 
       {/* Section 04: Nature 规范学术证据等级表 (全居中对齐，标准三线学术排版) */}
-      <section style={{ maxWidth: 1240, margin: '0 auto', padding: '56px 24px 24px' }}>
+      <section style={{ maxWidth: 1240, margin: '0 auto', padding: '56px 28px 24px' }}>
         <SectionHead
           index="04"
           title="科研证据分级与客观边界"
@@ -895,7 +894,7 @@ export default function HomePage() {
       </section>
 
       {/* Section 05: 科研哲学与定音 (Scientific Postulate & Conclusion) */}
-      <section style={{ maxWidth: 1240, margin: '0 auto', padding: '56px 24px 80px' }}>
+      <section style={{ maxWidth: 1240, margin: '0 auto', padding: '56px 28px 80px' }}>
         <div style={{
           border: '1px solid var(--line)',
           background: 'var(--panel)',

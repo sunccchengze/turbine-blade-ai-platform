@@ -38,6 +38,28 @@
   color-scheme: light;
 }
 
+/* 全局丝滑深浅色切换过渡（“灯亮起/灯熄灭”流体光影渐变） */
+html {
+  transition: background-color 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+              color 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+body, header, main, section, nav, aside,
+.surface-card, .glass-card, .card-glow,
+table, tr, td, th,
+button, input, select,
+.aerodynamic-bg-container {
+  transition: background-color 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              color 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.45s;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
 :root[data-theme='light'] body {
   background: var(--ink);
 }
@@ -105,7 +127,7 @@ button, input, select { font: inherit; }
   .glass-card, .surface-card {
     background: var(--panel) !important;
     border: 1px solid var(--line) !important;
-    border-radius: 9px !important;
+    border-radius: 6px !important;
   }
   .glass-card { backdrop-filter: blur(12px); }
   .glass-card [style*='#818cf8'], .glass-card [style*='#22d3ee'] { color: var(--teal) !important; }
@@ -115,18 +137,20 @@ button, input, select { font: inherit; }
   .card-glow { transition: border-color .25s, background .25s, transform .25s; }
   .card-glow:hover { border-color: var(--line-strong); background: var(--panel-2); transform: translateY(-2px); }
   .gradient-text { color: var(--teal-bright); }
+  
+  /* 彻底消除任何丑陋粗边框与局促椭圆，纯粹的高级工科 Token */
   .badge {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 3px 10px;
-    border: 1px solid var(--line-strong);
-    border-radius: 4px;
-    background: rgba(255, 255, 255, 0.03);
+    padding: 0;
+    border: none !important;
+    background: transparent !important;
     font: 10px var(--mono);
     letter-spacing: 0.08em;
     white-space: nowrap;
   }
+  
   .num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
   .section-divider { height: 1px; background: var(--line); max-width: 1180px; margin: 0 auto; }
   .grid-bg { background-image: linear-gradient(rgba(134,185,170,.055) 1px, transparent 1px), linear-gradient(90deg, rgba(134,185,170,.055) 1px, transparent 1px); background-size: 48px 48px; }
@@ -139,8 +163,6 @@ button, input, select { font: inherit; }
 
 @keyframes turbine-spin { from { transform: rotate(0); } to { transform: rotate(360deg); } }
 .spin { animation: turbine-spin 1s linear infinite; }
-@keyframes scanline { from { transform: translateY(-120%); } to { transform: translateY(420%); } }
-.scanline { animation: scanline 7s linear infinite; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }

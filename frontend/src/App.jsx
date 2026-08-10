@@ -109,7 +109,15 @@ export default function App() {
     localStorage.setItem('turbine-theme', theme)
   }, [theme])
 
-  const toggleTheme = () => setTheme(value => value === 'dark' ? 'light' : 'dark')
+  const toggleTheme = () => {
+    if (typeof document !== 'undefined' && document.startViewTransition) {
+      document.startViewTransition(() => {
+        setTheme(value => value === 'dark' ? 'light' : 'dark')
+      })
+    } else {
+      setTheme(value => value === 'dark' ? 'light' : 'dark')
+    }
+  }
 
   return (
     <BrowserRouter>
