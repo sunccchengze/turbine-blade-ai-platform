@@ -186,44 +186,13 @@ export default function HomePage() {
 
               {/* 核心操作按钮组 */}
               <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
-                <Link
-                  to="/predict"
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 8,
-                    background: 'var(--teal-bright)',
-                    color: 'var(--ink)',
-                    padding: '12px 20px',
-                    borderRadius: 4,
-                    textDecoration: 'none',
-                    fontSize: 13,
-                    fontWeight: 700,
-                    letterSpacing: '-0.01em',
-                    boxShadow: '0 1px 2px rgba(0,0,0,0.2)'
-                  }}
-                >
+                <Link to="/predict" className="btn-primary">
                   <Cpu size={15} />
                   运行代理预测 / Predict
                   <ArrowRight size={14} />
                 </Link>
 
-                <Link
-                  to="/explore"
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 8,
-                    background: 'var(--panel)',
-                    color: 'var(--paper)',
-                    border: '1px solid var(--line-strong)',
-                    padding: '12px 20px',
-                    borderRadius: 4,
-                    textDecoration: 'none',
-                    fontSize: 13,
-                    fontWeight: 600
-                  }}
-                >
+                <Link to="/explore" className="btn-secondary">
                   <Compass size={15} />
                   探索数据流场 / Explore
                 </Link>
