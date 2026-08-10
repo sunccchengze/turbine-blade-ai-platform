@@ -242,20 +242,6 @@ export default function ExplorePage() {
         thickness: 14
       },
       hovertemplate: `${paramX}: %{x:.4g}<br>${paramY}: %{y:.4g}<br>${meta.symbol}: %{z:.5f}<extra></extra>`
-    },
-    {
-      x: [baseline.features[paramX]],
-      y: [baseline.features[paramY]],
-      type: 'scatter',
-      mode: 'markers',
-      name: 'Rotor 37 基准',
-      marker: {
-        symbol: 'star',
-        size: 16,
-        color: '#e7c85b',
-        line: { color: '#0b0e0d', width: 1.5 }
-      },
-      hovertemplate: 'NASA Rotor 37 基准设计<extra></extra>'
     }
   ] : []
 
@@ -278,13 +264,7 @@ export default function ExplorePage() {
       zerolinecolor: 'var(--line-strong)',
       tickfont: { color: 'var(--muted)' }
     },
-    showlegend: true,
-    legend: {
-      orientation: 'h',
-      x: 0,
-      y: 1.06,
-      font: { size: 11, color: 'var(--paper)' }
-    }
+    showlegend: false
   }
 
   return (
@@ -345,7 +325,7 @@ export default function ExplorePage() {
           <span style={{ color: 'var(--line-strong)' }}>|</span>
           <span>防外推截断保护激活</span>
           <span style={{ color: 'var(--line-strong)' }}>|</span>
-          <span style={{ color: 'var(--yellow)' }}>★ 黄色星标为 Rotor 37 基准点</span>
+          <span style={{ color: 'var(--faint)' }}>纯前端毫秒级内插</span>
         </div>
 
         {/* 双栏布局 */}
