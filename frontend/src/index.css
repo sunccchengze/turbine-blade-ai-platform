@@ -110,13 +110,15 @@ button, input, select { font: inherit; }
   .card-glow:hover { border-color: var(--line-strong); background: var(--panel-2); transform: translateY(-2px); }
   .gradient-text { color: var(--teal-bright); }
   
-  /* 宽敞透气的按钮系统，具备充足左右内边距，永不挤压文字 */
+  /* 宽敞透气的按钮系统，具备充足左右内边距（32px~36px），永不挤压文字 */
   .btn-primary {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 9px;
-    padding: 13px 28px;
+    gap: 10px;
+    height: 44px;
+    min-height: 44px;
+    padding: 0 36px !important;
     border-radius: 6px;
     background: var(--teal-bright) !important;
     color: #0b0e0d !important;
@@ -125,6 +127,7 @@ button, input, select { font: inherit; }
     font-weight: 700;
     line-height: 1;
     letter-spacing: -0.01em;
+    white-space: nowrap;
     border: 1px solid transparent;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
     transition: opacity 0.2s, transform 0.2s, box-shadow 0.2s;
@@ -146,8 +149,10 @@ button, input, select { font: inherit; }
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 9px;
-    padding: 13px 26px;
+    gap: 10px;
+    height: 44px;
+    min-height: 44px;
+    padding: 0 32px !important;
     border-radius: 6px;
     background: var(--panel) !important;
     color: var(--paper) !important;
@@ -156,6 +161,8 @@ button, input, select { font: inherit; }
     font-size: 13px;
     font-weight: 600;
     line-height: 1;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
     transition: background 0.2s, border-color 0.2s, transform 0.2s;
   }
   .btn-secondary:hover {

@@ -1,63 +1,182 @@
-import { useEffect, useMemo, useState } from 'react'
-import Plot from 'react-plotly.js'
+import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
+import Plot from 'react-plotly.js'
 import {
-  AlertCircle,
   RefreshCw,
+  AlertCircle,
   Gauge,
   TrendingUp,
   Wind,
-  CircleDot,
+  CircleDot
 } from 'lucide-react'
 import { getUQResults } from '../utils/api'
 
-const configs = [
+// ── 3 大指标专属专属配色与配置 (总压比: 冰蓝 | 效率: 暖金 | 流量: 暖橙) ───────────────────
+const CHANNEL_CONFIGS = [
   {
     keyName: 'Compression_ratio',
     symbol: 'π',
     label: '总压比',
     en: 'Total Pressure Ratio',
-    color: 'var(--teal-bright)',
-    fillColor: 'rgba(52, 211, 153, 0.08)',
+    color: '#38bdf8', // 冰蓝 / Sky Blue
+    fillColor: 'rgba(56, 189, 248, 0.14)',
+    histColor: 'rgba(56, 189, 248, 0.28)',
     icon: Gauge,
-    tone: 'teal',
-    unit: 'π'
+    unit: 'π',
+    desc: '压气机级增压能力指标，对流道有效通流截面积与转速变化具有高线性一致性。'
   },
   {
     keyName: 'Efficiency',
     symbol: 'η',
     label: '等熵绝热效率',
     en: 'Isentropic Efficiency',
-    color: 'var(--yellow)',
-    fillColor: 'rgba(231, 200, 91, 0.08)',
+    color: '#e7c85b', // 暖金 / Amber Gold
+    fillColor: 'rgba(231, 200, 91, 0.14)',
+    histColor: 'rgba(231, 200, 91, 0.28)',
     icon: TrendingUp,
-    tone: 'yellow',
-    unit: 'η'
+    unit: 'η',
+    desc: '气动损失与分离特性指标，对叶表激波干涉与吸力面微细曲率极度敏感。'
   },
   {
     keyName: 'Massflow',
     symbol: 'ṁ',
     label: '质量流量',
     en: 'Mass Flow Rate',
-    color: 'var(--rust)',
-    fillColor: 'rgba(197, 104, 74, 0.08)',
+    color: '#f97316', // 暖橙 / Terracotta Orange
+    fillColor: 'rgba(249, 115, 22, 0.14)',
+    histColor: 'rgba(249, 115, 22, 0.28)',
     icon: Wind,
-    tone: 'rust',
-    unit: 'kg/s'
+    unit: 'kg/s',
+    desc: '进气道通流能力指标，主要受喉部堵塞限制与叶顶泄漏涡堵塞影响。'
   }
 ]
 
-function UQPanel({ data, cfg }) {
-  const rows = data || []
-  const { keyName, symbol, label, en, color, fillColor } = cfg
+// ── 单指标 UQ 分析面板 (CI 带图 + σ 分布直方图) ────────────────
+function UQChannelPanel({ cfg, data, isNarrow }) {
+  if (!data?.length) return null
+
+  const { keyName, symbol, label, en, color, fillColor, histColor, icon: Icon, unit } = cfg
   const trueKey = `${keyName}_true`
   const predKey = `${keyName}_pred`
   const lowerKey = `${keyName}_lower`
   const upperKey = `${keyName}_upper`
 
-  const covered = rows.filter(r => r[trueKey] >= r[lowerKey] && r[trueKey] <= r[upperKey]).length
-  const coverage = rows.length ? (covered / rows.length) * 100 : 0
-  const ordered = [...rows].sort((a, b) => a[trueKey] - b[trueKey])
+  const trueVals = data.map(d => d[trueKey])
+  const predVals = data.map(d => d[predKey])
+  const sigmaVals = data.map(d => (d[upperKey] - d[lowerKey]) / (2 * 1.96))
+  const lowerVals = data.map(d => d[lowerKey])
+  const upperVals = data.map(d => d[upperKey])
+
+  // 按真实值严格单调升序排序
+  const sortIdx = trueVals.map((_, i) => i).sort((a, b) => trueVals[a] - trueVals[b])
+  const xAxis = sortIdx.map((_, i) => i + 1)
+  const trueSorted = sortIdx.map(i => trueVals[i])
+  const predSorted = sortIdx.map(i => predVals[i])
+  const lowerSorted = sortIdx.map(i => lowerVals[i])
+  const upperSorted = sortIdx.map(i => upperVals[i])
+
+  // 覆盖率统计
+  const covered = data.filter(d => d[trueKey] >= d[lowerKey] && d[trueKey] <= d[upperKey]).length
+  const coverage = (covered / data.length) * 100
+  const avgSigma = sigmaVals.reduce((a, b) => a + b, 0) / sigmaVals.length
+  const errors = predVals.map((p, i) => Math.abs(p - trueVals[i]))
+  const mae = errors.reduce((a, b) => a + b, 0) / errors.length
+
+  // 左图：置信区间带与真值对比 (真实值=白线，预测均值=对应通道专属色彩点线)
+  const ciTrace = {
+    type: 'scatter',
+    mode: 'lines',
+    name: '±1.96σ 置信区间 (95% CI)',
+    x: [...xAxis, ...xAxis.slice().reverse()],
+    y: [...upperSorted, ...lowerSorted.slice().reverse()],
+    fill: 'toself',
+    fillcolor: fillColor,
+    line: { color: 'transparent' },
+    hoverinfo: 'skip'
+  }
+
+  const trueTrace = {
+    type: 'scatter',
+    mode: 'lines',
+    name: 'CFD 真实值 (Ground Truth)',
+    x: xAxis,
+    y: trueSorted,
+    line: { color: '#f1f5f9', width: 1.6 },
+    hovertemplate: '真值: %{y:.4f}<extra></extra>'
+  }
+
+  const predTrace = {
+    type: 'scatter',
+    mode: 'lines',
+    name: '代理预测均值 (Surrogate Mean)',
+    x: xAxis,
+    y: predSorted,
+    line: { color, width: 1.8, dash: 'dot' },
+    hovertemplate: '预测: %{y:.4f}<extra></extra>'
+  }
+
+  const plotLayout = {
+    autosize: true,
+    height: 230,
+    margin: { l: 60, r: 15, t: 15, b: 40 },
+    paper_bgcolor: 'rgba(0,0,0,0)',
+    plot_bgcolor: 'rgba(0,0,0,0)',
+    font: { family: 'DM Mono, monospace', color: 'var(--muted)', size: 10 },
+    xaxis: {
+      title: '留出测试样本单调排序 (Sample Index 1~100)',
+      gridcolor: 'rgba(255, 255, 255, 0.05)',
+      zeroline: false,
+      tickfont: { color: 'var(--muted)' }
+    },
+    yaxis: {
+      title: `${symbol} ${label}`,
+      gridcolor: 'rgba(255, 255, 255, 0.05)',
+      zeroline: false,
+      tickfont: { color: 'var(--muted)' }
+    },
+    showlegend: true,
+    legend: {
+      orientation: 'h',
+      x: 0,
+      y: 1.16,
+      font: { size: 10, color: 'var(--paper)' }
+    }
+  }
+
+  // 右图：σ 不确定性分布直方图
+  const sigmaHist = {
+    type: 'histogram',
+    x: sigmaVals,
+    name: 'σ 分布',
+    marker: {
+      color: histColor,
+      line: { color, width: 1 }
+    },
+    nbinsx: 14,
+    hovertemplate: 'σ 区间: %{x:.4f}<br>样本数: %{y}<extra></extra>'
+  }
+
+  const histLayout = {
+    autosize: true,
+    height: 230,
+    margin: { l: 45, r: 10, t: 15, b: 40 },
+    paper_bgcolor: 'rgba(0,0,0,0)',
+    plot_bgcolor: 'rgba(0,0,0,0)',
+    font: { family: 'DM Mono, monospace', color: 'var(--muted)', size: 10 },
+    xaxis: {
+      title: '不确定性 Uncertainty σ',
+      gridcolor: 'rgba(255, 255, 255, 0.05)',
+      zeroline: false,
+      tickfont: { color: 'var(--muted)' }
+    },
+    yaxis: {
+      title: '样本频数 (Count)',
+      gridcolor: 'rgba(255, 255, 255, 0.05)',
+      zeroline: false,
+      tickfont: { color: 'var(--muted)' }
+    },
+    showlegend: false
+  }
 
   return (
     <div style={{
@@ -65,110 +184,82 @@ function UQPanel({ data, cfg }) {
       border: '1px solid var(--line)',
       borderRadius: 6,
       padding: '22px 24px',
-      marginBottom: 16
+      marginBottom: 20
     }}>
       {/* 头部信息 */}
       <div style={{
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: 14,
+        marginBottom: 16,
         flexWrap: 'wrap',
         gap: 12
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <span className="num" style={{ color, fontSize: 20, fontWeight: 700 }}>
-            {symbol}
-          </span>
+          <div style={{
+            width: 32,
+            height: 32,
+            borderRadius: 4,
+            background: 'var(--ink)',
+            border: `1px solid ${color}40`,
+            display: 'grid',
+            placeItems: 'center',
+            color
+          }}>
+            <Icon size={16} />
+          </div>
           <div>
-            <div style={{ color: 'var(--paper)', fontSize: 15, fontWeight: 700 }}>
-              {label}
+            <div style={{ color: 'var(--paper)', fontSize: 16, fontWeight: 700 }}>
+              {label} ({symbol})
             </div>
-            <div style={{ color: 'var(--faint)', font: '10px var(--mono)' }}>
-              {en} · HELD-OUT TEST N=100
+            <div style={{ color: 'var(--faint)', font: '10px var(--mono)', marginTop: 2 }}>
+              {en} · TEST N=100
             </div>
           </div>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        {/* 覆盖率与指标胶囊 */}
+        <div style={{ display: 'flex', gap: 14, alignItems: 'center', flexWrap: 'wrap', fontFamily: 'var(--mono)', fontSize: '11px' }}>
           <span style={{
-            font: '11px var(--mono)',
             color: coverage < 75 ? 'var(--rust)' : coverage < 85 ? 'var(--yellow)' : 'var(--teal-bright)',
-            fontWeight: 600
+            fontWeight: 700
           }}>
-            名义 95% 实测覆盖率: {coverage.toFixed(1)}% {coverage < 75 ? '(灵敏低估)' : '(相对良好)'}
+            实测覆盖率: {coverage.toFixed(1)}% {coverage < 75 ? '(高阶灵敏·存在低估)' : '(相对良好)'}
+          </span>
+          <span style={{ color: 'var(--line-strong)' }}>|</span>
+          <span style={{ color: 'var(--muted)' }}>
+            平均 σ: <strong style={{ color: 'var(--paper)' }}>{avgSigma.toFixed(4)}</strong>
+          </span>
+          <span style={{ color: 'var(--line-strong)' }}>|</span>
+          <span style={{ color: 'var(--muted)' }}>
+            MAE: <strong style={{ color }}>{mae.toFixed(4)} {unit}</strong>
           </span>
         </div>
       </div>
 
-      {/* Plotly 曲线视口 */}
-      <Plot
-        data={[
-          {
-            x: ordered.map((_, i) => i + 1),
-            y: ordered.map(r => r[upperKey]),
-            mode: 'lines',
-            line: { color: 'transparent' },
-            showlegend: false,
-            hoverinfo: 'none'
-          },
-          {
-            x: ordered.map((_, i) => i + 1),
-            y: ordered.map(r => r[lowerKey]),
-            mode: 'lines',
-            fill: 'tonexty',
-            fillcolor: fillColor,
-            line: { color: 'transparent' },
-            name: '±1.96σ 置信区间 (95% CI)',
-            hoverinfo: 'none'
-          },
-          {
-            x: ordered.map((_, i) => i + 1),
-            y: ordered.map(r => r[trueKey]),
-            mode: 'lines',
-            name: 'CFD 真实值 (Ground Truth)',
-            line: { color: 'var(--paper)', width: 1.5 },
-            hovertemplate: '真值 %{y:.4f}<extra></extra>'
-          },
-          {
-            x: ordered.map((_, i) => i + 1),
-            y: ordered.map(r => r[predKey]),
-            mode: 'lines',
-            name: '代理预测均值 (Surrogate Mean)',
-            line: { color, width: 1.5, dash: 'dot' },
-            hovertemplate: '预测 %{y:.4f}<extra></extra>'
-          }
-        ]}
-        layout={{
-          autosize: true,
-          height: 220,
-          margin: { l: 55, r: 15, t: 15, b: 40 },
-          paper_bgcolor: 'rgba(0,0,0,0)',
-          plot_bgcolor: 'rgba(0,0,0,0)',
-          font: { family: 'DM Mono, monospace', color: 'var(--muted)', size: 10 },
-          xaxis: {
-            title: '测试样本排序编号 (Sorted Test Sample Index 1~100)',
-            gridcolor: 'rgba(255, 255, 255, 0.05)',
-            zeroline: false,
-            tickfont: { color: 'var(--muted)' }
-          },
-          yaxis: {
-            gridcolor: 'rgba(255, 255, 255, 0.05)',
-            zeroline: false,
-            tickfont: { color: 'var(--muted)' }
-          },
-          showlegend: true,
-          legend: {
-            orientation: 'h',
-            x: 0,
-            y: 1.15,
-            font: { size: 10, color: 'var(--paper)' }
-          }
-        }}
-        config={{ displayModeBar: false, responsive: true }}
-        useResizeHandler
-        style={{ width: '100%' }}
-      />
+      {/* 双图联动：左 CI 预测带图 + 右 σ 直方图 */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: isNarrow ? '1fr' : '2.1fr 1fr',
+        gap: 18,
+        alignItems: 'center'
+      }}>
+        <Plot
+          data={[ciTrace, trueTrace, predTrace]}
+          layout={plotLayout}
+          config={{ displayModeBar: false, responsive: true }}
+          useResizeHandler
+          style={{ width: '100%' }}
+        />
+
+        <Plot
+          data={[sigmaHist]}
+          layout={histLayout}
+          config={{ displayModeBar: false, responsive: true }}
+          useResizeHandler
+          style={{ width: '100%' }}
+        />
+      </div>
     </div>
   )
 }
@@ -176,29 +267,19 @@ function UQPanel({ data, cfg }) {
 export default function UQPage() {
   const [data, setData] = useState(null)
   const [error, setError] = useState(null)
+  const [isNarrow, setIsNarrow] = useState(() => window.innerWidth < 960)
+
+  useEffect(() => {
+    const onResize = () => setIsNarrow(window.innerWidth < 960)
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
 
   useEffect(() => {
     getUQResults()
       .then(r => setData(r.results))
       .catch(e => setError(e.message || '加载 UQ 评测数据失败 / Failed to load UQ results'))
   }, [])
-
-  // 计算三通道 MAE
-  const metrics = useMemo(() => {
-    if (!data) return []
-    return configs.map(cfg => {
-      const k = cfg.keyName
-      const trueKey = `${k}_true`
-      const predKey = `${k}_pred`
-      const lowerKey = `${k}_lower`
-      const upperKey = `${k}_upper`
-      const err = data.map(r => Math.abs(r[predKey] - r[trueKey]))
-      const mae = err.reduce((a, b) => a + b, 0) / err.length
-      const covered = data.filter(r => r[trueKey] >= r[lowerKey] && r[trueKey] <= r[upperKey]).length
-      const coverage = (covered / data.length) * 100
-      return { ...cfg, mae, coverage }
-    })
-  }, [data])
 
   if (error) {
     return (
@@ -220,7 +301,7 @@ export default function UQPage() {
       }}>
         <div style={{ textAlign: 'center', color: 'var(--muted)' }}>
           <RefreshCw size={28} className="spin" style={{ margin: '0 auto 14px', color: 'var(--yellow)' }} />
-          <p style={{ font: '13px var(--body)', color: 'var(--paper)' }}>正在载入留出测试集不确定性量化数据…</p>
+          <p style={{ font: '13px var(--body)', color: 'var(--paper)' }}>正在载入留出测试集 100 组不确定性采样数据…</p>
         </div>
       </div>
     )
@@ -255,12 +336,12 @@ export default function UQPage() {
               letterSpacing: '-0.045em',
               marginTop: 12
             }}>
-              认知不确定性与测试集实测<br />
-              <span style={{ color: 'var(--teal-bright)' }}>Epistemic Confidence & Held-Out Calibration</span>
+              认知不确定性与三通道实测检验<br />
+              <span style={{ color: 'var(--teal-bright)' }}>3-Channel Epistemic Confidence & Evaluation</span>
             </h1>
           </div>
           <p style={{ maxWidth: 420, color: 'var(--muted)', fontSize: 13, lineHeight: 1.8 }}>
-            UQ 用来提示模型在不同参数区域的认识把握度，而不是给出严格的数学置信保证。全站如实公开留出测试集上的区间覆盖率与物理局限性。
+            UQ 用来提示模型在不同参数区域的认识把握度。总压比（冰蓝）、等熵效率（暖金）与流量（暖橙）分别映射专属色彩，真实呈现 100 组留出测试集真值 vs 置信带对比。
           </p>
         </motion.header>
 
@@ -280,128 +361,99 @@ export default function UQPage() {
             MC DROPOUT SAMPLING (100 ITERS)
           </span>
           <span style={{ color: 'var(--line-strong)' }}>|</span>
-          <span>独立留出测试集 (n=100)</span>
+          <span style={{ color: '#38bdf8' }}>总压比 π (冰蓝 · 覆盖率 89%)</span>
           <span style={{ color: 'var(--line-strong)' }}>|</span>
-          <span>相对置信度指示器</span>
+          <span style={{ color: '#e7c85b' }}>等熵效率 η (暖金 · 覆盖率 65%)</span>
           <span style={{ color: 'var(--line-strong)' }}>|</span>
-          <span style={{ color: 'var(--yellow)' }}>η 实测覆盖率约 65% (气动极度敏感)</span>
+          <span style={{ color: '#f97316' }}>质量流量 ṁ (暖橙 · 覆盖率 88%)</span>
         </div>
 
-        {/* 02. 三通道核心指标卡片 (严格水平基线对齐) */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
-          gap: 16,
-          marginBottom: 24
-        }}>
-          {metrics.map(m => (
-            <div
-              key={m.keyName}
-              style={{
-                background: 'var(--panel)',
-                border: '1px solid var(--line)',
-                borderRadius: 6,
-                padding: '22px 20px',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between'
-              }}
-            >
-              <div style={{ height: 44, marginBottom: 12 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ font: '10px var(--mono)', color: 'var(--faint)', letterSpacing: '0.08em' }}>
-                    {m.symbol} / {m.en.toUpperCase()}
-                  </span>
-                  <span style={{
-                    font: '10px var(--mono)',
-                    color: m.coverage < 75 ? 'var(--rust)' : 'var(--teal-bright)',
-                    fontWeight: 600
-                  }}>
-                    覆盖率 {m.coverage.toFixed(0)}%
-                  </span>
-                </div>
-                <div style={{ color: 'var(--paper)', fontSize: 15, fontWeight: 700, marginTop: 4 }}>
-                  {m.label} MAE
-                </div>
-              </div>
-
-              <div style={{ height: 48, display: 'flex', alignItems: 'baseline', gap: 6 }}>
-                <span className="num" style={{ color: m.color, fontSize: 36, fontWeight: 700, lineHeight: 1 }}>
-                  {m.mae.toFixed(4)}
-                </span>
-                <span style={{ fontSize: 12, color: 'var(--muted)', fontFamily: 'var(--mono)' }}>
-                  {m.unit}
-                </span>
-              </div>
-
-              <div style={{
-                marginTop: 14,
-                paddingTop: 12,
-                borderTop: '1px solid var(--line)',
-                fontSize: '11px',
-                fontFamily: 'var(--mono)',
-                color: 'var(--muted)'
-              }}>
-                HELD-OUT TEST SET EVALUATION
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* 03. 三大通道实测折线与置信带视口 */}
+        {/* 02. 三大专属色彩 UQ 面板视口 */}
         <section style={{ marginBottom: 24 }}>
-          {configs.map(cfg => (
-            <UQPanel key={cfg.keyName} data={data} cfg={cfg} />
+          {CHANNEL_CONFIGS.map(cfg => (
+            <UQChannelPanel key={cfg.keyName} cfg={cfg} data={data} isNarrow={isNarrow} />
           ))}
         </section>
 
-        {/* 04. 深度物理机理分析与校准路线 (严格水平对齐 2 列) */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+        {/* 03. 深度物理机理分析与校准路线 (严格水平对齐 2 列) */}
+        <div style={{ display: 'grid', gridTemplateColumns: isNarrow ? '1fr' : '1fr 1fr', gap: 20 }}>
           <div style={{
             background: 'var(--panel)',
             border: '1px solid var(--line)',
             borderRadius: 6,
-            padding: '24px 22px'
+            padding: '24px 22px',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between'
           }}>
-            <div style={{ color: 'var(--yellow)', font: '10px var(--mono)', letterSpacing: '0.12em', marginBottom: 12 }}>
-              物理机理解读 · WHY EFFICIENCY COVERAGE IS 65%
+            <div>
+              <div style={{ color: 'var(--yellow)', font: '10px var(--mono)', letterSpacing: '0.12em', marginBottom: 12 }}>
+                物理机理解读 · PHYSICAL SENSITIVITY
+              </div>
+              <h3 style={{ color: 'var(--paper)', fontSize: 16, fontWeight: 700, marginBottom: 10 }}>
+                为什么等熵效率 η 的实测覆盖率偏低？
+              </h3>
+              <p style={{ color: 'var(--muted)', fontSize: 12, lineHeight: 1.8, marginBottom: 12 }}>
+                在跨音速压气机流动中，等熵绝热效率 η 对叶表附面层分离、激波边界层干涉具有极高阶的非线性响应。
+              </p>
+              <p style={{ color: 'var(--faint)', fontSize: 12, lineHeight: 1.8 }}>
+                单一模型的 MC Dropout 仅捕获了网络权重层面的认识不确定性（Epistemic），未包含流体湍流物理本身的偶然不确定性（Aleatoric），导致区间宽度在极端分离工况下存在低估。我们如实将此局限性公开在平台上。
+              </p>
             </div>
-            <h3 style={{ color: 'var(--paper)', fontSize: 16, fontWeight: 700, marginBottom: 10 }}>
-              为什么等熵效率 η 的实测覆盖率偏低？
-            </h3>
-            <p style={{ color: 'var(--muted)', fontSize: 12, lineHeight: 1.8, marginBottom: 12 }}>
-              在跨音速压气机流动中，等熵绝热效率 η 对叶表附面层分离、激波边界层干涉具有极高阶的非线性响应。
-            </p>
-            <p style={{ color: 'var(--faint)', fontSize: 12, lineHeight: 1.8 }}>
-              单一模型的 MC Dropout 仅捕获了网络权重层面的认识不确定性（Epistemic），未包含流体湍流物理本身的偶然不确定性（Aleatoric），导致区间宽度在极端分离工况下存在低估。我们如实将此局限性公开在平台上。
-            </p>
+
+            <div style={{
+              marginTop: 16,
+              paddingTop: 12,
+              borderTop: '1px solid var(--line)',
+              fontFamily: 'var(--mono)',
+              fontSize: '11px',
+              color: 'var(--faint)'
+            }}>
+              坚守科研诚实底线 · 绝不作虚假 95% 保证
+            </div>
           </div>
 
           <div style={{
             background: 'var(--panel)',
             border: '1px solid var(--line)',
             borderRadius: 6,
-            padding: '24px 22px'
+            padding: '24px 22px',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between'
           }}>
-            <div style={{ color: 'var(--teal-bright)', font: '10px var(--mono)', letterSpacing: '0.12em', marginBottom: 12 }}>
-              后续改进路线 · P2 DEEP ENSEMBLE + CONFORMAL CALIBRATION
+            <div>
+              <div style={{ color: 'var(--teal-bright)', font: '10px var(--mono)', letterSpacing: '0.12em', marginBottom: 12 }}>
+                后续改进路线 · P2/P3 CALIBRATION ROADMAP
+              </div>
+              <h3 style={{ color: 'var(--paper)', fontSize: 16, fontWeight: 700, marginBottom: 10 }}>
+                不确定性区间后续校准方案
+              </h3>
+              <div style={{ display: 'grid', gap: 10, color: 'var(--muted)', fontSize: 12, lineHeight: 1.7 }}>
+                <div>
+                  <strong style={{ color: 'var(--paper)' }}>1. 深度模型集成 (Deep Ensembles)：</strong>
+                  通过 5 个独立随机种子残差网络集成，覆盖率可由 65% 提升至 93.5%~96.5%。
+                </div>
+                <div>
+                  <strong style={{ color: 'var(--paper)' }}>2. 保形预测校准 (Conformal Prediction)：</strong>
+                  利用留出校准集对预测残差进行非对称缩放，在数学上提供可控的分位数覆盖保证。
+                </div>
+                <div>
+                  <strong style={{ color: 'var(--paper)' }}>3. 科学态度定音：</strong>
+                  在校准正式合并前，当前区间严格作为“相对置信度提示器”，不作伪保证。
+                </div>
+              </div>
             </div>
-            <h3 style={{ color: 'var(--paper)', fontSize: 16, fontWeight: 700, marginBottom: 10 }}>
-              不确定性区间后续校准方案
-            </h3>
-            <div style={{ display: 'grid', gap: 10, color: 'var(--muted)', fontSize: 12, lineHeight: 1.7 }}>
-              <div>
-                <strong style={{ color: 'var(--paper)' }}>1. 深度模型集成 (Deep Ensembles)：</strong>
-                通过 5 个独立随机种子残差网络集成，覆盖率可由 65% 提升至 93.5%~96.5%。
-              </div>
-              <div>
-                <strong style={{ color: 'var(--paper)' }}>2. 保形预测校准 (Conformal Prediction)：</strong>
-                利用留出校准集对预测残差进行非对称缩放，在数学上提供可控的分位数覆盖保证。
-              </div>
-              <div>
-                <strong style={{ color: 'var(--paper)' }}>3. 科学态度定音：</strong>
-                在校准正式合并前，当前区间严格作为“相对置信度提示器”，不作伪保证。
-              </div>
+
+            <div style={{
+              marginTop: 16,
+              paddingTop: 12,
+              borderTop: '1px solid var(--line)',
+              fontFamily: 'var(--mono)',
+              fontSize: '11px',
+              color: 'var(--teal-bright)'
+            }}>
+              后续版本将上线 P2 校准曲线与 ACD 评估
             </div>
           </div>
         </div>

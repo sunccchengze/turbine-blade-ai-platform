@@ -10,7 +10,7 @@ import {
   Check,
   CircleAlert,
   CircleDot,
-  Cpu,
+  Cpu
 } from 'lucide-react'
 
 const steps = [
@@ -260,17 +260,17 @@ export default function MethodologyPage() {
           </div>
         </div>
 
-        {/* 04. 底部快捷操作 */}
-        <div style={{ display: 'flex', gap: 14, alignItems: 'center' }}>
+        {/* 04. 底部快捷操作 (宽敞 36px 呼吸边距，绝不挤压文字) */}
+        <div style={{ display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap', marginTop: 16 }}>
           <Link to="/explore" className="btn-primary">
-            <Cpu size={14} />
+            <Cpu size={15} />
             <span>进入设计空间探索</span>
-            <span style={{ fontSize: 11, fontFamily: 'var(--mono)', opacity: 0.85 }}>Explore</span>
+            <span style={{ fontSize: '11px', fontFamily: 'var(--mono)', opacity: 0.85, marginLeft: 2 }}>Explore</span>
           </Link>
 
           <Link to="/predict" className="btn-secondary">
             <span>运行气动推理</span>
-            <span style={{ fontSize: 11, fontFamily: 'var(--mono)', opacity: 0.75 }}>Predict</span>
+            <span style={{ fontSize: '11px', fontFamily: 'var(--mono)', opacity: 0.75, marginLeft: 2 }}>Predict</span>
           </Link>
         </div>
 
