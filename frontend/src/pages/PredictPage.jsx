@@ -474,17 +474,24 @@ export default function PredictPage() {
                   width: 38,
                   height: 20,
                   borderRadius: 10,
-                  border: 0,
-                  background: withUQ ? 'var(--teal-bright)' : 'rgba(255,255,255,0.12)',
+                  border: '1px solid var(--line)',
+                  background: withUQ ? 'var(--teal-bright)' : 'var(--panel-2)',
                   cursor: 'pointer',
                   padding: 2,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: withUQ ? 'flex-end' : 'flex-start',
-                  transition: 'background 0.2s'
+                  transition: 'background 0.2s, border-color 0.2s'
                 }}
               >
-                <span style={{ width: 16, height: 16, borderRadius: '50%', background: '#0b0e0d' }} />
+                <span style={{
+                  width: 14,
+                  height: 14,
+                  borderRadius: '50%',
+                  background: '#ffffff',
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.35)',
+                  transition: 'transform 0.2s'
+                }} />
               </button>
             </div>
           </motion.aside>
