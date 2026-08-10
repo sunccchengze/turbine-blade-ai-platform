@@ -50,12 +50,12 @@ export default function OptimizePage() {
         type: 'scatter',
         name: 'Pareto 预测候选',
         marker: {
-          size: 11,
+          size: 9,
           color: vals,
           colorscale: [
-            [0, '#0d1512'],
-            [0.3, '#1f483d'],
-            [0.7, '#4e8072'],
+            [0, '#12201b'],
+            [0.35, '#265446'],
+            [0.7, '#5b9281'],
             [1, '#e7c85b']
           ],
           colorbar: {
@@ -64,12 +64,12 @@ export default function OptimizePage() {
             outlinewidth: 0,
             thickness: 14
           },
-          line: { color: '#ffffff', width: 0.8 }
+          line: { width: 0 }
         },
         text: data.pareto_front.map(d => `[候选 #${d.design_id}]<br>等熵效率 η: ${d.Efficiency.toFixed(4)}<br>质量流量 ṁ: ${d.Massflow.toFixed(2)} kg/s<br>总压比 π: ${d.Compression_ratio.toFixed(4)}`),
         hovertemplate: '%{text}<extra></extra>'
       },
-      // 当前选中的高亮十字标记
+      // 当前选中的高亮标记
       selected ? {
         x: [selected.Massflow],
         y: [selected.Efficiency],
@@ -78,13 +78,13 @@ export default function OptimizePage() {
         name: `当前选中 #${selected.design_id}`,
         marker: {
           symbol: 'circle-open-dot',
-          size: 20,
+          size: 18,
           color: '#ffffff',
-          line: { color: 'var(--yellow)', width: 2.5 }
+          line: { color: 'var(--yellow)', width: 2 }
         },
         hovertemplate: `已选候选 #${selected.design_id}<extra></extra>`
       } : null,
-      // 训练集均值基准点
+      // 训练集均值基准点 (金色菱形)
       stats ? {
         x: [stats?.statistics?.Massflow?.mean],
         y: [stats?.statistics?.Efficiency?.mean],
@@ -93,9 +93,9 @@ export default function OptimizePage() {
         name: '训练均值基准',
         marker: {
           symbol: 'diamond',
-          size: 13,
-          color: 'var(--rust)',
-          line: { color: '#ffffff', width: 1.2 }
+          size: 12,
+          color: '#e7c85b',
+          line: { color: '#0b0e0d', width: 1 }
         },
         hovertemplate: '数据集均值 Baseline<extra></extra>'
       } : null
@@ -122,7 +122,7 @@ export default function OptimizePage() {
   const s = data.summary
 
   return (
-    <main style={{ minHeight: '100vh', background: 'var(--ink)', padding: '56px 28px 88px' }}>
+    <main style={{ minHeight: '100vh', background: 'transparent', padding: '56px 28px 88px' }}>
       <div style={{ maxWidth: 1240, margin: '0 auto' }}>
         
         {/* 01. 页面头部 (严格 28px 左对齐) */}
@@ -315,9 +315,14 @@ export default function OptimizePage() {
               background: 'var(--panel)',
               border: '1px solid var(--line)',
               borderRadius: 6,
-              padding: '22px 20px'
+              padding: '22px 20px',
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between'
             }}
           >
+            <div>
             <div style={{
               display: 'flex',
               justifyContent: 'space-between',
@@ -379,23 +384,17 @@ export default function OptimizePage() {
                 font: { family: 'DM Mono, monospace', color: 'var(--muted)', size: 10 },
                 xaxis: {
                   title: '质量流量 ṁ (kg/s)',
-                  gridcolor: 'var(--line)',
-                  zerolinecolor: 'var(--line-strong)',
+                  gridcolor: 'rgba(255, 255, 255, 0.05)',
+                  zeroline: false,
                   tickfont: { color: 'var(--muted)' }
                 },
                 yaxis: {
                   title: '等熵绝热效率 η',
-                  gridcolor: 'var(--line)',
-                  zerolinecolor: 'var(--line-strong)',
+                  gridcolor: 'rgba(255, 255, 255, 0.05)',
+                  zeroline: false,
                   tickfont: { color: 'var(--muted)' }
                 },
-                showlegend: true,
-                legend: {
-                  orientation: 'h',
-                  x: 0,
-                  y: 1.06,
-                  font: { size: 11, color: 'var(--paper)' }
-                }
+                showlegend: false
               }}
               config={{ displayModeBar: false, responsive: true }}
               useResizeHandler
@@ -426,6 +425,7 @@ export default function OptimizePage() {
               <span style={{ color: 'var(--line-strong)' }}>|</span>
               <span style={{ color: 'var(--faint)' }}>所有散点均为残差代理网络预测值</span>
             </div>
+            </div>
           </motion.div>
 
           {/* 右侧：选中候选点检查器与 3D 叶片数字孪生 */}
@@ -433,7 +433,7 @@ export default function OptimizePage() {
             initial={{ opacity: 0, x: 14 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.08 }}
-            style={{ display: 'grid', gap: 18 }}
+            style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 16, height: '100%' }}
           >
             {/* 选中候选卡片 */}
             <div style={{
@@ -539,7 +539,7 @@ export default function OptimizePage() {
                 efficiency={selected?.Efficiency}
                 pressureRatio={selected?.Compression_ratio}
                 massflow={selected?.Massflow}
-                height={260}
+                height={220}
               />
             </div>
 

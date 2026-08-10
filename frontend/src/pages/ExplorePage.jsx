@@ -282,7 +282,7 @@ export default function ExplorePage() {
   }
 
   return (
-    <main style={{ minHeight: '100vh', background: 'var(--ink)', padding: '56px 28px 88px' }}>
+    <main style={{ minHeight: '100vh', background: 'transparent', padding: '56px 28px 88px' }}>
       <div style={{ maxWidth: 1240, margin: '0 auto' }}>
         
         {/* 01. 页面头部 (严格 28px 左对齐) */}

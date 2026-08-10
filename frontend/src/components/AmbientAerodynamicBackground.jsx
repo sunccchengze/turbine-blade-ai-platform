@@ -4,11 +4,10 @@ import { useEffect, useRef } from 'react'
  * AmbientAerodynamicBackground (全站子页面柔和气动氛围背景系统)
  * 
  * 特性：
- * 1. 650px 广域超柔焦漫射光斑 (极低不透明度 3.5%~5%)
- * 2. 400ms 慢速流体惯性阻尼跟随 (LERP α=0.025)
- * 3. 12 条超慢速平行层流发丝线 (0.25 px/frame 静谧漂浮)
- * 4. 48px CFD 几何网格 8s 周期正弦呼吸微光
- * 5. 全局单例穿透 (pointer-events: none)，0% CPU 开销
+ * 1. 520px 柔焦漫射光斑 (明晰且柔和的高对比微光，随鼠标惯性滑行)
+ * 2. 24 条慢速平行层流发丝线 (0.35 px/frame 静谧漂浮，遇探针平滑微绕流)
+ * 3. 48px CFD 几何网格感应与呼吸微光
+ * 4. 0% CPU 离屏休眠与硬件级全穿透保障
  */
 export default function AmbientAerodynamicBackground() {
   const containerRef = useRef(null)
@@ -29,14 +28,14 @@ export default function AmbientAerodynamicBackground() {
     let dpr = window.devicePixelRatio || 1
 
     const mouse = {
-      x: window.innerWidth * 0.75,
-      y: window.innerHeight * 0.25,
-      targetX: window.innerWidth * 0.75,
-      targetY: window.innerHeight * 0.25,
+      x: window.innerWidth * 0.72,
+      y: window.innerHeight * 0.28,
+      targetX: window.innerWidth * 0.72,
+      targetY: window.innerHeight * 0.28,
       active: false,
     }
 
-    const PARTICLE_COUNT = 12
+    const PARTICLE_COUNT = 24
     const particles = []
 
     const initParticles = (w, h) => {
@@ -46,9 +45,9 @@ export default function AmbientAerodynamicBackground() {
           x: Math.random() * w,
           y: Math.random() * h,
           baseY: Math.random() * h,
-          speed: 0.2 + Math.random() * 0.3,
-          length: 40 + Math.random() * 60,
-          opacity: 0.06 + Math.random() * 0.08,
+          speed: 0.35 + Math.random() * 0.45,
+          length: 35 + Math.random() * 55,
+          opacity: 0.16 + Math.random() * 0.18,
         })
       }
     }
@@ -79,8 +78,8 @@ export default function AmbientAerodynamicBackground() {
     }
 
     const onPointerLeave = () => {
-      mouse.targetX = width * 0.75
-      mouse.targetY = height * 0.25
+      mouse.targetX = width * 0.72
+      mouse.targetY = height * 0.28
       mouse.active = false
     }
 
@@ -90,14 +89,13 @@ export default function AmbientAerodynamicBackground() {
     const onVisibilityChange = () => {
       isVisible = !document.hidden
       if (isVisible && !animationFrameId) {
-        render(0)
+        render()
       }
     }
     document.addEventListener('visibilitychange', onVisibilityChange)
 
-    let startTime = performance.now()
 
-    const render = (time) => {
+    const render = () => {
       if (!isVisible) {
         animationFrameId = null
         return
@@ -106,23 +104,23 @@ export default function AmbientAerodynamicBackground() {
       const isLight = document.documentElement.dataset.theme === 'light'
       ctx.clearRect(0, 0, width, height)
 
-      // 1. 超慢速流体惯性插值 (LERP α=0.025)
-      mouse.x += (mouse.targetX - mouse.x) * 0.025
-      mouse.y += (mouse.targetY - mouse.y) * 0.025
+      // 1. 平滑流体惯性插值 (LERP α=0.045)
+      mouse.x += (mouse.targetX - mouse.x) * 0.045
+      mouse.y += (mouse.targetY - mouse.y) * 0.045
 
-      // 2. 650px 广域柔焦探照微光
-      const spotRadius = 650
+      // 2. 520px 柔焦漫射气动聚光斑
+      const spotRadius = 520
       const spotGrad = ctx.createRadialGradient(
         mouse.x, mouse.y, 0,
         mouse.x, mouse.y, spotRadius
       )
       if (isLight) {
-        spotGrad.addColorStop(0, 'rgba(45, 117, 105, 0.045)')
-        spotGrad.addColorStop(0.4, 'rgba(45, 117, 105, 0.015)')
+        spotGrad.addColorStop(0, 'rgba(45, 117, 105, 0.09)')
+        spotGrad.addColorStop(0.35, 'rgba(45, 117, 105, 0.035)')
         spotGrad.addColorStop(1, 'rgba(248, 247, 242, 0)')
       } else {
-        spotGrad.addColorStop(0, 'rgba(52, 211, 153, 0.06)')
-        spotGrad.addColorStop(0.4, 'rgba(134, 185, 170, 0.018)')
+        spotGrad.addColorStop(0, 'rgba(52, 211, 153, 0.11)')
+        spotGrad.addColorStop(0.35, 'rgba(134, 185, 170, 0.04)')
         spotGrad.addColorStop(1, 'rgba(11, 14, 13, 0)')
       }
 
@@ -131,29 +129,28 @@ export default function AmbientAerodynamicBackground() {
       ctx.arc(mouse.x, mouse.y, spotRadius, 0, Math.PI * 2)
       ctx.fill()
 
-      // 3. 48px CFD 网格 8s 周期正弦呼吸微光
-      const elapsed = (time - startTime) / 1000
-      const breathe = Math.sin(elapsed * 0.78) * 0.015 + 0.035
-
-      ctx.strokeStyle = isLight
-        ? `rgba(45, 117, 105, ${breathe * 1.1})`
-        : `rgba(134, 185, 170, ${breathe})`
-      ctx.lineWidth = 0.75
-
-      // 绘制极其微弱的网格线
-      ctx.beginPath()
+      // 3. 48px CFD 几何网格节点微感应
       const GRID = 48
-      for (let x = 0; x <= width; x += GRID) {
-        ctx.moveTo(x, 0)
-        ctx.lineTo(x, height)
-      }
-      for (let y = 0; y <= height; y += GRID) {
-        ctx.moveTo(0, y)
-        ctx.lineTo(width, y)
-      }
-      ctx.stroke()
+      const PROXIMITY_RADIUS = 130
+      const PROXIMITY_SQ = PROXIMITY_RADIUS * PROXIMITY_RADIUS
 
-      // 4. 12 条超慢速平行层流发丝线
+      for (let x = 0; x <= width; x += GRID) {
+        for (let y = 0; y <= height; y += GRID) {
+          const dx = x - mouse.x
+          const dy = y - mouse.y
+          const distSq = dx * dx + dy * dy
+
+          if (distSq < PROXIMITY_SQ) {
+            const intensity = Math.pow(1 - distSq / PROXIMITY_SQ, 2)
+            ctx.fillStyle = isLight
+              ? `rgba(45, 117, 105, ${0.12 + intensity * 0.35})`
+              : `rgba(52, 211, 153, ${0.15 + intensity * 0.4})`
+            ctx.fillRect(x - 1, y - 1, 2, 2)
+          }
+        }
+      }
+
+      // 4. 24 条平行层流发丝线 (遇探针平滑微绕流)
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i]
         p.x += p.speed
@@ -164,26 +161,29 @@ export default function AmbientAerodynamicBackground() {
           p.baseY = p.y
         }
 
-        // 微小微扰
+        const dx = p.x - mouse.x
         const dy = p.baseY - mouse.y
-        const dist = Math.abs(dy)
-        if (dist < 120) {
-          p.y += (p.baseY + (dy >= 0 ? 1 : -1) * 6 - p.y) * 0.03
+        const dist = Math.sqrt(dx * dx + dy * dy)
+        const R = 75
+
+        if (dist < R && dist > 1) {
+          const push = (1 - dist / R) * (dy >= 0 ? 1 : -1) * 14
+          p.y += (p.baseY + push - p.y) * 0.1
         } else {
-          p.y += (p.baseY - p.y) * 0.015
+          p.y += (p.baseY - p.y) * 0.04
         }
 
         const lineGrad = ctx.createLinearGradient(p.x - p.length, p.y, p.x, p.y)
         if (isLight) {
           lineGrad.addColorStop(0, 'rgba(45, 117, 105, 0)')
-          lineGrad.addColorStop(1, `rgba(45, 117, 105, ${p.opacity * 0.7})`)
+          lineGrad.addColorStop(1, `rgba(45, 117, 105, ${p.opacity})`)
         } else {
           lineGrad.addColorStop(0, 'rgba(134, 185, 170, 0)')
           lineGrad.addColorStop(1, `rgba(181, 222, 208, ${p.opacity})`)
         }
 
         ctx.strokeStyle = lineGrad
-        ctx.lineWidth = 0.8
+        ctx.lineWidth = 1
         ctx.beginPath()
         ctx.moveTo(p.x - p.length, p.y)
         ctx.lineTo(p.x, p.y)
@@ -193,7 +193,7 @@ export default function AmbientAerodynamicBackground() {
       animationFrameId = requestAnimationFrame(render)
     }
 
-    render(0)
+    render()
 
     return () => {
       if (animationFrameId) cancelAnimationFrame(animationFrameId)
