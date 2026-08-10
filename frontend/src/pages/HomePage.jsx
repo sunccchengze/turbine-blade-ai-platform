@@ -150,9 +150,9 @@ export default function HomePage() {
                 <span style={{ color: 'var(--teal-bright)' }}>Physics decides.</span><br />
                 <span style={{
                   display: 'block',
-                  marginTop: 12,
-                  color: 'var(--faint)',
-                  font: '500 clamp(18px, 2.2vw, 26px)/1.3 var(--body)',
+                  marginTop: 14,
+                  color: 'var(--paper)',
+                  font: '700 clamp(20px, 2.5vw, 30px)/1.25 var(--display)',
                   letterSpacing: '-0.02em'
                 }}>
                   模型探路 · 物理定音
