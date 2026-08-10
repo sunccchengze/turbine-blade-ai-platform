@@ -115,7 +115,18 @@ button, input, select { font: inherit; }
   .card-glow { transition: border-color .25s, background .25s, transform .25s; }
   .card-glow:hover { border-color: var(--line-strong); background: var(--panel-2); transform: translateY(-2px); }
   .gradient-text { color: var(--teal-bright); }
-  .badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 9px; border: 1px solid var(--line); border-radius: 999px; font: 10px var(--mono); letter-spacing: .06em; }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px;
+    border: 1px solid var(--line-strong);
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.03);
+    font: 10px var(--mono);
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+  }
   .num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
   .section-divider { height: 1px; background: var(--line); max-width: 1180px; margin: 0 auto; }
   .grid-bg { background-image: linear-gradient(rgba(134,185,170,.055) 1px, transparent 1px), linear-gradient(90deg, rgba(134,185,170,.055) 1px, transparent 1px); background-size: 48px 48px; }

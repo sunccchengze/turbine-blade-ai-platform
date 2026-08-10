@@ -279,7 +279,7 @@ export default function HomePage() {
                     ROTOR 37 · REALTIME TELEMETRY
                   </span>
                 </div>
-                <span className="badge" style={{ color: 'var(--teal-bright)', borderColor: 'rgba(52,211,153,0.3)' }}>
+                <span className="badge" style={{ color: 'var(--teal-bright)' }}>
                   <CircleDot size={8} /> E2 / E3 ACTIVE
                 </span>
               </div>
@@ -367,9 +367,9 @@ export default function HomePage() {
                       <span style={{
                         color,
                         font: '10px var(--mono)',
-                        padding: '2px 6px',
-                        border: '1px solid var(--line)',
-                        borderRadius: 3,
+                        padding: '3px 8px',
+                        border: '1px solid var(--line-strong)',
+                        borderRadius: 4,
                         background: 'rgba(0,0,0,0.2)'
                       }}>
                         {tag}
@@ -383,7 +383,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Section 01: 数量化留出测试集验证矩阵 (Held-Out Test Set Metrics) */}
+      {/* Section 01: 数量化留出测试集验证矩阵 (严格水平与基线对齐) */}
       <section style={{ maxWidth: 1240, margin: '0 auto', padding: '64px 24px 24px' }}>
         <SectionHead
           index="01"
@@ -393,37 +393,59 @@ export default function HomePage() {
           所有决定系数 $R^2$、MAE 与 RMSE 均由独立留出测试集（$n=100$）严格测量产生，绝无训练集泄漏。此指标代表代理模型拟合精度，不替代真实 CFD。
         </SectionHead>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 16 }}>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(4, minmax(0, 1fr))',
+          gap: 16
+        }}>
           {/* Card 1: 总压比 */}
           <div style={{
             background: 'var(--panel)',
             border: '1px solid var(--line)',
             borderRadius: 6,
-            padding: '24px 22px'
+            padding: '22px 20px',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between'
           }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
-              <div>
-                <span style={{ font: '11px var(--mono)', color: 'var(--faint)' }}>01 / PRESSURE RATIO</span>
-                <div style={{ color: 'var(--paper)', fontSize: 16, fontWeight: 700, marginTop: 2 }}>总压比 π</div>
+            {/* 卡片头部：固定高度 */}
+            <div style={{ height: 44, marginBottom: 12 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ font: '10px var(--mono)', color: 'var(--faint)', letterSpacing: '0.08em' }}>
+                  01 / PRESSURE RATIO
+                </span>
+                <span className="badge" style={{ color: 'var(--teal-bright)' }}>
+                  PRIMARY GOAL
+                </span>
               </div>
-              <span className="badge" style={{ color: 'var(--teal-bright)' }}>PRIMARY GOAL</span>
+              <div style={{ color: 'var(--paper)', fontSize: 15, fontWeight: 700, marginTop: 4 }}>
+                总压比 π
+              </div>
             </div>
-            <div className="num" style={{ color: 'var(--teal-bright)', fontSize: 36, fontWeight: 700, lineHeight: 1 }}>
-              0.9844
+
+            {/* 大数字：固定高度与水平对齐 */}
+            <div style={{ height: 48, display: 'flex', alignItems: 'center' }}>
+              <span className="num" style={{ color: 'var(--teal-bright)', fontSize: 36, fontWeight: 700, lineHeight: 1 }}>
+                0.9844
+              </span>
             </div>
+
+            {/* 底部指标：固定 3 列网格 */}
             <div style={{
-              display: 'flex',
-              gap: 16,
-              marginTop: 16,
-              paddingTop: 14,
+              display: 'grid',
+              gridTemplateColumns: 'repeat(3, 1fr)',
+              gap: 6,
+              marginTop: 14,
+              paddingTop: 12,
               borderTop: '1px solid var(--line)',
               fontSize: '11px',
               fontFamily: 'var(--mono)',
-              color: 'var(--muted)'
+              color: 'var(--muted)',
+              whiteSpace: 'nowrap'
             }}>
               <div>MAE: <strong style={{ color: 'var(--paper)' }}>0.0097</strong></div>
               <div>RMSE: <strong style={{ color: 'var(--paper)' }}>0.0135</strong></div>
-              <div>RANGE: <strong style={{ color: 'var(--paper)' }}>1.45~2.21</strong></div>
+              <div>范围: <strong style={{ color: 'var(--paper)' }}>1.45~2.21</strong></div>
             </div>
           </div>
 
@@ -432,31 +454,49 @@ export default function HomePage() {
             background: 'var(--panel)',
             border: '1px solid var(--line)',
             borderRadius: 6,
-            padding: '24px 22px'
+            padding: '22px 20px',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between'
           }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
-              <div>
-                <span style={{ font: '11px var(--mono)', color: 'var(--faint)' }}>02 / ISENTROPIC EFFICIENCY</span>
-                <div style={{ color: 'var(--paper)', fontSize: 16, fontWeight: 700, marginTop: 2 }}>等熵绝热效率 η</div>
+            {/* 卡片头部：固定高度 */}
+            <div style={{ height: 44, marginBottom: 12 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ font: '10px var(--mono)', color: 'var(--faint)', letterSpacing: '0.08em' }}>
+                  02 / EFFICIENCY
+                </span>
+                <span className="badge" style={{ color: 'var(--yellow)' }}>
+                  AERO SENSITIVE
+                </span>
               </div>
-              <span className="badge" style={{ color: 'var(--yellow)' }}>AERO SENSITIVE</span>
+              <div style={{ color: 'var(--paper)', fontSize: 15, fontWeight: 700, marginTop: 4 }}>
+                等熵绝热效率 η
+              </div>
             </div>
-            <div className="num" style={{ color: 'var(--yellow)', fontSize: 36, fontWeight: 700, lineHeight: 1 }}>
-              0.9561
+
+            {/* 大数字：固定高度与水平对齐 */}
+            <div style={{ height: 48, display: 'flex', alignItems: 'center' }}>
+              <span className="num" style={{ color: 'var(--yellow)', fontSize: 36, fontWeight: 700, lineHeight: 1 }}>
+                0.9561
+              </span>
             </div>
+
+            {/* 底部指标：固定 3 列网格 */}
             <div style={{
-              display: 'flex',
-              gap: 16,
-              marginTop: 16,
-              paddingTop: 14,
+              display: 'grid',
+              gridTemplateColumns: 'repeat(3, 1fr)',
+              gap: 6,
+              marginTop: 14,
+              paddingTop: 12,
               borderTop: '1px solid var(--line)',
               fontSize: '11px',
               fontFamily: 'var(--mono)',
-              color: 'var(--muted)'
+              color: 'var(--muted)',
+              whiteSpace: 'nowrap'
             }}>
               <div>MAE: <strong style={{ color: 'var(--paper)' }}>0.0031</strong></div>
               <div>RMSE: <strong style={{ color: 'var(--paper)' }}>0.0044</strong></div>
-              <div>RANGE: <strong style={{ color: 'var(--paper)' }}>0.82~0.93</strong></div>
+              <div>范围: <strong style={{ color: 'var(--paper)' }}>0.82~0.93</strong></div>
             </div>
           </div>
 
@@ -465,31 +505,49 @@ export default function HomePage() {
             background: 'var(--panel)',
             border: '1px solid var(--line)',
             borderRadius: 6,
-            padding: '24px 22px'
+            padding: '22px 20px',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between'
           }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
-              <div>
-                <span style={{ font: '11px var(--mono)', color: 'var(--faint)' }}>03 / MASS FLOW RATE</span>
-                <div style={{ color: 'var(--paper)', fontSize: 16, fontWeight: 700, marginTop: 2 }}>质量流量 ṁ (kg/s)</div>
+            {/* 卡片头部：固定高度 */}
+            <div style={{ height: 44, marginBottom: 12 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ font: '10px var(--mono)', color: 'var(--faint)', letterSpacing: '0.08em' }}>
+                  03 / MASS FLOW
+                </span>
+                <span className="badge" style={{ color: 'var(--teal-bright)' }}>
+                  CHOKING LIMIT
+                </span>
               </div>
-              <span className="badge" style={{ color: 'var(--teal-bright)' }}>CHOKING LIMIT</span>
+              <div style={{ color: 'var(--paper)', fontSize: 15, fontWeight: 700, marginTop: 4 }}>
+                质量流量 ṁ (kg/s)
+              </div>
             </div>
-            <div className="num" style={{ color: 'var(--teal-bright)', fontSize: 36, fontWeight: 700, lineHeight: 1 }}>
-              0.9827
+
+            {/* 大数字：固定高度与水平对齐 */}
+            <div style={{ height: 48, display: 'flex', alignItems: 'center' }}>
+              <span className="num" style={{ color: 'var(--teal-bright)', fontSize: 36, fontWeight: 700, lineHeight: 1 }}>
+                0.9827
+              </span>
             </div>
+
+            {/* 底部指标：固定 3 列网格 */}
             <div style={{
-              display: 'flex',
-              gap: 16,
-              marginTop: 16,
-              paddingTop: 14,
+              display: 'grid',
+              gridTemplateColumns: 'repeat(3, 1fr)',
+              gap: 6,
+              marginTop: 14,
+              paddingTop: 12,
               borderTop: '1px solid var(--line)',
               fontSize: '11px',
               fontFamily: 'var(--mono)',
-              color: 'var(--muted)'
+              color: 'var(--muted)',
+              whiteSpace: 'nowrap'
             }}>
-              <div>MAE: <strong style={{ color: 'var(--paper)' }}>0.142 kg/s</strong></div>
-              <div>RMSE: <strong style={{ color: 'var(--paper)' }}>0.201 kg/s</strong></div>
-              <div>RANGE: <strong style={{ color: 'var(--paper)' }}>18~22 kg/s</strong></div>
+              <div>MAE: <strong style={{ color: 'var(--paper)' }}>0.142</strong></div>
+              <div>RMSE: <strong style={{ color: 'var(--paper)' }}>0.201</strong></div>
+              <div>范围: <strong style={{ color: 'var(--paper)' }}>18~22 kg/s</strong></div>
             </div>
           </div>
 
@@ -498,31 +556,49 @@ export default function HomePage() {
             background: 'var(--panel)',
             border: '1px solid var(--line)',
             borderRadius: 6,
-            padding: '24px 22px'
+            padding: '22px 20px',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between'
           }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
-              <div>
-                <span style={{ font: '11px var(--mono)', color: 'var(--faint)' }}>04 / THROUGHPUT ACCELERATION</span>
-                <div style={{ color: 'var(--paper)', fontSize: 16, fontWeight: 700, marginTop: 2 }}>代理筛选加速比</div>
+            {/* 卡片头部：固定高度 */}
+            <div style={{ height: 44, marginBottom: 12 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ font: '10px var(--mono)', color: 'var(--faint)', letterSpacing: '0.08em' }}>
+                  04 / SPEEDUP
+                </span>
+                <span className="badge" style={{ color: 'var(--rust)' }}>
+                  CFD ACCELERATION
+                </span>
               </div>
-              <span className="badge" style={{ color: 'var(--rust)' }}>CFD VS SURROGATE</span>
+              <div style={{ color: 'var(--paper)', fontSize: 15, fontWeight: 700, marginTop: 4 }}>
+                代理筛选加速比
+              </div>
             </div>
-            <div className="num" style={{ color: 'var(--rust)', fontSize: 36, fontWeight: 700, lineHeight: 1 }}>
-              ~100,000×
+
+            {/* 大数字：固定高度与水平对齐 */}
+            <div style={{ height: 48, display: 'flex', alignItems: 'center' }}>
+              <span className="num" style={{ color: 'var(--rust)', fontSize: 36, fontWeight: 700, lineHeight: 1 }}>
+                ~100,000×
+              </span>
             </div>
+
+            {/* 底部指标：固定 3 列网格 */}
             <div style={{
-              display: 'flex',
-              gap: 16,
-              marginTop: 16,
-              paddingTop: 14,
+              display: 'grid',
+              gridTemplateColumns: 'repeat(3, 1fr)',
+              gap: 6,
+              marginTop: 14,
+              paddingTop: 12,
               borderTop: '1px solid var(--line)',
               fontSize: '11px',
               fontFamily: 'var(--mono)',
-              color: 'var(--muted)'
+              color: 'var(--muted)',
+              whiteSpace: 'nowrap'
             }}>
-              <div>ONNX: <strong style={{ color: 'var(--paper)' }}>0.23 ms</strong></div>
-              <div>RANS: <strong style={{ color: 'var(--paper)' }}>30~60 s</strong></div>
-              <div>GAIN: <strong style={{ color: 'var(--paper)' }}>$10^5$ 量级</strong></div>
+              <div>ONNX: <strong style={{ color: 'var(--paper)' }}>0.23ms</strong></div>
+              <div>CFD: <strong style={{ color: 'var(--paper)' }}>30~60s</strong></div>
+              <div>增益: <strong style={{ color: 'var(--paper)' }}>10⁵ 量级</strong></div>
             </div>
           </div>
         </div>
@@ -707,7 +783,7 @@ export default function HomePage() {
                   </span>
                   <Icon size={16} style={{ color: accent }} />
                 </div>
-                <span className="badge" style={{ color: accent, borderColor: 'var(--line-strong)' }}>
+                <span className="badge" style={{ color: accent }}>
                   {badge}
                 </span>
               </div>
@@ -739,7 +815,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Section 04: Nature 规范学术证据等级表 (Academic Evidence Standard 3-Line Table) */}
+      {/* Section 04: Nature 规范学术证据等级表 (全居中对齐，标准三线学术排版) */}
       <section style={{ maxWidth: 1240, margin: '0 auto', padding: '56px 24px 24px' }}>
         <SectionHead
           index="04"
@@ -754,61 +830,61 @@ export default function HomePage() {
           border: '1px solid var(--line)',
           borderRadius: 6,
           overflowX: 'auto',
-          padding: '16px 20px'
+          padding: '20px 24px'
         }}>
           <table style={{
             width: '100%',
             borderCollapse: 'collapse',
             fontSize: '12px',
             fontFamily: 'var(--mono)',
-            textAlign: 'left'
+            textAlign: 'center'
           }}>
             <thead>
               <tr style={{ borderBottom: '2px solid var(--line-strong)', color: 'var(--paper)' }}>
-                <th style={{ padding: '10px 14px' }}>证据等级 (GRADE)</th>
-                <th style={{ padding: '10px 14px' }}>定义与适用范围</th>
-                <th style={{ padding: '10px 14px' }}>本项目当前对应成果</th>
-                <th style={{ padding: '10px 14px' }}>科学结论边界</th>
+                <th style={{ padding: '14px 16px', textAlign: 'center', fontWeight: 700 }}>证据等级 (GRADE)</th>
+                <th style={{ padding: '14px 16px', textAlign: 'center', fontWeight: 700 }}>定义与适用范围</th>
+                <th style={{ padding: '14px 16px', textAlign: 'center', fontWeight: 700 }}>本项目当前对应成果</th>
+                <th style={{ padding: '14px 16px', textAlign: 'center', fontWeight: 700 }}>科学结论边界</th>
               </tr>
             </thead>
             <tbody>
               <tr style={{ borderBottom: '1px solid var(--line)' }}>
-                <td style={{ padding: '12px 14px', color: 'var(--faint)' }}>E0 规划</td>
-                <td style={{ padding: '12px 14px', color: 'var(--muted)' }}>设计假设与理论推演</td>
-                <td style={{ padding: '12px 14px', color: 'var(--paper)' }}>无压气机燃气轮机启发与 Rotor 37 命题</td>
-                <td style={{ padding: '12px 14px' }}>
+                <td style={{ padding: '14px 16px', textAlign: 'center', color: 'var(--faint)' }}>E0 规划</td>
+                <td style={{ padding: '14px 16px', textAlign: 'center', color: 'var(--muted)' }}>设计假设与理论推演</td>
+                <td style={{ padding: '14px 16px', textAlign: 'center', color: 'var(--paper)' }}>无压气机燃气轮机启发与 Rotor 37 命题</td>
+                <td style={{ padding: '14px 16px', textAlign: 'center' }}>
                   <span style={{ color: 'var(--faint)' }}>[ 探索方向 / THEORETICAL ]</span>
                 </td>
               </tr>
               <tr style={{ borderBottom: '1px solid var(--line)' }}>
-                <td style={{ padding: '12px 14px', color: 'var(--faint)' }}>E1 静态</td>
-                <td style={{ padding: '12px 14px', color: 'var(--muted)' }}>代码架构、数据字典与接口协议</td>
-                <td style={{ padding: '12px 14px', color: 'var(--paper)' }}>FastAPI 契约、ONNX 导出脚本、点云转换器</td>
-                <td style={{ padding: '12px 14px' }}>
+                <td style={{ padding: '14px 16px', textAlign: 'center', color: 'var(--faint)' }}>E1 静态</td>
+                <td style={{ padding: '14px 16px', textAlign: 'center', color: 'var(--muted)' }}>代码架构、数据字典与接口协议</td>
+                <td style={{ padding: '14px 16px', textAlign: 'center', color: 'var(--paper)' }}>FastAPI 契约、ONNX 导出脚本、点云转换器</td>
+                <td style={{ padding: '14px 16px', textAlign: 'center' }}>
                   <span style={{ color: 'var(--yellow)' }}>[ 架构通路已就绪 / READY ]</span>
                 </td>
               </tr>
               <tr style={{ borderBottom: '1px solid var(--line)' }}>
-                <td style={{ padding: '12px 14px', color: 'var(--teal-bright)', fontWeight: 700 }}>E2 代理/统计</td>
-                <td style={{ padding: '12px 14px', color: 'var(--muted)' }}>留出测试集指标与代理模型搜索</td>
-                <td style={{ padding: '12px 14px', color: 'var(--paper)' }}>R²=0.9844、100 组 NSGA-II Pareto 解集</td>
-                <td style={{ padding: '12px 14px' }}>
+                <td style={{ padding: '14px 16px', textAlign: 'center', color: 'var(--teal-bright)', fontWeight: 700 }}>E2 代理/统计</td>
+                <td style={{ padding: '14px 16px', textAlign: 'center', color: 'var(--muted)' }}>留出测试集指标与代理模型搜索</td>
+                <td style={{ padding: '14px 16px', textAlign: 'center', color: 'var(--paper)' }}>R²=0.9844、100 组 NSGA-II Pareto 解集</td>
+                <td style={{ padding: '14px 16px', textAlign: 'center' }}>
                   <span style={{ color: 'var(--teal-bright)', fontWeight: 600 }}>[ 代理预测已复现 / REPRODUCED ]</span>
                 </td>
               </tr>
               <tr style={{ borderBottom: '1px solid var(--line)' }}>
-                <td style={{ padding: '12px 14px', color: 'var(--rust)', fontWeight: 700 }}>E3 物理趋势</td>
-                <td style={{ padding: '12px 14px', color: 'var(--muted)' }}>真实求解器启动与粗网格流动计算</td>
-                <td style={{ padding: '12px 14px', color: 'var(--paper)' }}>SU2 粗网格一阶 1000 步 Stage 性能提取 (relrms=-3.39)</td>
-                <td style={{ padding: '12px 14px' }}>
+                <td style={{ padding: '14px 16px', textAlign: 'center', color: 'var(--rust)', fontWeight: 700 }}>E3 物理趋势</td>
+                <td style={{ padding: '14px 16px', textAlign: 'center', color: 'var(--muted)' }}>真实求解器启动与粗网格流动计算</td>
+                <td style={{ padding: '14px 16px', textAlign: 'center', color: 'var(--paper)' }}>SU2 粗网格一阶 1000 步 Stage 性能提取 (relrms=-3.39)</td>
+                <td style={{ padding: '14px 16px', textAlign: 'center' }}>
                   <span style={{ color: 'var(--rust)', fontWeight: 600 }}>[ 粗网格流动趋势 · 未收敛 / TREND ONLY ]</span>
                 </td>
               </tr>
               <tr>
-                <td style={{ padding: '12px 14px', color: 'var(--muted)' }}>E4 物理闭环</td>
-                <td style={{ padding: '12px 14px', color: 'var(--muted)' }}>高精度 RANS CFD 二阶正式收敛验证</td>
-                <td style={{ padding: '12px 14px', color: 'var(--faint)' }}>SU2 355万细网格 (受限本地内存，留待 HPC)</td>
-                <td style={{ padding: '12px 14px' }}>
+                <td style={{ padding: '14px 16px', textAlign: 'center', color: 'var(--muted)' }}>E4 物理闭环</td>
+                <td style={{ padding: '14px 16px', textAlign: 'center', color: 'var(--muted)' }}>高精度 RANS CFD 二阶正式收敛验证</td>
+                <td style={{ padding: '14px 16px', textAlign: 'center', color: 'var(--faint)' }}>SU2 355万细网格 (受限本地内存，留待 HPC)</td>
+                <td style={{ padding: '14px 16px', textAlign: 'center' }}>
                   <span style={{ color: 'var(--muted)' }}>[ 待超算算力支持 / HPC PENDING ]</span>
                 </td>
               </tr>
