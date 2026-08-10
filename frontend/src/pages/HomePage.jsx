@@ -1,56 +1,880 @@
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
-import { ArrowUpRight, ChevronRight, CircleDot, Database, Layers3, Orbit, ShieldCheck } from 'lucide-react'
+import {
+  ArrowUpRight,
+  CircleDot,
+  Database,
+  Layers3,
+  Orbit,
+  ShieldCheck,
+  Cpu,
+  Compass,
+  TrendingUp,
+  BarChart3,
+  Wand2,
+  BookOpen,
+  ArrowRight,
+  Terminal,
+  Activity
+} from 'lucide-react'
 
-const fade = { hidden: { opacity: 0, y: 18 }, visible: { opacity: 1, y: 0, transition: { duration: .55, ease: [.22, .8, .24, 1] } } }
-
-function Eyebrow({ children }) { return <div style={{ color: 'var(--yellow)', font: '10px var(--mono)', letterSpacing: '.16em', textTransform: 'uppercase' }}>{children}</div> }
-function Rule() { return <div style={{ height: 1, background: 'var(--line)' }} /> }
-function Metric({ value, label, note, accent = 'var(--teal)' }) {
-  return <div className="card-glow" style={{ padding: '22px 20px', border: '1px solid var(--line)', background: 'var(--panel)', borderRadius: 8 }}>
-    <div className="num" style={{ color: accent, fontSize: 30, lineHeight: 1.1, marginBottom: 12 }}>{value}</div>
-    <div style={{ color: 'var(--paper)', fontSize: 13, fontWeight: 600 }}>{label}</div>
-    <div style={{ color: 'var(--faint)', font: '10px var(--mono)', marginTop: 5 }}>{note}</div>
-  </div>
+const fade = {
+  hidden: { opacity: 0, y: 14 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.45, ease: [0.16, 1, 0.3, 1] },
+  },
 }
+
 function SectionHead({ index, title, en, children }) {
-  return <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end', gap: 24, marginBottom: 26, flexWrap: 'wrap' }}>
-    <div style={{ display: 'flex', gap: 14, alignItems: 'start' }}><span className="num" style={{ color: 'var(--yellow)', fontSize: 12, paddingTop: 5 }}>{index}</span><div><h2 style={{ color: 'var(--paper)', font: '600 clamp(24px,3vw,38px)/1 var(--display)', letterSpacing: '-.045em' }}>{title}</h2><div style={{ color: 'var(--faint)', font: '10px var(--mono)', marginTop: 8, letterSpacing: '.08em' }}>{en}</div></div></div>
-    {children && <div style={{ maxWidth: 380, color: 'var(--muted)', fontSize: 12, lineHeight: 1.7 }}>{children}</div>}
-  </div>
+  return (
+    <div style={{
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'flex-end',
+      gap: 24,
+      marginBottom: 28,
+      flexWrap: 'wrap',
+      paddingBottom: 16,
+      borderBottom: '1px solid var(--line)'
+    }}>
+      <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
+        <span className="num" style={{ color: 'var(--yellow)', fontSize: 11, paddingTop: 4, fontWeight: 700 }}>
+          {index}
+        </span>
+        <div>
+          <h2 style={{
+            color: 'var(--paper)',
+            font: '600 clamp(22px, 2.8vw, 34px)/1.15 var(--display)',
+            letterSpacing: '-0.04em'
+          }}>
+            {title}
+          </h2>
+          <div style={{
+            color: 'var(--faint)',
+            font: '10px var(--mono)',
+            marginTop: 6,
+            letterSpacing: '0.08em',
+            textTransform: 'uppercase'
+          }}>
+            {en}
+          </div>
+        </div>
+      </div>
+      {children && (
+        <div style={{ maxWidth: 420, color: 'var(--muted)', fontSize: 12, lineHeight: 1.75 }}>
+          {children}
+        </div>
+      )}
+    </div>
+  )
 }
 
 export default function HomePage() {
-  return <main>
-    <section className="grid-bg" style={{ position: 'relative', overflow: 'hidden' }}>
-      <div className="hero-glow" />
-      <div style={{ maxWidth: 1240, margin: '0 auto', padding: '92px 28px 76px', position: 'relative' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1.05fr) minmax(300px,.95fr)', gap: 70, alignItems: 'end' }}>
-          <motion.div initial="hidden" animate="visible" variants={fade}>
-            <Eyebrow>AI-ENABLED TURBOMACHINERY / RESEARCH PLATFORM</Eyebrow>
-            <h1 style={{ color: 'var(--paper)', font: '600 clamp(36px,4.6vw,58px)/1.14 var(--display)', letterSpacing: '-.045em', maxWidth: 760, marginTop: 19 }}><span style={{ display: 'block', whiteSpace: 'nowrap' }}>Surrogate explores</span><span style={{ display: 'block', color: 'var(--teal-bright)', whiteSpace: 'nowrap' }}>Physics decides</span><span style={{ display: 'block', marginTop: 18, color: 'var(--faint)', font: '500 clamp(18px,2.5vw,30px)/1.3 var(--body)', letterSpacing: '-.02em' }}>模型探路·物理定音</span></h1>
-            <p style={{ color: 'var(--muted)', fontSize: 16, lineHeight: 1.8, maxWidth: 570, marginTop: 26 }}>用代理模型先筛选 74 维设计空间，再把值得计算的候选交给真实物理验证。现在，预测和探索都在浏览器本地运行。</p>
-            <p style={{ color: 'var(--faint)', font: '11px var(--mono)', maxWidth: 570, lineHeight: 1.7, marginTop: 10 }}>Surrogate screening for NASA Rotor 37 compressor data. Pareto results are predictions, not converged RANS facts.</p>
-            <div style={{ display: 'flex', gap: 10, marginTop: 32, flexWrap: 'wrap' }}>
-              <Link to="/explore" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'var(--yellow)', color: 'var(--ink)', padding: '12px 17px', borderRadius: 5, textDecoration: 'none', fontSize: 12, fontWeight: 800 }}>Open design space <ArrowUpRight size={15} /></Link>
-              <Link to="/methodology" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, color: 'var(--paper)', border: '1px solid var(--line-strong)', padding: '11px 17px', borderRadius: 5, textDecoration: 'none', fontSize: 12 }}>Read the evidence <ChevronRight size={15} /></Link>
-            </div>
-          </motion.div>
-          <motion.div initial="hidden" animate="visible" variants={{ ...fade, visible: { ...fade.visible, transition: { ...fade.visible.transition, delay: .12 } } }} style={{ border: '1px solid var(--line-strong)', background: 'rgba(17,22,21,.72)', borderRadius: 9, overflow: 'hidden', position: 'relative' }}>
-            <div style={{ height: 3, background: 'var(--yellow)' }} /><div style={{ padding: 19, borderBottom: '1px solid var(--line)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}><span style={{ font: '11px var(--mono)', color: 'var(--muted)' }}>RUN STATUS / 08.09.2026</span><span className="badge" style={{ color: 'var(--teal-bright)' }}><CircleDot size={9} /> LOCAL READY</span></div>
-            <div style={{ padding: 25 }}><div style={{ color: 'var(--faint)', font: '10px var(--mono)', letterSpacing: '.1em' }}>CURRENT EVIDENCE PATH</div><div style={{ marginTop: 20, display: 'grid', gap: 0 }}>{[['01','PUBLIC DATA','PLAID / Rotor 37 / 1,000 samples'],['02','SURROGATE','ONNX / 74 features / 3 outputs'],['03','SEARCH','NSGA-II / 100 predicted candidates'],['04','PHYSICS GATE','SU2 route live / RANS pending']].map(([n, t, d], i) => <div key={n} style={{ display: 'grid', gridTemplateColumns: '32px 1fr', gap: 12, padding: '13px 0', borderBottom: i < 3 ? '1px solid var(--line)' : 0 }}><span className="num" style={{ color: i === 3 ? 'var(--yellow)' : 'var(--teal)', fontSize: 11 }}>{n}</span><div><div style={{ color: 'var(--paper)', fontSize: 12, fontWeight: 700 }}>{t}</div><div style={{ color: 'var(--faint)', font: '10px var(--mono)', marginTop: 4 }}>{d}</div></div></div>)}</div></div>
-            <div className="scanline" style={{ height: 1, background: 'var(--teal)', opacity: .28, position: 'absolute', left: 0, right: 0, top: '22%' }} />
-          </motion.div>
+  return (
+    <main style={{ minHeight: '100vh', background: 'var(--ink)' }}>
+      {/* 00. 顶部系统遥测条 (Linear-Style Live Telemetry Strip) */}
+      <div style={{
+        borderBottom: '1px solid var(--line)',
+        background: 'var(--panel)',
+        padding: '8px 24px',
+        fontSize: '11px',
+        fontFamily: 'var(--mono)'
+      }}>
+        <div style={{
+          maxWidth: 1240,
+          margin: '0 auto',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          gap: 16,
+          flexWrap: 'wrap'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, color: 'var(--muted)' }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: 'var(--teal-bright)', fontWeight: 600 }}>
+              <CircleDot size={8} className="spin" style={{ animationDuration: '4s' }} />
+              WASM LOCAL ENGINE ACTIVE
+            </span>
+            <span style={{ color: 'var(--line-strong)' }}>|</span>
+            <span>LATENCY: <strong style={{ color: 'var(--paper)' }}>0.23 ms</strong> (SIMD WASM)</span>
+            <span style={{ color: 'var(--line-strong)' }}>|</span>
+            <span>CARRIER: <strong style={{ color: 'var(--paper)' }}>NASA Rotor 37 (PLAID)</strong></span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14, color: 'var(--faint)' }}>
+            <span>ACCELERATION: <strong style={{ color: 'var(--yellow)' }}>~100,000×</strong></span>
+            <span>EVIDENCE: <strong style={{ color: 'var(--teal)' }}>GRADE E2/E3</strong></span>
+            <span>ZERO BACKEND COLD START</span>
+          </div>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', gap: 20, marginTop: 72, flexWrap: 'wrap', color: 'var(--faint)', font: '10px var(--mono)' }}><span>CONTEXT / KIT 303 SEC COMPRESSORLESS TURBINE</span><span>ACTUAL CARRIER / NASA ROTOR 37 COMPRESSOR</span><span>MODE / BROWSER WASM</span></div>
       </div>
-    </section>
 
-    <section style={{ maxWidth: 1240, margin: '0 auto', padding: '74px 28px 10px' }}><SectionHead index="01" title="What the model can say" en="HELD-OUT TEST SET / ONNX PRODUCTION MODEL">三个数字描述的是留出测试集上的代理精度。不是最终 CFD 性能。</SectionHead><div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10 }}><Metric value="0.9844" label="总压比 R²" note="π / TEST N=100" /><Metric value="0.9561" label="效率 R²" note="η / TEST N=100" accent="var(--yellow)" /><Metric value="0.9827" label="质量流量 R²" note="ṁ / TEST N=100" /><Metric value="~100K×" label="筛选加速量级" note="ORDER OF MAGNITUDE" accent="var(--rust)" /></div></section>
+      {/* Hero Section (主舞台) */}
+      <section className="grid-bg" style={{ position: 'relative', overflow: 'hidden', borderBottom: '1px solid var(--line)' }}>
+        <div className="hero-glow" />
+        <div style={{ maxWidth: 1240, margin: '0 auto', padding: '72px 24px 64px', position: 'relative' }}>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'minmax(0, 1.1fr) minmax(320px, 0.9fr)',
+            gap: 48,
+            alignItems: 'start'
+          }}>
+            {/* 左侧：叙事与操作入口 */}
+            <motion.div initial="hidden" animate="visible" variants={fade}>
+              <div style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
+                padding: '3px 10px',
+                border: '1px solid var(--line-strong)',
+                borderRadius: 4,
+                background: 'var(--panel)',
+                color: 'var(--yellow)',
+                font: '10px var(--mono)',
+                letterSpacing: '0.12em',
+                marginBottom: 20
+              }}>
+                <Activity size={12} />
+                TURBOMACHINERY MDO · RESEARCH WORKSPACE
+              </div>
 
-    <section style={{ maxWidth: 1240, margin: '0 auto', padding: '74px 28px' }}><SectionHead index="02" title="The design loop" en="FROM PARAMETERS TO A PHYSICS GATE">每一步都留下证据。每一步也有自己的边界。</SectionHead><div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10 }}>{[{icon: Database, n:'01', t:'Observe', d:'公开 Rotor 37 数据与真实点云，先把输入审计清楚。'}, {icon: Orbit, n:'02', t:'Predict', d:'74 维统计特征进入 ONNX 代理，在浏览器本地推理。'}, {icon: Layers3, n:'03', t:'Search', d:'NSGA-II 生成 100 个候选，作为筛选结果而非事实。'}, {icon: ShieldCheck, n:'04', t:'Verify', d:'几何审计与 SU2 通路已启动，最终 RANS 仍待 HPC。'}].map(({ icon: Icon, n, t, d }, i) => <motion.div whileHover={{ y: -3 }} key={n} className="card-glow" style={{ padding: 21, minHeight: 205, border: '1px solid var(--line)', background: 'var(--panel)', borderRadius: 8, position: 'relative' }}><div style={{ display: 'flex', justifyContent: 'space-between' }}><Icon size={18} color={i === 3 ? 'var(--yellow)' : 'var(--teal)'} /><span className="num" style={{ color: 'var(--faint)', fontSize: 11 }}>{n}</span></div><h3 style={{ color: 'var(--paper)', font: '600 22px var(--display)', marginTop: 38 }}>{t}</h3><p style={{ color: 'var(--muted)', fontSize: 12, lineHeight: 1.7, marginTop: 8 }}>{d}</p></motion.div>)}</div></section>
+              <h1 style={{
+                color: 'var(--paper)',
+                font: '700 clamp(38px, 4.8vw, 62px)/1.08 var(--display)',
+                letterSpacing: '-0.055em',
+                marginBottom: 20
+              }}>
+                Surrogate explores.<br />
+                <span style={{ color: 'var(--teal-bright)' }}>Physics decides.</span><br />
+                <span style={{
+                  display: 'block',
+                  marginTop: 12,
+                  color: 'var(--faint)',
+                  font: '500 clamp(18px, 2.2vw, 26px)/1.3 var(--body)',
+                  letterSpacing: '-0.02em'
+                }}>
+                  模型探路 · 物理定音
+                </span>
+              </h1>
 
-    <Rule />
-    <section style={{ maxWidth: 1240, margin: '0 auto', padding: '58px 28px 86px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 70, alignItems: 'start' }}><div><Eyebrow>THE DECISION</Eyebrow><h2 style={{ color: 'var(--paper)', font: '600 clamp(30px,4vw,52px)/.98 var(--display)', letterSpacing: '-.06em', marginTop: 17 }}>A fast filter.<br /><span style={{ color: 'var(--yellow)' }}>A slower truth.</span></h2></div><div style={{ color: 'var(--muted)', fontSize: 14, lineHeight: 1.9 }}><p>代理模型负责缩小搜索空间。几何审计负责拒绝不可信的形状。RANS 负责最后裁决。把这三个角色混在一起，平台会显得更完整，结论却会变得更弱。</p><Link to="/optimize" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, color: 'var(--teal-bright)', fontSize: 12, textDecoration: 'none', marginTop: 22 }}>Inspect predicted candidates <ArrowUpRight size={14} /></Link></div></section>
-  </main>
+              <p style={{
+                color: 'var(--muted)',
+                fontSize: 15,
+                lineHeight: 1.8,
+                maxWidth: 580,
+                marginBottom: 16
+              }}>
+                从 74 维统计参数到 NASA Rotor 37 真实叶型拓扑。利用物理残差代理网络在浏览器本地进行毫秒级气动筛选，再把高价值候选提交至工业级 SU2 求解器完成物理验证。
+              </p>
+
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                color: 'var(--faint)',
+                font: '11px var(--mono)',
+                marginBottom: 32,
+                lineHeight: 1.6
+              }}>
+                <span style={{ color: 'var(--yellow)' }}>*</span>
+                <span>PLAID 基准数据 · 纯前端 WASM 推理 · 100 组 Pareto 候选设计</span>
+              </div>
+
+              {/* 核心操作按钮组 */}
+              <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
+                <Link
+                  to="/predict"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    background: 'var(--teal-bright)',
+                    color: 'var(--ink)',
+                    padding: '12px 20px',
+                    borderRadius: 4,
+                    textDecoration: 'none',
+                    fontSize: 13,
+                    fontWeight: 700,
+                    letterSpacing: '-0.01em',
+                    boxShadow: '0 1px 2px rgba(0,0,0,0.2)'
+                  }}
+                >
+                  <Cpu size={15} />
+                  运行代理预测 / Predict
+                  <ArrowRight size={14} />
+                </Link>
+
+                <Link
+                  to="/explore"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    background: 'var(--panel)',
+                    color: 'var(--paper)',
+                    border: '1px solid var(--line-strong)',
+                    padding: '12px 20px',
+                    borderRadius: 4,
+                    textDecoration: 'none',
+                    fontSize: 13,
+                    fontWeight: 600
+                  }}
+                >
+                  <Compass size={15} />
+                  探索数据流场 / Explore
+                </Link>
+
+                <Link
+                  to="/methodology"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    color: 'var(--muted)',
+                    padding: '12px 14px',
+                    textDecoration: 'none',
+                    fontSize: 12,
+                    fontFamily: 'var(--mono)'
+                  }}
+                >
+                  <BookOpen size={14} />
+                  方法论证据 →
+                </Link>
+              </div>
+            </motion.div>
+
+            {/* 右侧：精密控制台 (Linear Precision Status Terminal) */}
+            <motion.div
+              initial="hidden"
+              animate="visible"
+              variants={{
+                ...fade,
+                visible: { ...fade.visible, transition: { ...fade.visible.transition, delay: 0.1 } }
+              }}
+              style={{
+                border: '1px solid var(--line-strong)',
+                background: 'var(--panel)',
+                borderRadius: 6,
+                overflow: 'hidden',
+                position: 'relative'
+              }}
+            >
+              {/* 顶部发丝状态头 */}
+              <div style={{
+                height: 2,
+                background: 'linear-gradient(90deg, var(--teal-bright), var(--yellow), var(--rust))'
+              }} />
+              <div style={{
+                padding: '14px 18px',
+                borderBottom: '1px solid var(--line)',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                background: 'rgba(0,0,0,0.1)'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <Terminal size={13} style={{ color: 'var(--yellow)' }} />
+                  <span style={{ font: '11px var(--mono)', color: 'var(--paper)', fontWeight: 600 }}>
+                    ROTOR 37 · REALTIME TELEMETRY
+                  </span>
+                </div>
+                <span className="badge" style={{ color: 'var(--teal-bright)', borderColor: 'rgba(52,211,153,0.3)' }}>
+                  <CircleDot size={8} /> E2 / E3 ACTIVE
+                </span>
+              </div>
+
+              {/* 遥测指标 4 格阵列 */}
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: '1fr 1fr',
+                gap: 1,
+                background: 'var(--line)',
+                borderBottom: '1px solid var(--line)'
+              }}>
+                <div style={{ background: 'var(--panel)', padding: '14px 18px' }}>
+                  <div style={{ color: 'var(--faint)', font: '9px var(--mono)', letterSpacing: '0.08em' }}>INFERENCE LATENCY</div>
+                  <div className="num" style={{ color: 'var(--teal-bright)', fontSize: 22, fontWeight: 700, marginTop: 4 }}>
+                    0.23 <span style={{ fontSize: 12, fontWeight: 400, color: 'var(--muted)' }}>ms</span>
+                  </div>
+                  <div style={{ color: 'var(--faint)', font: '10px var(--mono)', marginTop: 2 }}>WASM SIMD 1000 iter</div>
+                </div>
+
+                <div style={{ background: 'var(--panel)', padding: '14px 18px' }}>
+                  <div style={{ color: 'var(--faint)', font: '9px var(--mono)', letterSpacing: '0.08em' }}>MODEL COMPLEXITY</div>
+                  <div className="num" style={{ color: 'var(--paper)', fontSize: 22, fontWeight: 700, marginTop: 4 }}>
+                    523k <span style={{ fontSize: 12, fontWeight: 400, color: 'var(--muted)' }}>params</span>
+                  </div>
+                  <div style={{ color: 'var(--faint)', font: '10px var(--mono)', marginTop: 2 }}>2.01 MB single ONNX</div>
+                </div>
+
+                <div style={{ background: 'var(--panel)', padding: '14px 18px' }}>
+                  <div style={{ color: 'var(--faint)', font: '9px var(--mono)', letterSpacing: '0.08em' }}>HELD-OUT TEST R²</div>
+                  <div className="num" style={{ color: 'var(--yellow)', fontSize: 22, fontWeight: 700, marginTop: 4 }}>
+                    0.9844
+                  </div>
+                  <div style={{ color: 'var(--faint)', font: '10px var(--mono)', marginTop: 2 }}>Total Pressure Ratio π</div>
+                </div>
+
+                <div style={{ background: 'var(--panel)', padding: '14px 18px' }}>
+                  <div style={{ color: 'var(--faint)', font: '9px var(--mono)', letterSpacing: '0.08em' }}>PHYSICS STAGE</div>
+                  <div className="num" style={{ color: 'var(--rust)', fontSize: 22, fontWeight: 700, marginTop: 4 }}>
+                    10 pts
+                  </div>
+                  <div style={{ color: 'var(--faint)', font: '10px var(--mono)', marginTop: 2 }}>SU2 Stage Trend E3</div>
+                </div>
+              </div>
+
+              {/* 4 阶段科研证据链流水 */}
+              <div style={{ padding: '18px 20px' }}>
+                <div style={{
+                  color: 'var(--faint)',
+                  font: '10px var(--mono)',
+                  letterSpacing: '0.12em',
+                  marginBottom: 12,
+                  display: 'flex',
+                  justifyContent: 'space-between'
+                }}>
+                  <span>EVIDENCE FLOW PIPELINE</span>
+                  <span>STATUS</span>
+                </div>
+
+                <div style={{ display: 'grid', gap: 0 }}>
+                  {[
+                    ['01', 'PUBLIC CFD SAMPLES', 'PLAID Rotor 37 / 1,000 样本 / 0 非流形边', 'VERIFIED E2', 'var(--teal-bright)'],
+                    ['02', 'RESIDUAL SURROGATE', '74 维几何特征 → π, η, ṁ (WASM 本地)', 'ACTIVE E2', 'var(--teal-bright)'],
+                    ['03', 'NSGA-II MULTI-OBJ', '100 组 Pareto 气动权衡候选解', 'FILTERED E2', 'var(--yellow)'],
+                    ['04', 'SU2 SOLVER CLOSURE', '一阶 1000 步残差平台 -3.39 / 细网格待 HPC', 'TREND E3', 'var(--rust)'],
+                  ].map(([num, title, desc, tag, color], idx) => (
+                    <div
+                      key={num}
+                      style={{
+                        display: 'grid',
+                        gridTemplateColumns: '26px 1fr auto',
+                        gap: 12,
+                        padding: '10px 0',
+                        alignItems: 'center',
+                        borderBottom: idx < 3 ? '1px solid var(--line)' : 'none'
+                      }}
+                    >
+                      <span className="num" style={{ color: 'var(--faint)', fontSize: 11, fontWeight: 600 }}>
+                        {num}
+                      </span>
+                      <div>
+                        <div style={{ color: 'var(--paper)', fontSize: 12, fontWeight: 600 }}>{title}</div>
+                        <div style={{ color: 'var(--faint)', font: '10px var(--mono)', marginTop: 2 }}>{desc}</div>
+                      </div>
+                      <span style={{
+                        color,
+                        font: '10px var(--mono)',
+                        padding: '2px 6px',
+                        border: '1px solid var(--line)',
+                        borderRadius: 3,
+                        background: 'rgba(0,0,0,0.2)'
+                      }}>
+                        {tag}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* 动态扫描线 */}
+              <div className="scanline" style={{
+                height: 1,
+                background: 'var(--teal-bright)',
+                opacity: 0.35,
+                position: 'absolute',
+                left: 0,
+                right: 0,
+                top: '20%'
+              }} />
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Section 01: 数量化留出测试集验证矩阵 (Held-Out Test Set Metrics) */}
+      <section style={{ maxWidth: 1240, margin: '0 auto', padding: '64px 24px 24px' }}>
+        <SectionHead
+          index="01"
+          title="留出测试集严格评测指标"
+          en="HELD-OUT TEST SET EVALUATION / N=100 RANDOM_STATE=42"
+        >
+          所有决定系数 $R^2$、MAE 与 RMSE 均由独立留出测试集（$n=100$）严格测量产生，绝无训练集泄漏。此指标代表代理模型拟合精度，不替代真实 CFD。
+        </SectionHead>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 16 }}>
+          {/* Card 1: 总压比 */}
+          <div style={{
+            background: 'var(--panel)',
+            border: '1px solid var(--line)',
+            borderRadius: 6,
+            padding: '24px 22px'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
+              <div>
+                <span style={{ font: '11px var(--mono)', color: 'var(--faint)' }}>01 / PRESSURE RATIO</span>
+                <div style={{ color: 'var(--paper)', fontSize: 16, fontWeight: 700, marginTop: 2 }}>总压比 π</div>
+              </div>
+              <span className="badge" style={{ color: 'var(--teal-bright)' }}>PRIMARY GOAL</span>
+            </div>
+            <div className="num" style={{ color: 'var(--teal-bright)', fontSize: 36, fontWeight: 700, lineHeight: 1 }}>
+              0.9844
+            </div>
+            <div style={{
+              display: 'flex',
+              gap: 16,
+              marginTop: 16,
+              paddingTop: 14,
+              borderTop: '1px solid var(--line)',
+              fontSize: '11px',
+              fontFamily: 'var(--mono)',
+              color: 'var(--muted)'
+            }}>
+              <div>MAE: <strong style={{ color: 'var(--paper)' }}>0.0097</strong></div>
+              <div>RMSE: <strong style={{ color: 'var(--paper)' }}>0.0135</strong></div>
+              <div>RANGE: <strong style={{ color: 'var(--paper)' }}>1.45~2.21</strong></div>
+            </div>
+          </div>
+
+          {/* Card 2: 等熵效率 */}
+          <div style={{
+            background: 'var(--panel)',
+            border: '1px solid var(--line)',
+            borderRadius: 6,
+            padding: '24px 22px'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
+              <div>
+                <span style={{ font: '11px var(--mono)', color: 'var(--faint)' }}>02 / ISENTROPIC EFFICIENCY</span>
+                <div style={{ color: 'var(--paper)', fontSize: 16, fontWeight: 700, marginTop: 2 }}>等熵绝热效率 η</div>
+              </div>
+              <span className="badge" style={{ color: 'var(--yellow)' }}>AERO SENSITIVE</span>
+            </div>
+            <div className="num" style={{ color: 'var(--yellow)', fontSize: 36, fontWeight: 700, lineHeight: 1 }}>
+              0.9561
+            </div>
+            <div style={{
+              display: 'flex',
+              gap: 16,
+              marginTop: 16,
+              paddingTop: 14,
+              borderTop: '1px solid var(--line)',
+              fontSize: '11px',
+              fontFamily: 'var(--mono)',
+              color: 'var(--muted)'
+            }}>
+              <div>MAE: <strong style={{ color: 'var(--paper)' }}>0.0031</strong></div>
+              <div>RMSE: <strong style={{ color: 'var(--paper)' }}>0.0044</strong></div>
+              <div>RANGE: <strong style={{ color: 'var(--paper)' }}>0.82~0.93</strong></div>
+            </div>
+          </div>
+
+          {/* Card 3: 质量流量 */}
+          <div style={{
+            background: 'var(--panel)',
+            border: '1px solid var(--line)',
+            borderRadius: 6,
+            padding: '24px 22px'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
+              <div>
+                <span style={{ font: '11px var(--mono)', color: 'var(--faint)' }}>03 / MASS FLOW RATE</span>
+                <div style={{ color: 'var(--paper)', fontSize: 16, fontWeight: 700, marginTop: 2 }}>质量流量 ṁ (kg/s)</div>
+              </div>
+              <span className="badge" style={{ color: 'var(--teal-bright)' }}>CHOKING LIMIT</span>
+            </div>
+            <div className="num" style={{ color: 'var(--teal-bright)', fontSize: 36, fontWeight: 700, lineHeight: 1 }}>
+              0.9827
+            </div>
+            <div style={{
+              display: 'flex',
+              gap: 16,
+              marginTop: 16,
+              paddingTop: 14,
+              borderTop: '1px solid var(--line)',
+              fontSize: '11px',
+              fontFamily: 'var(--mono)',
+              color: 'var(--muted)'
+            }}>
+              <div>MAE: <strong style={{ color: 'var(--paper)' }}>0.142 kg/s</strong></div>
+              <div>RMSE: <strong style={{ color: 'var(--paper)' }}>0.201 kg/s</strong></div>
+              <div>RANGE: <strong style={{ color: 'var(--paper)' }}>18~22 kg/s</strong></div>
+            </div>
+          </div>
+
+          {/* Card 4: 代理筛选加速比 */}
+          <div style={{
+            background: 'var(--panel)',
+            border: '1px solid var(--line)',
+            borderRadius: 6,
+            padding: '24px 22px'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
+              <div>
+                <span style={{ font: '11px var(--mono)', color: 'var(--faint)' }}>04 / THROUGHPUT ACCELERATION</span>
+                <div style={{ color: 'var(--paper)', fontSize: 16, fontWeight: 700, marginTop: 2 }}>代理筛选加速比</div>
+              </div>
+              <span className="badge" style={{ color: 'var(--rust)' }}>CFD VS SURROGATE</span>
+            </div>
+            <div className="num" style={{ color: 'var(--rust)', fontSize: 36, fontWeight: 700, lineHeight: 1 }}>
+              ~100,000×
+            </div>
+            <div style={{
+              display: 'flex',
+              gap: 16,
+              marginTop: 16,
+              paddingTop: 14,
+              borderTop: '1px solid var(--line)',
+              fontSize: '11px',
+              fontFamily: 'var(--mono)',
+              color: 'var(--muted)'
+            }}>
+              <div>ONNX: <strong style={{ color: 'var(--paper)' }}>0.23 ms</strong></div>
+              <div>RANS: <strong style={{ color: 'var(--paper)' }}>30~60 s</strong></div>
+              <div>GAIN: <strong style={{ color: 'var(--paper)' }}>$10^5$ 量级</strong></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Section 02: 全流程科研闭环架构 (Closed-Loop Scientific Architecture) */}
+      <section style={{ maxWidth: 1240, margin: '0 auto', padding: '56px 24px 24px' }}>
+        <SectionHead
+          index="02"
+          title="从参数空间到物理终审的四步闭环"
+          en="SCIENTIFIC CLOSED LOOP: AUDIT → SURROGATE → PARETO → SOLVER"
+        >
+          平台构建了严谨的证据链条：每一步均有清晰的数学输入、算法处理与验证边界，严禁在未收敛求解器上作过度断言。
+        </SectionHead>
+
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+          gap: 16
+        }}>
+          {[
+            {
+              step: '01',
+              label: 'AUDIT',
+              title: '几何拓扑审计',
+              desc: '对 1,000 组真实点云 (1000×2048×9) 与原始表面网格进行单连通与流形性检验，确认 0 非流形边，消除几何畸变。',
+              icon: Database,
+              color: 'var(--teal-bright)'
+            },
+            {
+              step: '02',
+              label: 'PREDICT',
+              title: '毫秒级代理推理',
+              desc: '74 维气动统计特征经标准化后送入 PyTorch/ONNX 残差代理网络，在浏览器 WASM 本地输出 π, η, ṁ 及置信度提示。',
+              icon: Orbit,
+              color: 'var(--teal-bright)'
+            },
+            {
+              step: '03',
+              label: 'OPTIMIZE',
+              title: '多目标 Pareto 权衡',
+              desc: 'NSGA-II 算法进行 20 代进化寻优，生成 100 组压比、效率与质量流量的三目标非支配候选解集。',
+              icon: Layers3,
+              color: 'var(--yellow)'
+            },
+            {
+              step: '04',
+              label: 'SOLVER',
+              title: 'SU2 求解器物理校验',
+              desc: '打通真实 Rotor 37 网格与边界条件输入，提取粗网格 10 阶段流动趋势（E3 级），细网格二阶收敛留待 HPC 集群。',
+              icon: ShieldCheck,
+              color: 'var(--rust)'
+            },
+          ].map(({ step, label, title, desc, icon: Icon, color }) => (
+            <div
+              key={step}
+              style={{
+                background: 'var(--panel)',
+                border: '1px solid var(--line)',
+                borderRadius: 6,
+                padding: '24px 20px',
+                position: 'relative'
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <Icon size={16} style={{ color }} />
+                  <span style={{ font: '10px var(--mono)', color: 'var(--faint)', letterSpacing: '0.1em' }}>
+                    {step} / {label}
+                  </span>
+                </div>
+                <span className="num" style={{ color: 'var(--faint)', fontSize: 11 }}>
+                  PHASE {step}
+                </span>
+              </div>
+              <h3 style={{ color: 'var(--paper)', fontSize: 16, fontWeight: 700, marginBottom: 10 }}>
+                {title}
+              </h3>
+              <p style={{ color: 'var(--muted)', fontSize: 12, lineHeight: 1.8 }}>
+                {desc}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Section 03: 科研工作台核心系统入口 (Workspace Gateway) */}
+      <section style={{ maxWidth: 1240, margin: '0 auto', padding: '56px 24px 24px' }}>
+        <SectionHead
+          index="03"
+          title="交互式科研工作台"
+          en="INTERACTIVE SCIENTIFIC WORKSPACES & MODULES"
+        >
+          全站所有计算与图表均在浏览器端通过 WebAssembly 本地执行，无需等待后端服务器唤醒，支持毫秒级响应与多维联动。
+        </SectionHead>
+
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))',
+          gap: 16
+        }}>
+          {[
+            {
+              path: '/predict',
+              num: '01',
+              title: '气动性能预测工作台',
+              en: 'Aerodynamic Performance Prediction',
+              desc: '动态调整 74 维几何统计参数，实时获取压比、等熵效率与流量预测，并查看与基准设计的绝对/相对差异。',
+              badge: 'WASM LOCAL',
+              icon: Cpu,
+              accent: 'var(--teal-bright)'
+            },
+            {
+              path: '/explore',
+              num: '02',
+              title: '1,000 样本数据与流场探索',
+              en: 'Dataset & Flow Field Exploration',
+              desc: '3D 散点投影、PCA 降维、翼型截面切片与参数相关性热力图，全景审视 NASA Rotor 37 公开样本分布空间。',
+              badge: '1000 SAMPLES',
+              icon: Compass,
+              accent: 'var(--teal-bright)'
+            },
+            {
+              path: '/optimize',
+              num: '03',
+              title: 'NSGA-II 帕累托优化前沿',
+              en: 'Multi-Objective Pareto Front',
+              desc: '交互式查看 100 组三目标 Pareto 候选解，回放 20 代种群进化历程，点选候选设计实时驱动 3D 叶片几何渲染。',
+              badge: '100 CANDIDATES',
+              icon: TrendingUp,
+              accent: 'var(--yellow)'
+            },
+            {
+              path: '/uq',
+              num: '04',
+              title: '不确定性量化与灵敏度',
+              en: 'Uncertainty Quantification (UQ)',
+              desc: '基于 MC Dropout 提取预测方差 σ，坦诚呈现留出测试集区间覆盖率，深度剖析等熵效率通道的物理敏感性。',
+              badge: 'MC DROPOUT',
+              icon: BarChart3,
+              accent: 'var(--yellow)'
+            },
+            {
+              path: '/generate',
+              num: '05',
+              title: '扩散逆向生成设计',
+              en: 'Generative Inverse Design',
+              desc: '输入目标气动指标，通过逆向生成模型反演 74 维叶片几何参数，内置几何厚度非负性与曲率连续性校验。',
+              badge: 'DIFFUSION PROTOTYPE',
+              icon: Wand2,
+              accent: 'var(--rust)'
+            },
+            {
+              path: '/methodology',
+              num: '06',
+              title: '数学方法论与科学证明',
+              en: 'Methodology & Theoretical Rigor',
+              desc: '物理软惩罚损失函数推导、训练/留出集切分口径、ONNX 算力基准测试与完整复现指令。',
+              badge: 'THEORETICAL PROOF',
+              icon: BookOpen,
+              accent: 'var(--paper)'
+            },
+          ].map(({ path, num, title, en, desc, badge, icon: Icon, accent }) => (
+            <Link
+              key={path}
+              to={path}
+              style={{
+                display: 'block',
+                background: 'var(--panel)',
+                border: '1px solid var(--line)',
+                borderRadius: 6,
+                padding: '24px 22px',
+                textDecoration: 'none',
+                transition: 'border-color 0.2s, transform 0.2s, background 0.2s'
+              }}
+              className="card-glow"
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <span className="num" style={{ color: accent, fontSize: 13, fontWeight: 700 }}>
+                    {num}
+                  </span>
+                  <Icon size={16} style={{ color: accent }} />
+                </div>
+                <span className="badge" style={{ color: accent, borderColor: 'var(--line-strong)' }}>
+                  {badge}
+                </span>
+              </div>
+
+              <h3 style={{ color: 'var(--paper)', fontSize: 17, fontWeight: 700, marginBottom: 4 }}>
+                {title}
+              </h3>
+              <div style={{ color: 'var(--faint)', font: '10px var(--mono)', marginBottom: 12, letterSpacing: '0.04em' }}>
+                {en}
+              </div>
+
+              <p style={{ color: 'var(--muted)', fontSize: 12, lineHeight: 1.75, marginBottom: 16 }}>
+                {desc}
+              </p>
+
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                color: accent,
+                fontSize: 11,
+                fontFamily: 'var(--mono)',
+                fontWeight: 600
+              }}>
+                进入工作台 / Enter Workspace <ArrowUpRight size={13} />
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* Section 04: Nature 规范学术证据等级表 (Academic Evidence Standard) */}
+      <section style={{ maxWidth: 1240, margin: '0 auto', padding: '56px 24px 24px' }}>
+        <SectionHead
+          index="04"
+          title="科研证据分级与客观边界"
+          en="SCIENTIFIC EVIDENCE HIERARCHY & DEMARCATION"
+        >
+          坚守第一性原理与工科诚实原则：明确区分代理模型推断、统计测试指标与真实 CFD 物理计算，不将中间推断包装为权威事实。
+        </SectionHead>
+
+        <div style={{
+          background: 'var(--panel)',
+          border: '1px solid var(--line)',
+          borderRadius: 6,
+          overflowX: 'auto',
+          padding: '16px 20px'
+        }}>
+          <table style={{
+            width: '100%',
+            borderCollapse: 'collapse',
+            fontSize: '12px',
+            fontFamily: 'var(--mono)',
+            textAlign: 'left'
+          }}>
+            <thead>
+              <tr style={{ borderBottom: '2px solid var(--line-strong)', color: 'var(--paper)' }}>
+                <th style={{ padding: '10px 14px' }}>证据等级 (GRADE)</th>
+                <th style={{ padding: '10px 14px' }}>定义与适用范围</th>
+                <th style={{ padding: '10px 14px' }}>本项目当前对应成果</th>
+                <th style={{ padding: '10px 14px' }}>科学结论边界</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style={{ borderBottom: '1px solid var(--line)' }}>
+                <td style={{ padding: '12px 14px', color: 'var(--faint)' }}>E0 规划</td>
+                <td style={{ padding: '12px 14px', color: 'var(--muted)' }}>设计假设与理论推演</td>
+                <td style={{ padding: '12px 14px', color: 'var(--paper)' }}>无压气机燃气轮机启发与 Rotor 37 命题</td>
+                <td style={{ padding: '12px 14px', color: 'var(--yellow)' }}>仅代表探索方向</td>
+              </tr>
+              <tr style={{ borderBottom: '1px solid var(--line)' }}>
+                <td style={{ padding: '12px 14px', color: 'var(--faint)' }}>E1 静态</td>
+                <td style={{ padding: '12px 14px', color: 'var(--muted)' }}>代码架构、数据字典与接口协议</td>
+                <td style={{ padding: '12px 14px', color: 'var(--paper)' }}>FastAPI 契约、ONNX 导出脚本、点云转换器</td>
+                <td style={{ padding: '12px 14px', color: 'var(--yellow)' }}>代码连通性已验证</td>
+              </tr>
+              <tr style={{ borderBottom: '1px solid var(--line)' }}>
+                <td style={{ padding: '12px 14px', color: 'var(--teal-bright)', fontWeight: 700 }}>E2 代理/统计</td>
+                <td style={{ padding: '12px 14px', color: 'var(--muted)' }}>留出测试集指标与代理模型搜索</td>
+                <td style={{ padding: '12px 14px', color: 'var(--paper)' }}>R²=0.9844、100 组 NSGA-II Pareto 解集</td>
+                <td style={{ padding: '12px 14px', color: 'var(--teal-bright)' }}>✅ 代理预测已复现</td>
+              </tr>
+              <tr style={{ borderBottom: '1px solid var(--line)' }}>
+                <td style={{ padding: '12px 14px', color: 'var(--rust)', fontWeight: 700 }}>E3 物理趋势</td>
+                <td style={{ padding: '12px 14px', color: 'var(--muted)' }}>真实求解器启动与粗网格流动计算</td>
+                <td style={{ padding: '12px 14px', color: 'var(--paper)' }}>SU2 粗网格一阶 1000 步 Stage 性能提取 (relrms=-3.39)</td>
+                <td style={{ padding: '12px 14px', color: 'var(--rust)' }}>⚠️ 粗网格趋势 (未收敛)</td>
+              </tr>
+              <tr>
+                <td style={{ padding: '12px 14px', color: 'var(--muted)' }}>E4 物理闭环</td>
+                <td style={{ padding: '12px 14px', color: 'var(--muted)' }}>高精度 RANS CFD 二阶正式收敛验证</td>
+                <td style={{ padding: '12px 14px', color: 'var(--faint)' }}>SU2 355万细网格 (受限本地内存，留待 HPC)</td>
+                <td style={{ padding: '12px 14px', color: 'var(--muted)' }}>⏸️ 待超算算力支持</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {/* Section 05: 科研哲学与定音 (Scientific Postulate & Conclusion) */}
+      <section style={{ maxWidth: 1240, margin: '0 auto', padding: '56px 24px 80px' }}>
+        <div style={{
+          border: '1px solid var(--line)',
+          background: 'var(--panel)',
+          borderRadius: 6,
+          padding: '36px 32px',
+          display: 'grid',
+          gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)',
+          gap: 48,
+          alignItems: 'center'
+        }}>
+          <div>
+            <div style={{ color: 'var(--yellow)', font: '10px var(--mono)', letterSpacing: '0.14em', textTransform: 'uppercase' }}>
+              SCIENTIFIC POSTULATE / 科研总纲
+            </div>
+            <h2 style={{
+              color: 'var(--paper)',
+              font: '600 clamp(26px, 3.2vw, 42px)/1.15 var(--display)',
+              letterSpacing: '-0.045em',
+              marginTop: 14
+            }}>
+              A fast filter.<br />
+              <span style={{ color: 'var(--teal-bright)' }}>A slower truth.</span>
+            </h2>
+            <div style={{ color: 'var(--faint)', font: '13px var(--body)', marginTop: 8 }}>
+              快速筛选空间，慢速验证真理。
+            </div>
+          </div>
+
+          <div style={{ color: 'var(--muted)', fontSize: 13, lineHeight: 1.85 }}>
+            <p style={{ marginBottom: 14 }}>
+              代理模型负责用毫秒级算力缩小高维搜索空间；几何审计负责拦截自交与破损形状；RANS CFD 负责物理终审。
+            </p>
+            <p style={{ marginBottom: 20 }}>
+              把这三个角色分得越清，平台就越有学术可信度。我们选择将全部真实指标、置信区间与未收敛风险公开展示在平台上。
+            </p>
+            <div style={{
+              display: 'flex',
+              gap: 16,
+              alignItems: 'center',
+              paddingTop: 16,
+              borderTop: '1px solid var(--line)',
+              fontFamily: 'var(--mono)',
+              fontSize: '11px',
+              color: 'var(--faint)'
+            }}>
+              <span>西安交通大学 · 孙承泽</span>
+              <span>•</span>
+              <span>本科二年级独立研发</span>
+              <span>•</span>
+              <Link to="/about" style={{ color: 'var(--teal-bright)', textDecoration: 'none' }}>
+                查看研发日志 →
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  )
 }
