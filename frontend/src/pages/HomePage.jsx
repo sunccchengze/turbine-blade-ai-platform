@@ -74,7 +74,7 @@ function SectionHead({ index, title, en, children }) {
 export default function HomePage() {
   return (
     <main style={{ minHeight: '100vh', background: 'var(--ink)' }}>
-      {/* 00. 顶部系统遥测条 (Linear-Style Live Telemetry Strip) */}
+      {/* 00. 顶部系统遥测条 (中英交织，面向工科评审) */}
       <div style={{
         borderBottom: '1px solid var(--line)',
         background: 'var(--panel)',
@@ -91,20 +91,22 @@ export default function HomePage() {
           gap: 16,
           flexWrap: 'wrap'
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, color: 'var(--muted)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, color: 'var(--muted)', flexWrap: 'wrap' }}>
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: 'var(--teal-bright)', fontWeight: 600 }}>
               <CircleDot size={8} className="spin" style={{ animationDuration: '4s' }} />
-              WASM LOCAL ENGINE ACTIVE
+              本地 WASM 引擎就绪 / Local Active
             </span>
             <span style={{ color: 'var(--line-strong)' }}>|</span>
-            <span>LATENCY: <strong style={{ color: 'var(--paper)' }}>0.23 ms</strong> (SIMD WASM)</span>
+            <span>推理延迟: <strong style={{ color: 'var(--paper)' }}>0.23 ms</strong> (SIMD WASM)</span>
             <span style={{ color: 'var(--line-strong)' }}>|</span>
-            <span>CARRIER: <strong style={{ color: 'var(--paper)' }}>NASA Rotor 37 (PLAID)</strong></span>
+            <span>验证载体: <strong style={{ color: 'var(--paper)' }}>NASA Rotor 37 压气机</strong> (PLAID)</span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 14, color: 'var(--faint)' }}>
-            <span>ACCELERATION: <strong style={{ color: 'var(--yellow)' }}>~100,000×</strong></span>
-            <span>EVIDENCE: <strong style={{ color: 'var(--teal)' }}>GRADE E2/E3</strong></span>
-            <span>ZERO BACKEND COLD START</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14, color: 'var(--faint)', flexWrap: 'wrap' }}>
+            <span>筛选加速: <strong style={{ color: 'var(--yellow)' }}>~100,000×</strong> (vs 3D RANS)</span>
+            <span style={{ color: 'var(--line-strong)' }}>|</span>
+            <span>证据等级: <strong style={{ color: 'var(--teal)' }}>E2 代理 / E3 求解器趋势</strong></span>
+            <span style={{ color: 'var(--line-strong)' }}>|</span>
+            <span>纯前端零冷启动</span>
           </div>
         </div>
       </div>
@@ -243,7 +245,7 @@ export default function HomePage() {
               </div>
             </motion.div>
 
-            {/* 右侧：精密控制台 (Linear Precision Status Terminal) */}
+            {/* 右侧：精密控制台 (Linear Precision Status Terminal，无分割线噪点) */}
             <motion.div
               initial="hidden"
               animate="visible"
@@ -255,8 +257,7 @@ export default function HomePage() {
                 border: '1px solid var(--line-strong)',
                 background: 'var(--panel)',
                 borderRadius: 6,
-                overflow: 'hidden',
-                position: 'relative'
+                overflow: 'hidden'
               }}
             >
               {/* 顶部发丝状态头 */}
@@ -377,17 +378,6 @@ export default function HomePage() {
                   ))}
                 </div>
               </div>
-
-              {/* 动态扫描线 */}
-              <div className="scanline" style={{
-                height: 1,
-                background: 'var(--teal-bright)',
-                opacity: 0.35,
-                position: 'absolute',
-                left: 0,
-                right: 0,
-                top: '20%'
-              }} />
             </motion.div>
           </div>
         </div>
@@ -749,7 +739,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Section 04: Nature 规范学术证据等级表 (Academic Evidence Standard) */}
+      {/* Section 04: Nature 规范学术证据等级表 (Academic Evidence Standard 3-Line Table) */}
       <section style={{ maxWidth: 1240, margin: '0 auto', padding: '56px 24px 24px' }}>
         <SectionHead
           index="04"
@@ -786,31 +776,41 @@ export default function HomePage() {
                 <td style={{ padding: '12px 14px', color: 'var(--faint)' }}>E0 规划</td>
                 <td style={{ padding: '12px 14px', color: 'var(--muted)' }}>设计假设与理论推演</td>
                 <td style={{ padding: '12px 14px', color: 'var(--paper)' }}>无压气机燃气轮机启发与 Rotor 37 命题</td>
-                <td style={{ padding: '12px 14px', color: 'var(--yellow)' }}>仅代表探索方向</td>
+                <td style={{ padding: '12px 14px' }}>
+                  <span style={{ color: 'var(--faint)' }}>[ 探索方向 / THEORETICAL ]</span>
+                </td>
               </tr>
               <tr style={{ borderBottom: '1px solid var(--line)' }}>
                 <td style={{ padding: '12px 14px', color: 'var(--faint)' }}>E1 静态</td>
                 <td style={{ padding: '12px 14px', color: 'var(--muted)' }}>代码架构、数据字典与接口协议</td>
                 <td style={{ padding: '12px 14px', color: 'var(--paper)' }}>FastAPI 契约、ONNX 导出脚本、点云转换器</td>
-                <td style={{ padding: '12px 14px', color: 'var(--yellow)' }}>代码连通性已验证</td>
+                <td style={{ padding: '12px 14px' }}>
+                  <span style={{ color: 'var(--yellow)' }}>[ 架构通路已就绪 / READY ]</span>
+                </td>
               </tr>
               <tr style={{ borderBottom: '1px solid var(--line)' }}>
                 <td style={{ padding: '12px 14px', color: 'var(--teal-bright)', fontWeight: 700 }}>E2 代理/统计</td>
                 <td style={{ padding: '12px 14px', color: 'var(--muted)' }}>留出测试集指标与代理模型搜索</td>
                 <td style={{ padding: '12px 14px', color: 'var(--paper)' }}>R²=0.9844、100 组 NSGA-II Pareto 解集</td>
-                <td style={{ padding: '12px 14px', color: 'var(--teal-bright)' }}>✅ 代理预测已复现</td>
+                <td style={{ padding: '12px 14px' }}>
+                  <span style={{ color: 'var(--teal-bright)', fontWeight: 600 }}>[ 代理预测已复现 / REPRODUCED ]</span>
+                </td>
               </tr>
               <tr style={{ borderBottom: '1px solid var(--line)' }}>
                 <td style={{ padding: '12px 14px', color: 'var(--rust)', fontWeight: 700 }}>E3 物理趋势</td>
                 <td style={{ padding: '12px 14px', color: 'var(--muted)' }}>真实求解器启动与粗网格流动计算</td>
                 <td style={{ padding: '12px 14px', color: 'var(--paper)' }}>SU2 粗网格一阶 1000 步 Stage 性能提取 (relrms=-3.39)</td>
-                <td style={{ padding: '12px 14px', color: 'var(--rust)' }}>⚠️ 粗网格趋势 (未收敛)</td>
+                <td style={{ padding: '12px 14px' }}>
+                  <span style={{ color: 'var(--rust)', fontWeight: 600 }}>[ 粗网格流动趋势 · 未收敛 / TREND ONLY ]</span>
+                </td>
               </tr>
               <tr>
                 <td style={{ padding: '12px 14px', color: 'var(--muted)' }}>E4 物理闭环</td>
                 <td style={{ padding: '12px 14px', color: 'var(--muted)' }}>高精度 RANS CFD 二阶正式收敛验证</td>
                 <td style={{ padding: '12px 14px', color: 'var(--faint)' }}>SU2 355万细网格 (受限本地内存，留待 HPC)</td>
-                <td style={{ padding: '12px 14px', color: 'var(--muted)' }}>⏸️ 待超算算力支持</td>
+                <td style={{ padding: '12px 14px' }}>
+                  <span style={{ color: 'var(--muted)' }}>[ 待超算算力支持 / HPC PENDING ]</span>
+                </td>
               </tr>
             </tbody>
           </table>

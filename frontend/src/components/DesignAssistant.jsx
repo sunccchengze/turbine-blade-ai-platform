@@ -23,14 +23,14 @@ export default function DesignAssistant() {
       const pred = data.predictions
       const nCand = data.candidates?.length || 1
       const reply = [
-        `📊 逆设计最优方案：效率 ${pred.Efficiency?.toFixed(4)} · 压比 ${pred.Compression_ratio?.toFixed(4)} · 流量 ${pred.Massflow?.toFixed(2)} kg/s`,
-        nCand > 1 ? `🧩 共 ${nCand} 个候选（详见「生成设计」页）` : null,
-        ...(data.explanation || []).map(e => `💡 ${e}`),
+        `[最优方案] 效率 ${pred.Efficiency?.toFixed(4)} · 压比 ${pred.Compression_ratio?.toFixed(4)} · 流量 ${pred.Massflow?.toFixed(2)} kg/s`,
+        nCand > 1 ? `[候选设计] 共 ${nCand} 个候选（详见「生成设计」页）` : null,
+        ...(data.explanation || []).map(e => `[说明] ${e}`),
       ].filter(Boolean).join('\n')
       setMessages(m => [...m, { role: 'bot', text: reply }])
     } catch (e) {
       const detail = e?.response?.data?.detail
-      setMessages(m => [...m, { role: 'bot', text: `⚠️ ${detail || '请求失败，请稍后重试'}` }])
+      setMessages(m => [...m, { role: 'bot', text: `[错误] ${detail || '请求失败，请稍后重试'}` }])
     } finally {
       setLoading(false)
     }
