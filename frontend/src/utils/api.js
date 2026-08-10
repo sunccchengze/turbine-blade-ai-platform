@@ -1,4 +1,4 @@
-import * as ort from 'onnxruntime-web/wasm'
+import * as ort from 'onnxruntime-web'
 
 // 纯前端数据层：所有公开演示数据和 ONNX 模型随 Cloudflare Pages 静态部署，
 // 不再依赖会冷启动的 FastAPI/SnapDeploy 服务。
