@@ -58,7 +58,6 @@ function buildBladeGeometry(params) {
   const SPAN    = 18
   const PROFILE = 40
 
-  // 提前计算翼型模板和 stride
   const tmpl   = airfoilProfile(camber, thickness, PROFILE)
   const stride = tmpl.length
 
@@ -103,7 +102,6 @@ function buildBladeGeometry(params) {
       const d = c + 1
       indices.push(a, c, b, b, c, d)
     }
-    // 闭合最后一条边
     const a = s * stride + stride - 1
     const b = s * stride
     const c = (s + 1) * stride + stride - 1
@@ -128,81 +126,19 @@ function buildBladeGeometry(params) {
     indices.push(tipCenter, tipBase + p, tipBase + p + 1)
   }
 
-  const geo = new THREE.BufferGeometry()
-  geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3))
-  geo.setAttribute('color',    new THREE.Float32BufferAttribute(colors,    3))
-  geo.setIndex(indices)
-  geo.computeVertexNormals()
-  return geo
-}
+  const geometry = new THREE.BufferGeometry()
+  geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3))
+  geometry.setAttribute('color',    new THREE.Float32BufferAttribute(colors,    3))
+  geometry.setIndex(indices)
+  geometry.computeVertexNormals()
 
-function SpanwiseSlices({ params }) {
-  const isLight = typeof document !== 'undefined' && document.documentElement.dataset.theme === 'light'
-  const sliceGeometries = useMemo(() => {
-    const {
-      omega = 1710, pMean = 109000,
-      pStd  = 34000, rMean = 0.220,
-    } = params
-
-    const omegaN = Math.max(0, Math.min(1, (omega - 1620) / 180))
-    const pMeanN = Math.max(0, Math.min(1, (pMean - 50000)  / 100000))
-    const pStdN  = Math.max(0, Math.min(1, (pStd  - 10000)  / 50000))
-    const rMeanN = Math.max(0, Math.min(1, (rMean - 0.176)  / 0.075))
-
-    const chord      = 0.038 + omegaN * 0.008
-    const camber     = 0.06  + pMeanN * 0.12
-    const thickness  = 0.08  + pStdN  * 0.04
-    const twistRoot  = 55    + omegaN * 15
-    const twistTip   = 25    + omegaN * 8
-    const spanHeight = 0.068 + rMeanN * 0.018
-    const sweep      = omegaN * 0.008
-
-    const SPAN_FRACTIONS = [0.0, 0.25, 0.50, 0.75, 1.0]
-    const lines = []
-
-    SPAN_FRACTIONS.forEach(frac => {
-      const y = 0.176 + frac * spanHeight
-      const twist = (twistRoot + frac * (twistTip - twistRoot)) * (Math.PI / 180)
-      const xOffset = frac * frac * sweep
-      const zOffset = -frac * 0.004
-
-      const profile = airfoilProfile(camber * (1 - frac * 0.3), thickness * (1 - frac * 0.25), 45)
-      const points = []
-
-      profile.forEach(([px, py]) => {
-        const xRot = px * chord * Math.cos(twist) - py * chord * Math.sin(twist)
-        const zRot = px * chord * Math.sin(twist) + py * chord * Math.cos(twist)
-        points.push(new THREE.Vector3(xRot + xOffset, y, zRot + zOffset))
-      })
-      points.push(points[0]) // 闭合截面环线
-
-      const g = new THREE.BufferGeometry().setFromPoints(points)
-      lines.push(g)
-    })
-
-    return lines
-  }, [params])
-
-  return (
-    <group>
-      {sliceGeometries.map((g, i) => (
-        <lineLoop key={i} geometry={g}>
-          <lineBasicMaterial
-            color={isLight ? '#1e675c' : '#e7c85b'}
-            linewidth={1}
-            transparent
-            opacity={isLight ? 0.75 : 0.85}
-          />
-        </lineLoop>
-      ))}
-    </group>
-  )
+  return geometry
 }
 
 function BladeMesh({ params }) {
   const groupRef = useRef()
+  const isLight = typeof document !== 'undefined' && document.documentElement.dataset.theme === 'light'
 
-  // 几何重建 key：量化后的参数。微小变化（<量化步长）不重建几何，拖动滑块时避免卡顿。
   const geometryKey = [
     Math.round((params.omega  || 1710)   / 5),
     Math.round((params.pMean  || 109000) / 1000),
@@ -210,7 +146,8 @@ function BladeMesh({ params }) {
     Math.round((params.tMean  || 349)    / 2),
     Math.round((params.rMean  || 0.220)  * 200),
   ]
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- 依赖是量化后的 key，属有意优化
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const geometry = useMemo(() => buildBladeGeometry(params), geometryKey)
 
   useFrame((state) => {
@@ -225,20 +162,18 @@ function BladeMesh({ params }) {
         <meshPhongMaterial
           vertexColors
           side={THREE.DoubleSide}
-          shininess={70}
-          specular={new THREE.Color(0x6d887b)}
+          shininess={isLight ? 85 : 70}
+          specular={new THREE.Color(isLight ? 0x8ba699 : 0x6d887b)}
         />
       </mesh>
       <mesh geometry={geometry}>
         <meshBasicMaterial
-          color="#49675d"
+          color={isLight ? '#2d7569' : '#49675d'}
           wireframe
           transparent
-          opacity={0.05}
+          opacity={isLight ? 0.08 : 0.05}
         />
       </mesh>
-      {/* 达·芬奇 5 层展向等高翼型剖切线 (Hub to Tip · 老达 1.1) */}
-      <SpanwiseSlices params={params} />
     </group>
   )
 }
@@ -324,11 +259,11 @@ export default function BladeViewer3D({
       <div className="blade-viewer-overlay">
         <div className="blade-viewer-label">NASA Rotor 37 · Blade Geometry</div>
         <div className="blade-viewer-stats">
-          {efficiency    !== null && <div className="blade-stat-chip">η = {efficiency.toFixed(4)}</div>}
-          {pressureRatio !== null && <div className="blade-stat-chip">π = {pressureRatio.toFixed(4)}</div>}
-          {massflow      !== null && <div className="blade-stat-chip">ṁ = {massflow.toFixed(3)}</div>}
+          {efficiency    != null && <span>η = {Number(efficiency).toFixed(4)}</span>}
+          {pressureRatio != null && <span>π = {Number(pressureRatio).toFixed(4)}</span>}
+          {massflow      != null && <span>ṁ = {Number(massflow).toFixed(3)}</span>}
+          <span className="blade-viewer-hint">拖拽旋转 · 滚轮缩放 — drag to rotate · scroll to zoom</span>
         </div>
-        <div className="blade-viewer-hint">拖拽旋转 · 滚轮缩放 — drag to rotate · scroll to zoom</div>
       </div>
     </div>
   )

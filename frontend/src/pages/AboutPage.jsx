@@ -247,14 +247,14 @@ export default function AboutPage() {
                   display: 'grid',
                   gridTemplateColumns: '72px 32px minmax(200px, 0.32fr) 1fr',
                   gap: 18,
-                  alignItems: 'start'
+                  alignItems: 'center'
                 }}
                 className="card-glow"
               >
-                <span className="num" style={{ color: tone, fontSize: 12, fontWeight: 700, paddingTop: 3 }}>
+                <span className="num" style={{ color: tone, fontSize: 12, fontWeight: 700 }}>
                   DAY {day}
                 </span>
-                <div style={{ paddingTop: 2 }}>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
                   <Icon size={18} style={{ color: tone }} />
                 </div>
                 <div style={{ color: 'var(--paper)', fontSize: 14, fontWeight: 700 }}>

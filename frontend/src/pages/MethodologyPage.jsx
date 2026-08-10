@@ -126,7 +126,7 @@ export default function MethodologyPage() {
           <span style={{ color: 'var(--yellow)' }}>SU2 真实物理闭环通路已就绪</span>
         </div>
 
-        {/* 02. 六阶段严密科研流水道 */}
+        {/* 02. 六阶段严密科研流水道 (编号与图标严格垂直居中) */}
         <section style={{ display: 'grid', gap: 14, marginBottom: 28 }}>
           {steps.map(({ num, icon: Icon, title, en, desc, tone }) => (
             <div
@@ -135,25 +135,25 @@ export default function MethodologyPage() {
                 background: 'var(--panel)',
                 border: '1px solid var(--line)',
                 borderRadius: 6,
-                padding: '24px 22px',
+                padding: '22px 24px',
                 display: 'grid',
                 gridTemplateColumns: '40px 32px minmax(180px, 0.32fr) 1fr',
                 gap: 18,
-                alignItems: 'start'
+                alignItems: 'center'
               }}
               className="card-glow"
             >
-              <span className="num" style={{ color: tone, fontSize: 13, fontWeight: 700, paddingTop: 2 }}>
+              <span className="num" style={{ color: tone, fontSize: 13, fontWeight: 700 }}>
                 {num}
               </span>
-              <div style={{ paddingTop: 1 }}>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
                 <Icon size={18} style={{ color: tone }} />
               </div>
               <div>
                 <div style={{ color: 'var(--paper)', fontSize: 15, fontWeight: 700 }}>
                   {title}
                 </div>
-                <div style={{ color: 'var(--faint)', font: '10px var(--mono)', marginTop: 4 }}>
+                <div style={{ color: 'var(--faint)', font: '10px var(--mono)', marginTop: 2 }}>
                   {en}
                 </div>
               </div>

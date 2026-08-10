@@ -225,16 +225,7 @@ export default function ExplorePage() {
       x: result.x_values,
       y: result.y_values,
       z: result.z,
-      type: 'contour',
-      contours: {
-        coloring: 'heatmap',
-        showlines: true,
-        line: {
-          color: 'rgba(255, 255, 255, 0.20)',
-          width: 0.75,
-          smoothing: 1.3
-        }
-      },
+      type: 'heatmap',
       colorscale: [
         [0, '#0d1512'],
         [0.3, '#1f483d'],
