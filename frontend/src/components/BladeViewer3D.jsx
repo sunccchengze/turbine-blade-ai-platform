@@ -256,13 +256,45 @@ export default function BladeViewer3D({
         />
       </Canvas>
 
-      <div className="blade-viewer-overlay">
-        <div className="blade-viewer-label">NASA Rotor 37 · Blade Geometry</div>
-        <div className="blade-viewer-stats">
-          {efficiency    != null && <span>η = {Number(efficiency).toFixed(4)}</span>}
-          {pressureRatio != null && <span>π = {Number(pressureRatio).toFixed(4)}</span>}
-          {massflow      != null && <span>ṁ = {Number(massflow).toFixed(3)}</span>}
-          <span className="blade-viewer-hint">拖拽旋转 · 滚轮缩放 — drag to rotate · scroll to zoom</span>
+      <div style={{
+        position: 'absolute',
+        inset: 0,
+        pointerEvents: 'none',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        padding: '12px 14px'
+      }}>
+        <div style={{
+          fontFamily: 'var(--mono)',
+          fontSize: '10px',
+          fontWeight: 600,
+          color: 'var(--muted)',
+          letterSpacing: '0.08em'
+        }}>
+          NASA ROTOR 37 · 3D BLADE GEOMETRY
+        </div>
+
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: 8,
+          fontSize: '11px',
+          fontFamily: 'var(--mono)'
+        }}>
+          {(efficiency != null || pressureRatio != null || massflow != null) ? (
+            <div style={{ display: 'flex', gap: 10 }}>
+              {efficiency != null && <span style={{ color: 'var(--yellow)', fontWeight: 600 }}>η = {Number(efficiency).toFixed(4)}</span>}
+              {pressureRatio != null && <span style={{ color: 'var(--rust)', fontWeight: 600 }}>π = {Number(pressureRatio).toFixed(4)}</span>}
+              {massflow != null && <span style={{ color: 'var(--teal-bright)', fontWeight: 600 }}>ṁ = {Number(massflow).toFixed(3)}</span>}
+            </div>
+          ) : <div />}
+
+          <span style={{ fontSize: '10px', color: 'var(--faint)' }}>
+            拖拽旋转 · 滚轮缩放
+          </span>
         </div>
       </div>
     </div>
