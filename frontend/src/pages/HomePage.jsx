@@ -13,7 +13,6 @@ import {
   BarChart3,
   Wand2,
   BookOpen,
-  ArrowRight,
   Terminal,
   Activity
 } from 'lucide-react'
@@ -184,17 +183,18 @@ export default function HomePage() {
                 <span>PLAID 基准数据 · 纯前端 WASM 推理 · 100 组 Pareto 候选设计</span>
               </div>
 
-              {/* 核心操作按钮组 */}
-              <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
+              {/* 核心操作按钮组 (具备充裕呼吸空间与精致工科字距) */}
+              <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', alignItems: 'center' }}>
                 <Link to="/predict" className="btn-primary">
                   <Cpu size={15} />
-                  运行代理预测 / Predict
-                  <ArrowRight size={14} />
+                  <span>运行代理预测</span>
+                  <span style={{ fontSize: '11px', fontFamily: 'var(--mono)', opacity: 0.85, fontWeight: 500, marginLeft: 2 }}>Predict</span>
                 </Link>
 
                 <Link to="/explore" className="btn-secondary">
                   <Compass size={15} />
-                  探索数据流场 / Explore
+                  <span>探索数据流场</span>
+                  <span style={{ fontSize: '11px', fontFamily: 'var(--mono)', opacity: 0.75, fontWeight: 500, marginLeft: 2 }}>Explore</span>
                 </Link>
 
                 <Link
@@ -204,7 +204,7 @@ export default function HomePage() {
                     alignItems: 'center',
                     gap: 6,
                     color: 'var(--muted)',
-                    padding: '12px 14px',
+                    padding: '12px 16px',
                     textDecoration: 'none',
                     fontSize: 12,
                     fontFamily: 'var(--mono)'

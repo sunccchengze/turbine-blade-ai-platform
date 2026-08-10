@@ -110,14 +110,13 @@ button, input, select { font: inherit; }
   .card-glow:hover { border-color: var(--line-strong); background: var(--panel-2); transform: translateY(-2px); }
   .gradient-text { color: var(--teal-bright); }
   
-  /* 严格的按钮系统，保证深浅色对比度严格 >= 7:1 与 44px 舒适工科高度 */
+  /* 宽敞透气的按钮系统，具备充足左右内边距，永不挤压文字 */
   .btn-primary {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    height: 44px;
-    padding: 0 22px;
+    gap: 9px;
+    padding: 13px 28px;
     border-radius: 6px;
     background: var(--teal-bright) !important;
     color: #0b0e0d !important;
@@ -127,28 +126,28 @@ button, input, select { font: inherit; }
     line-height: 1;
     letter-spacing: -0.01em;
     border: 1px solid transparent;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
     transition: opacity 0.2s, transform 0.2s, box-shadow 0.2s;
   }
   .btn-primary:hover {
     opacity: 0.92;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(52, 211, 153, 0.2);
+    box-shadow: 0 4px 14px rgba(52, 211, 153, 0.25);
   }
   :root[data-theme='light'] .btn-primary {
     background: #1e675c !important;
     color: #ffffff !important;
   }
   :root[data-theme='light'] .btn-primary:hover {
-    box-shadow: 0 4px 12px rgba(30, 103, 92, 0.25);
+    box-shadow: 0 4px 14px rgba(30, 103, 92, 0.25);
   }
 
   .btn-secondary {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    height: 44px;
-    padding: 0 22px;
+    gap: 9px;
+    padding: 13px 26px;
     border-radius: 6px;
     background: var(--panel) !important;
     color: var(--paper) !important;
