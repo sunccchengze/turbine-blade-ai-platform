@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { Loader2, ArrowUp } from 'lucide-react'
 import Navbar from './components/Navbar'
 import HomePage from './pages/HomePage'
+import AmbientAerodynamicBackground from './components/AmbientAerodynamicBackground'
 
 // ── 路由级代码分割 ──────────────────────────────────────────
 // three.js (Predict) 和 Plotly (Explore/Optimize/UQ) 体积巨大，
@@ -101,6 +102,12 @@ function BackToTop() {
   )
 }
 
+function GlobalBackground() {
+  const location = useLocation()
+  if (location.pathname === '/') return null
+  return <AmbientAerodynamicBackground />
+}
+
 export default function App() {
   const [theme, setTheme] = useState(() => localStorage.getItem('turbine-theme') || 'dark')
 
@@ -123,6 +130,7 @@ export default function App() {
     <BrowserRouter>
       <RouteTitles />
       <ScrollToTop />
+      <GlobalBackground />
       <BackToTop />
       {/* 内容层 */}
       <div style={{ position: 'relative', zIndex: 1 }}>
