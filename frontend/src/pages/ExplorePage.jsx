@@ -342,15 +342,15 @@ export default function ExplorePage() {
           <span style={{ color: 'var(--yellow)' }}>⊙ 靶心圆标为 Rotor 37 基准坐标 (Baseline)</span>
         </div>
 
-        {/* 双栏布局 */}
+        {/* 双栏布局 (严格等高拉伸与底部绝对对齐) */}
         <div style={{
           display: 'grid',
           gridTemplateColumns: isNarrow ? '1fr' : '340px minmax(0, 1fr)',
           gap: 20,
-          alignItems: 'start'
+          alignItems: 'stretch'
         }}>
           
-          {/* 左侧控制面板 */}
+          {/* 左侧控制面板 (100% 高度等高对齐) */}
           <motion.aside
             initial={{ opacity: 0, x: -14 }}
             animate={{ opacity: 1, x: 0 }}
@@ -359,8 +359,10 @@ export default function ExplorePage() {
               border: '1px solid var(--line)',
               borderRadius: 6,
               padding: '24px 20px',
-              position: isNarrow ? 'relative' : 'sticky',
-              top: 88
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              height: '100%'
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
@@ -477,12 +479,18 @@ export default function ExplorePage() {
             </div>
           </motion.aside>
 
-          {/* 右侧响应面与读数 */}
+          {/* 右侧响应面与读数 (100% 高度等高对齐) */}
           <motion.section
             initial={{ opacity: 0, x: 14 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.08 }}
-            style={{ display: 'grid', gap: 18 }}
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              gap: 16,
+              height: '100%'
+            }}
           >
             {/* Plotly 响应面视口 */}
             <div style={{
