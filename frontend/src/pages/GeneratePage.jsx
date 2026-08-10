@@ -8,21 +8,21 @@ import {
   Target
 } from 'lucide-react'
 import BladeViewer3D from '../components/BladeViewer3D'
-import { generateDesign, getBaselineFeatures } from '../utils/api'
+import { generateDesign } from '../utils/api'
 
 const PRESETS = [
-  { label: '高效率型 · High Efficiency', values: { Efficiency: 0.915, Massflow: 19.8, Compression_ratio: 2.02 } },
-  { label: '大通流型 · Max Massflow', values: { Efficiency: 0.885, Massflow: 21.4, Compression_ratio: 2.08 } },
-  { label: '高压比型 · High Pressure', values: { Efficiency: 0.875, Massflow: 20.5, Compression_ratio: 2.18 } },
+  { id: 'eff', label: '高效率型 · High Efficiency', values: { Efficiency: 0.915, Massflow: 19.8, Compression_ratio: 2.02 } },
+  { id: 'flow', label: '大通流型 · Max Massflow', values: { Efficiency: 0.885, Massflow: 21.4, Compression_ratio: 2.08 } },
+  { id: 'press', label: '高压比型 · High Pressure', values: { Efficiency: 0.875, Massflow: 20.5, Compression_ratio: 2.18 } },
 ]
 
 export default function GeneratePage() {
-  const [targets, setTargets] = useState({ Efficiency: 0.895, Massflow: 20.2, Compression_ratio: 2.05 })
+  const [targets, setTargets] = useState({ Efficiency: 0.915, Massflow: 19.8, Compression_ratio: 2.02 })
+  const [activePresetId, setActivePresetId] = useState('eff')
   const [result, setResult] = useState(null)
   const [selectedIdx, setSelectedIdx] = useState(0)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
-  const [_baseline, setBaseline] = useState(null)
   const [isNarrow, setIsNarrow] = useState(() => window.innerWidth < 960)
 
   useEffect(() => {
@@ -31,18 +31,15 @@ export default function GeneratePage() {
     return () => window.removeEventListener('resize', onResize)
   }, [])
 
-  useEffect(() => {
-    getBaselineFeatures().then(setBaseline).catch(() => {})
-  }, [])
-
   // 运行逆向生成与最近邻候选匹配
-  const handleGenerate = async (targetValues = targets) => {
+  const handleGenerate = async (targetValues = targets, presetId = activePresetId) => {
     setLoading(true)
     setError(null)
     try {
       const res = await generateDesign(targetValues, 5)
       setResult(res)
       setSelectedIdx(0)
+      if (presetId) setActivePresetId(presetId)
     } catch (e) {
       setError(e.message || '生成失败，请重试 / Generation failed')
     } finally {
@@ -52,8 +49,20 @@ export default function GeneratePage() {
 
   // 首次进入自动生成一组候选
   useEffect(() => {
-    handleGenerate({ Efficiency: 0.895, Massflow: 20.2, Compression_ratio: 2.05 })
+    handleGenerate({ Efficiency: 0.915, Massflow: 19.8, Compression_ratio: 2.02 }, 'eff')
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleCustomChange = (key, val) => {
+    const newTargets = { ...targets, [key]: val }
+    setTargets(newTargets)
+    // 检查是否与预设匹配
+    const matched = PRESETS.find(p =>
+      p.values.Efficiency === newTargets.Efficiency &&
+      p.values.Massflow === newTargets.Massflow &&
+      p.values.Compression_ratio === newTargets.Compression_ratio
+    )
+    setActivePresetId(matched ? matched.id : null)
+  }
 
   const candidates = result?.candidates || []
   const selectedCandidate = candidates[selectedIdx] || candidates[0]
@@ -169,40 +178,64 @@ export default function GeneratePage() {
                   </span>
                 </div>
                 <span style={{ font: '10px var(--mono)', color: 'var(--teal-bright)', fontWeight: 600 }}>
-                  INVERSE INPUT
+                  {activePresetId ? 'PRESET ACTIVE' : 'CUSTOM INPUT'}
                 </span>
               </div>
 
-              {/* 预设工况快速选择 */}
+              {/* 预设工况快速选择 (具备清晰的选中高亮状态) */}
               <div style={{ marginBottom: 18 }}>
                 <div style={{ color: 'var(--faint)', font: '10px var(--mono)', letterSpacing: '0.08em', marginBottom: 8 }}>
                   预设典型工况 / PRESET PROFILES
                 </div>
                 <div style={{ display: 'grid', gap: 6 }}>
-                  {PRESETS.map(p => (
-                    <button
-                      key={p.label}
-                      onClick={() => {
-                        setTargets(p.values)
-                        handleGenerate(p.values)
-                      }}
-                      style={{
-                        padding: '8px 10px',
-                        background: 'var(--ink)',
-                        border: '1px solid var(--line)',
-                        color: 'var(--muted)',
-                        borderRadius: 4,
-                        cursor: 'pointer',
-                        fontSize: '11px',
-                        textAlign: 'left',
-                        fontFamily: 'var(--body)',
-                        transition: 'all 0.2s'
-                      }}
-                      className="card-glow"
-                    >
-                      {p.label}
-                    </button>
-                  ))}
+                  {PRESETS.map(p => {
+                    const active = activePresetId === p.id
+                    return (
+                      <button
+                        key={p.id}
+                        onClick={() => {
+                          setTargets(p.values)
+                          setActivePresetId(p.id)
+                          handleGenerate(p.values, p.id)
+                        }}
+                        style={{
+                          padding: '9px 12px',
+                          background: active ? 'rgba(52,211,153,0.12)' : 'var(--ink)',
+                          border: `1px solid ${active ? 'var(--teal-bright)' : 'var(--line)'}`,
+                          color: active ? 'var(--paper)' : 'var(--muted)',
+                          borderRadius: 4,
+                          cursor: 'pointer',
+                          fontSize: '12px',
+                          fontWeight: active ? 700 : 500,
+                          textAlign: 'left',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          transition: 'all 0.2s'
+                        }}
+                      >
+                        <span style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+                          <span style={{
+                            width: 6,
+                            height: 6,
+                            borderRadius: '50%',
+                            background: active ? 'var(--teal-bright)' : 'var(--faint)'
+                          }} />
+                          {p.label}
+                        </span>
+                        {active && (
+                          <span style={{
+                            font: '9px var(--mono)',
+                            color: 'var(--teal-bright)',
+                            letterSpacing: '0.08em',
+                            fontWeight: 700
+                          }}>
+                            [ SELECTED ]
+                          </span>
+                        )}
+                      </button>
+                    )
+                  })}
                 </div>
               </div>
 
@@ -221,7 +254,7 @@ export default function GeneratePage() {
                     max={0.93}
                     step={0.001}
                     value={targets.Efficiency}
-                    onChange={e => setTargets({ ...targets, Efficiency: Number(e.target.value) })}
+                    onChange={e => handleCustomChange('Efficiency', Number(e.target.value))}
                     style={{
                       width: '100%',
                       padding: '10px 12px',
@@ -248,7 +281,7 @@ export default function GeneratePage() {
                     max={22.0}
                     step={0.1}
                     value={targets.Massflow}
-                    onChange={e => setTargets({ ...targets, Massflow: Number(e.target.value) })}
+                    onChange={e => handleCustomChange('Massflow', Number(e.target.value))}
                     style={{
                       width: '100%',
                       padding: '10px 12px',
@@ -275,7 +308,7 @@ export default function GeneratePage() {
                     max={2.22}
                     step={0.01}
                     value={targets.Compression_ratio}
-                    onChange={e => setTargets({ ...targets, Compression_ratio: Number(e.target.value) })}
+                    onChange={e => handleCustomChange('Compression_ratio', Number(e.target.value))}
                     style={{
                       width: '100%',
                       padding: '10px 12px',
@@ -293,7 +326,7 @@ export default function GeneratePage() {
 
             <div style={{ marginTop: 20 }}>
               <button
-                onClick={() => handleGenerate()}
+                onClick={() => handleGenerate(targets, activePresetId)}
                 disabled={loading}
                 className="btn-primary"
                 style={{ width: '100%', height: 44 }}
@@ -353,7 +386,7 @@ export default function GeneratePage() {
                       onClick={() => setSelectedIdx(idx)}
                       style={{
                         padding: '10px 8px',
-                        background: active ? 'rgba(52,211,153,0.08)' : 'var(--ink)',
+                        background: active ? 'rgba(52,211,153,0.12)' : 'var(--ink)',
                         border: `1px solid ${active ? 'var(--teal-bright)' : 'var(--line)'}`,
                         borderRadius: 4,
                         cursor: 'pointer',
