@@ -109,20 +109,34 @@ function GlobalBackground() {
 }
 
 export default function App() {
-  const [theme, setTheme] = useState(() => localStorage.getItem('turbine-theme') || 'dark')
+  const [theme, setTheme] = useState(() => {
+    try {
+      const saved = localStorage.getItem('turbine-theme-v2')
+      if (saved === 'light' || saved === 'dark') return saved
+      // 清除旧版本可能残留的 light 键值，确保新打开或默认状态下 100% 为深色模式
+      localStorage.removeItem('turbine-theme')
+      localStorage.setItem('turbine-theme-v2', 'dark')
+      return 'dark'
+    } catch {
+      return 'dark'
+    }
+  })
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme
-    localStorage.setItem('turbine-theme', theme)
+    try {
+      localStorage.setItem('turbine-theme-v2', theme)
+    } catch {}
   }, [theme])
 
   const toggleTheme = () => {
+    const next = theme === 'dark' ? 'light' : 'dark'
     if (typeof document !== 'undefined' && document.startViewTransition) {
       document.startViewTransition(() => {
-        setTheme(value => value === 'dark' ? 'light' : 'dark')
+        setTheme(next)
       })
     } else {
-      setTheme(value => value === 'dark' ? 'light' : 'dark')
+      setTheme(next)
     }
   }
 
