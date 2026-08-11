@@ -1,0 +1,26 @@
+{
+  "name": "agents-specialized-domains",
+  "version": "1.0.0",
+  "description": "Domain-specific expert agents for validation, knowledge-graph, and other specialized tasks",
+  "author": {
+    "name": "BuildWithClaude Community",
+    "url": "https://github.com/davepoon/buildwithclaude"
+  },
+  "repository": "https://github.com/davepoon/buildwithclaude",
+  "license": "MIT",
+  "keywords": [
+    "agents",
+    "subagents",
+    "specialized-domains",
+    "connection-agent",
+    "game-developer",
+    "metadata-agent",
+    "moc-agent",
+    "query-clarifier",
+    "report-generator",
+    "tag-agent",
+    "text-comparison-validator",
+    "url-context-validator",
+    "url-link-extractor"
+  ]
+}

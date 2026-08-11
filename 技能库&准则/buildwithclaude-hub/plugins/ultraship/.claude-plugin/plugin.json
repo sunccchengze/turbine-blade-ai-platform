@@ -1,0 +1,25 @@
+{
+  "name": "ultraship",
+  "version": "2.1.2",
+  "description": "32 expert-level skills for building, shipping, and scaling production software. 29 audit tools (security, code quality, bundle size, SEO/GEO/AEO) close the loop before deploy.",
+  "author": {
+    "name": "Houseofmvps",
+    "url": "https://github.com/Houseofmvps"
+  },
+  "repository": "https://github.com/Houseofmvps/ultraship",
+  "license": "MIT",
+  "keywords": [
+    "code-review",
+    "tdd",
+    "deploy",
+    "frontend-design",
+    "security",
+    "code-quality",
+    "bundle-size",
+    "seo",
+    "geo",
+    "aeo",
+    "competitive-analysis",
+    "architecture"
+  ]
+}

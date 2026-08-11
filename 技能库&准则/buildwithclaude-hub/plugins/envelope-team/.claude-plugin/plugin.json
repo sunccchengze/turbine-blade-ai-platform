@@ -1,0 +1,21 @@
+{
+  "name": "envelope-team",
+  "version": "1.0.0",
+  "description": "Design and generate .envelope.json AI agent team definitions — the open standard for multi-agent teams with hierarchy, access policies, human-in-the-loop gates, and cron schedules. Validates against schema.openenvelope.org.",
+  "author": {
+    "name": "Envelope",
+    "url": "https://github.com/openenvelope"
+  },
+  "homepage": "https://openenvelope.org/claude-code",
+  "repository": "https://github.com/openenvelope/claude-plugin",
+  "license": "Apache-2.0",
+  "keywords": [
+    "claude-code",
+    "ai-agents",
+    "multi-agent",
+    "envelope",
+    "workflow-automation",
+    "open-standard"
+  ],
+  "skills": "./skills/"
+}

@@ -1,0 +1,25 @@
+{
+  "name": "vulnetix",
+  "version": "1.0.0",
+  "description": "Vulnerability intelligence and remediation skills for Claude Code — 7 skills for exploit analysis, fix proposals, scoring, exploits, and package security via the Vulnetix VDB API",
+  "author": {
+    "name": "Vulnetix",
+    "url": "https://github.com/Vulnetix"
+  },
+  "repository": "https://github.com/Vulnetix/claude-code-plugin",
+  "license": "Apache-2.0",
+  "keywords": [
+    "security",
+    "vulnerability",
+    "exploits",
+    "remediation",
+    "cve",
+    "cvss",
+    "epss",
+    "threat",
+    "exploit",
+    "eol",
+    "package-security",
+    "vdb"
+  ]
+}

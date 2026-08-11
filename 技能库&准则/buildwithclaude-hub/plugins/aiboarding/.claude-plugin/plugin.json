@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "aiboarding",
+  "version": "0.2.0",
+  "description": "Onboard AI agents like fresh engineers: generate, inject, and maintain a compressed AIBOARDING.md per repo via committed hooks",
+  "author": {
+    "name": "Gustavo Meilus",
+    "url": "https://github.com/gustavo-meilus"
+  },
+  "homepage": "https://github.com/gustavo-meilus/aiboarding",
+  "repository": "https://github.com/gustavo-meilus/aiboarding",
+  "license": "MIT",
+  "keywords": [
+    "onboarding",
+    "context",
+    "hooks",
+    "documentation",
+    "claude-code",
+    "aiboarding",
+    "agent-context",
+    "session-start"
+  ]
+}

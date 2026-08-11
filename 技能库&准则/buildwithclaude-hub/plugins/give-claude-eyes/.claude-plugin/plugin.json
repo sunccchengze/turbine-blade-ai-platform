@@ -1,0 +1,11 @@
+{
+  "name": "give-claude-eyes",
+  "version": "0.1.0",
+  "description": "Add native video and image understanding to Claude via Qwen Omni API. Analyze videos, classify footage, extract motion data, and more.",
+  "author": {
+    "name": "Kirill Brysenkov"
+  },
+  "repository": "https://github.com/kirillbrsnkv/give-claude-eyes",
+  "license": "MIT",
+  "keywords": ["video", "multimodal", "qwen", "vision", "analysis", "claude"]
+}

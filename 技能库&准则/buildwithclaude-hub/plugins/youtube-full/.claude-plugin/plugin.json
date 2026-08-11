@@ -1,0 +1,12 @@
+{
+  "name": "youtube-full",
+  "version": "1.5.0",
+  "description": "Complete YouTube toolkit for Claude Code — transcripts, video/channel search, playlists, and channel monitoring via TranscriptAPI.",
+  "author": {
+    "name": "TranscriptAPI",
+    "url": "https://github.com/ZeroPointRepo"
+  },
+  "repository": "https://github.com/ZeroPointRepo/youtube-skills",
+  "license": "MIT",
+  "keywords": ["youtube", "transcripts", "video-search", "channel-data", "playlists", "mcp"]
+}

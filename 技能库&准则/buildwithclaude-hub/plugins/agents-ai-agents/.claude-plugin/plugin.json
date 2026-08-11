@@ -1,0 +1,21 @@
+{
+  "name": "agents-ai-agents",
+  "version": "1.0.0",
+  "description": "Agents for multi-agent orchestration, MCP tooling, and agentic workflows",
+  "author": {
+    "name": "BuildWithClaude Community",
+    "url": "https://github.com/davepoon/buildwithclaude"
+  },
+  "repository": "https://github.com/davepoon/buildwithclaude",
+  "license": "MIT",
+  "keywords": [
+    "agents",
+    "subagents",
+    "ai-agents",
+    "agent-expert",
+    "mcp-deployment-orchestrator",
+    "mcp-expert",
+    "mcp-registry-navigator",
+    "project-supervisor-orchestrator"
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "$schema": "https://railway.com/railway.schema.json",
+  "build": {
+    "builder": "DOCKERFILE",
+    "dockerfilePath": "Dockerfile.indexer"
+  },
+  "deploy": {
+    "startCommand": "node scripts/run-indexer.js",
+    "cronSchedule": "0 5 * * *",
+    "restartPolicyType": "NEVER",
+    "overlapSeconds": 0,
+    "drainingSeconds": 0
+  }
+}

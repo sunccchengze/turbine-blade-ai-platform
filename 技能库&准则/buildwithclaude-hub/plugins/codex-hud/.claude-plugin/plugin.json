@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "codex-hud",
+  "description": "Display OpenAI Codex API usage and costs inside Claude Code",
+  "version": "0.10.0",
+  "author": {
+    "name": "Haenara Shin"
+  },
+  "homepage": "https://github.com/haenara-shin/codex-hud",
+  "license": "MIT",
+  "keywords": ["codex", "openai", "usage", "costs", "hud", "claude-code"]
+}
