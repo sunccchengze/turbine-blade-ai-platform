@@ -89,12 +89,30 @@ jobs:
             echo "present=false" >> "$GITHUB_OUTPUT"
           fi
 
+<<<<<<< HEAD
+=======
+      - name: Capture the release plan
+        if: steps.pending-changesets.outputs.present == 'true'
+        run: npx changeset status --output .changeset/release-status.json
+
+>>>>>>> aa6c0e44 (feat(skills): 全量装载 17 大顶尖开源技能库（含 Understand-Anything/scientific-skills/deepsec/galaxy等）并升级SKILL运用指南)
       - name: Version packages
         if: steps.pending-changesets.outputs.present == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: node .github/changeset-version.mjs
 
+<<<<<<< HEAD
+=======
+      - name: Build the Version Packages PR body
+        if: steps.pending-changesets.outputs.present == 'true'
+        run: |
+          trap 'rm -f .changeset/release-status.json' EXIT
+          node .github/changeset-pr-body.mjs \
+            .changeset/release-status.json \
+            "$RUNNER_TEMP/changeset-pr-body.md"
+
+>>>>>>> aa6c0e44 (feat(skills): 全量装载 17 大顶尖开源技能库（含 Understand-Anything/scientific-skills/deepsec/galaxy等）并升级SKILL运用指南)
       # changesets/action fixes its branch name to changeset-release/<base>.
       # Use create-pull-request so the stable Version Packages branch is the
       # shorter `release` name.
@@ -109,10 +127,14 @@ jobs:
           committer: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
           author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
           title: Version Packages
+<<<<<<< HEAD
           body: |
             This pull request applies the pending changesets to package versions,
             changelogs, the lockfile, and computerd image pins. Merge it to publish
             the release.
+=======
+          body-path: ${{ runner.temp }}/changeset-pr-body.md
+>>>>>>> aa6c0e44 (feat(skills): 全量装载 17 大顶尖开源技能库（含 Understand-Anything/scientific-skills/deepsec/galaxy等）并升级SKILL运用指南)
 
       - name: Close the old Version Packages PR
         if: steps.version-pr.outputs.pull-request-number

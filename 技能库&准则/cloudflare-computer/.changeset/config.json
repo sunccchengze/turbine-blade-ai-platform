@@ -2,7 +2,18 @@
   "$schema": "https://unpkg.com/@changesets/config@3.1.1/schema.json",
   "changelog": ["@changesets/changelog-github", { "repo": "cloudflare/computer" }],
   "commit": false,
+<<<<<<< HEAD
   "fixed": [],
+=======
+  "fixed": [
+    [
+      "@cloudflare/computer",
+      "@cloudflare/dofs",
+      "@cloudflare/computer-rpc",
+      "@cloudflare/computerd"
+    ]
+  ],
+>>>>>>> aa6c0e44 (feat(skills): 全量装载 17 大顶尖开源技能库（含 Understand-Anything/scientific-skills/deepsec/galaxy等）并升级SKILL运用指南)
   "linked": [],
   "access": "public",
   "baseBranch": "main",

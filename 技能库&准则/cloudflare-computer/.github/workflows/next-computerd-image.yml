@@ -19,6 +19,10 @@ concurrency:
 permissions:
   contents: read
   packages: write
+<<<<<<< HEAD
+=======
+  pull-requests: write
+>>>>>>> aa6c0e44 (feat(skills): 全量装载 17 大顶尖开源技能库（含 Understand-Anything/scientific-skills/deepsec/galaxy等）并升级SKILL运用指南)
 
 jobs:
   build:
@@ -114,3 +118,49 @@ jobs:
             --tag ghcr.io/cloudflare/computer-computerd-linux-x64:next \
             --file packages/computer-computerd-linux-x64/Dockerfile \
             packages/computer-computerd-linux-x64
+<<<<<<< HEAD
+=======
+
+      - name: Update the release PR with the next image
+        if: steps.release-sha.outputs.current == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          pr_number="$(gh pr list --repo "$GITHUB_REPOSITORY" --state open \
+            --base main --head release --json number \
+            --jq '.[0].number // empty')"
+          if [[ -z "$pr_number" ]]; then
+            echo "No open release pull request found; skipping the image comment"
+            exit 0
+          fi
+
+          body_file="$(mktemp)"
+          cat > "$body_file" <<'EOF'
+          <!-- computerd-next-image -->
+          The `computerd` image for this release candidate is ready. Copy this stage into your Dockerfile:
+
+          ```dockerfile
+          FROM ghcr.io/cloudflare/computer-computerd-linux-x64:next AS computerd
+          ```
+          EOF
+          commit_sha="$(git rev-parse HEAD)"
+          printf '\nBuilt from [`%s`](%s/commit/%s).\n' \
+            "${commit_sha:0:7}" "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" "$commit_sha" \
+            >> "$body_file"
+
+          comment_id="$(gh api --paginate \
+            "repos/$GITHUB_REPOSITORY/issues/$pr_number/comments" \
+            --jq '.[] | select(.user.login == "github-actions[bot]" and (.body | contains("<!-- computerd-next-image -->"))) | .id' \
+            | sed -n '1p')"
+
+          payload="$(jq -n --rawfile body "$body_file" '{ body: $body }')"
+          if [[ -n "$comment_id" ]]; then
+            gh api --method PATCH \
+              "repos/$GITHUB_REPOSITORY/issues/comments/$comment_id" \
+              --input - <<< "$payload"
+          else
+            gh api --method POST \
+              "repos/$GITHUB_REPOSITORY/issues/$pr_number/comments" \
+              --input - <<< "$payload"
+          fi
+>>>>>>> aa6c0e44 (feat(skills): 全量装载 17 大顶尖开源技能库（含 Understand-Anything/scientific-skills/deepsec/galaxy等）并升级SKILL运用指南)

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # SKILL 运用指南（叶轮机械 AI 优化平台 · 全能科研旗舰版）
 
 > 本文件是本仓库「技能库&准则」的统一入口、技能路由表、多 Agent 协作架构与全流程科研质量控制最高准则。
@@ -6,12 +7,25 @@
 > **整理日期**：2026-08-10（UTC）  
 > **适用项目**：AI 赋能的叶轮机械多学科设计优化平台（NASA Rotor 37 / PLAID）  
 > **项目作者**：西安交通大学 · 孙承泽
+=======
+# SKILL 运用指南（叶轮机械与两机 AI 优化平台 · 全球开源大师完全体）
+
+> 本文件是本仓库「技能库&准则」的统一入口、技能路由表和全流程质量控制最高准则。
+>
+> **适用项目**：西安交通大学能动学院 · AI 赋能的叶轮机械多学科设计优化平台（NASA Rotor 37 / PLAID）
+> **负责人**：孙承泽（能动强基 2501 班，燃气轮机与航空发动机“两机”方向）
+> **装载规模**：**58 大领域专业技能库 + 17 大核心规约档案 + 女娲蒸馏 13 大师智囊团**
+>>>>>>> aa6c0e44 (feat(skills): 全量装载 17 大顶尖开源技能库（含 Understand-Anything/scientific-skills/deepsec/galaxy等）并升级SKILL运用指南)
 
 ---
 
 ## 0. 必须遵守的回复声明规范（铁律）
 
+<<<<<<< HEAD
 每次回答用户问题时，开篇第一行必须严格包含以下声明结构，绝无例外：
+=======
+每次回答用户问题时，开篇必须严格包含以下声明结构：
+>>>>>>> aa6c0e44 (feat(skills): 全量装载 17 大顶尖开源技能库（含 Understand-Anything/scientific-skills/deepsec/galaxy等）并升级SKILL运用指南)
 
 ```markdown
 ### 🛠️ 技能调用与执行声明
@@ -21,6 +35,7 @@
 
 ---
 
+<<<<<<< HEAD
 ## 1. 核心装载技能全景矩阵（33 大技能模块库）
 
 | 技能分类 | 核心库/目录 | 主要能力与在本项目中的定位 |
@@ -281,3 +296,91 @@ git pull --ff-only origin arena/019feb03-turbine-blade-ai-platform
 ## 17. 总结与行动总纲
 
 $$\textbf{先想清楚，再写代码；先建证据，再做宣称；外科手术修改，目标驱动闭环！}$$
+=======
+## 1. 核心装载技能全景矩阵 (The 8 Skill Pillars)
+
+| 技能分类 | 核心装载技能库 | 主要能力与在本项目/科研学习中的核心定位 |
+|---|---|---|
+| **一、代码图谱与深度理解 (Knowledge Graphs & Understanding)** | `Understand-Anything/`, `llm-wiki-skill-main/`, `anydoc-main/` | **【核心王牌】代码知识图谱生成**：将庞大复杂的 CFD/优化代码转化为交互式、可提问、可搜索的教学图谱（Graphs that teach > graphs that impress），彻底理解开源代码架构 |
+| **二、科学计算与顶刊学术研究 (Scientific Research & Publishing)** | `scientific-agent-skills/`, `academic-research-skills/`, `nature-skills/`, `claude-scholar/`, `DeepTutor/`, `Research-Paper-Writing-Skills-main/` | 170,000+ 科学家验证的 AI 科研助手：支持从选题、文献检索、数据统计、Nature 规范论文写作、同行评审对练到 ASME/IEEE 顶刊投稿全流程 |
+| **三、学术绘图与图表可视化 (Scientific Figures & Diagrams)** | `scipilot-figure-skill/`, `drawio-skill/`, `guizang-ppt-skill-main/`, `frontend-slides/` | 顶级期刊（Nature/Science）出版级插图生成、Draw.io 架构图/SysML/C4 流程图自动绘制、瑞士国际主义网格（Swiss Grid）16:9 答辩 Deck 引擎 |
+| **四、多模态视觉与视频分析 (Multimodal Vision & Video)** | `Qwen-MM-Plugins/`, `claude-video-vision/`, `claude-video/`, `video-use/`, `gpt-image-2-skill/` | 多模态视频逐帧解析、流体仿真动画关键帧提取、语音转录、视频自动剪辑、31 大场景提示词库与工业绘图七条铁律 |
+| **五、3D 建模与交互工程 (3D Graphics & Spatial Interaction)** | `img2threejs/`, `scroll-world/`, `motionsites-design-system/`, `gsap-skills/` | 图像转 Three.js 程序化 3D 网格、滚动式 3D 沉浸式着陆页、不可压缩势流避障粒子系统、GSAP 物理动力学动效 |
+| **六、现代 UI/UX 与前端组件库 (Design Systems & Web UI)** | `uiverse-galaxy/`, `ui-ux-pro-max/`, `taste-skill/`, `impeccable/`, `awesome-shadcn-ui/`, `awesome-design-md/`, `huashu-design/` | 全球最大开源 UI 库（Galaxy）、109k Stars 顶级设计智能库（161 条行业推理规则）、莫兰迪工科色盘与 1px 发丝线排版标准 |
+| **七、智能体自治与代码安全 (Agentic Harness & Security)** | `deepsec/`, `prime-agent/`, `cloudflare-computer/`, `ai-agent-engineering/`, `self-harness/`, `addyosmani-agent-skills/`, `obra-superpowers/`, `superpowers-main/`, `karpathy-skills/`, `boraoztunc-skills/` | Vercel 代码漏洞安全检测（Deepsec）、自演化 RLM 强化学习智能体（Prime-Agent）、李博杰 Agent Harness 架构、跨 Session 记忆与自愈门禁 |
+| **八、网络互联与测试审查 (Outreach, Review & Testing)** | `open-code-review/`, `ECC/`, `gstack/`, `playwright/`, `agent-browser/`, `browser-use/`, `agent-reach/`, `anysearch-skill/`, `free-domain-service/` | 阿里开源代码审查规则库（OCR）、84 项工程缺陷规约、Playwright E2E 自动化测试、B站/小红书/知乎/X 跨平台连接器 |
+
+---
+
+## 2. 核心明星技能专精深度解析
+
+### 2.1 🌟 【Understand-Anything】—— 代码知识图谱与教学探索器
+- **存放路径**：`技能库&准则/Understand-Anything/`
+- **核心理念**：*“Graphs that teach > graphs that impress.”*（能讲清逻辑的图，远胜过仅仅用来炫技的图）。
+- **在承泽学习中的作用**：
+  1. **解析复杂 CFD 求解器**：将 SU2、OpenFOAM、pymoo、Three.js 的数万行复杂源码一键转换为分层结构知识图谱；
+  2. **交互式节点提问**：点击图谱中的任意类/函数节点，即可展开其物理意义、调用链路与输入输出契约；
+  3. **学习路径可视化**：将从几何生成、前处理网格划分到 Navier-Stokes 求解的每一步骤生成动态因果流图。
+
+### 2.2 🌟 【scientific-agent-skills & nature-skills】—— 顶级科学研究与学术论文全流程
+- **存放路径**：`技能库&准则/scientific-agent-skills/` 与 `技能库&准则/nature-skills/`
+- **核心能力**：
+  1. **Nature 规范排版**：严格执行三线表、发丝线、标准误差棒与配色无障碍（Colorblind-safe）规范；
+  2. **学术写作与去 AI 味**：配合 `Stop-slop.md` 与 `Humanizer - 中文版.md`，输出严谨、精炼、充满第一性原理的学术论文英文；
+  3. **同行评审红蓝对抗**：模拟 ASME Turbo Expo 与 J. Turbomach. 严苛审稿人，对论文逻辑漏洞进行盲审质询。
+
+### 2.3 🌟 【img2threejs & scroll-world】—— 图像转 3D 与空间流体交互
+- **存放路径**：`技能库&准则/img2threejs/` 与 `技能库&准则/scroll-world/`
+- **核心能力**：
+  1. 将 2D 叶片草图与流场切片直接程序化转为 Three.js 参数化几何体；
+  2. 纯代码生成，具备质量门禁与动画准备，内存占用极小。
+
+### 2.4 🌟 【deepsec & open-code-review】—— 工业级漏洞检测与代码门禁
+- **存放路径**：`技能库&准则/deepsec/` 与 `技能库&准则/open-code-review/`
+- **配置文件**：`.opencodereview/rule.json`
+- **核心能力**：自动拦截 `NaN/Inf` 矩阵计算、浮点裸显、内存泄漏与越界风险，确保交付代码 100% 工业级健壮。
+
+---
+
+## 3. 自动专家与技能调度路由表
+
+根据孙承泽在科研与学习中的具体问题属性，助手自动调度对应领域的大师与 SKILL：
+
+1. **涉及代码库理解、图谱拆解、复杂开源架构学习**：
+   - 调度大师：**【李博杰】(Bojie Li)**、**【费曼】(Richard Feynman)**
+   - 挂载 SKILL：`Understand-Anything`, `llm-wiki-skill-main`, `DeepTutor`
+2. **涉及跨音速压气机气动、激波边界层干扰、CFD 算例与守恒格式**：
+   - 调度大师：**【老詹】(Antony Jameson)**、**【老达】(Leonardo da Vinci)**、**【老贝】(Albert Betz)**
+   - 挂载 SKILL：`scientific-agent-skills`, `nature-skills`, `DeepTutor`, `Research-Paper-Writing-Skills-main`
+3. **涉及 NSGA-II 遗传算法、Pareto 前沿演化、多学科优化 MDO**：
+   - 调度大师：**【老高】(David E. Goldberg)**、**【老卡】(Andrej Karpathy)**
+   - 挂载 SKILL：`karpathy-skills`, `prime-agent`, `boraoztunc-skills`, `ECC`
+4. **涉及顶刊论文撰写、学术绘图、Draw.io 架构图与答辩 PPT**：
+   - 调度大师：**【老塔】(Edward Tufte)**、**【老达】(Leonardo da Vinci)**、**【老加】(Garry Tan)**
+   - 挂载 SKILL：`scipilot-figure-skill`, `drawio-skill`, `academic-research-skills`, `guizang-ppt-skill-main`, `Stop-slop.md`
+5. **涉及 3D WebGL 渲染、前端 UI 交互与工程美学**：
+   - 调度大师：**【老乔】(Steve Jobs)**、**【addyosmani】**
+   - 挂载 SKILL：`img2threejs`, `scroll-world`, `uiverse-galaxy`, `ui-ux-pro-max`, `taste-skill`, `impeccable`
+6. **涉及代码漏洞排查、安全审计与逆向防翻车**：
+   - 调度大师：**【老芒】(Charlie Munger)**
+   - 挂载 SKILL：`deepsec`, `open-code-review`, `内阁决策.md`
+
+---
+
+## 4. 页面与图表制作“零 AI 味”核心规范
+
+1. **绝对禁用悬浮卡片堆砌（Anti-SaaS UI Slop）**：严禁使用带浅灰描边和柔和阴影的通用圆角矩形堆叠。一律采用严谨的瑞士国际主义网格系统（Swiss Grid），以纯色底、1px 发丝线和清晰空间分栏排布。
+2. **严禁任何 Emoji 装饰**：专业/科学图表与工科卡片严禁出现 🚀, 🔥, 📊, ⚙️, ✅, ⚠️, ⏸️ 等符号，一律替换为国际通用的章节代号（如 `01 / PREDICT`）或标准物理数学变量。
+3. **双栏底部严格水平对齐**：左侧控制台与右侧读数面板高度必须保持严密对齐。
+4. **最大化数据墨水比（Data-Ink Ratio）**：优先使用标准三线学术表格（Nature/IEEE 规范）、真实散点热力图与离散网格单元，直接标注物理机理与性能变化量。
+
+---
+
+## 5. Windows 同步协议 (Rule 13)
+
+指导用户在 Windows 环境检视或拉取代码时，必须提供单行绝对路径命令：
+
+```bat
+cd /d D:\turbine-blade-ai-platform && git pull origin arena/019feb03-turbine-blade-ai-platform
+```
+>>>>>>> aa6c0e44 (feat(skills): 全量装载 17 大顶尖开源技能库（含 Understand-Anything/scientific-skills/deepsec/galaxy等）并升级SKILL运用指南)
