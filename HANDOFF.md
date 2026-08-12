@@ -2,15 +2,17 @@
 
 > **写给下一会话的 AI Agent（和孙承泽本人）**：读完本文件与 `学习路.md`，你应该能 100% 接手本项目与承泽的长期科研成长辅导，不丢任何上下文、不重复劳动、严格执行苏格拉底式 Deep Tutor 教学。
 >
-> **最后更新**：2026-08-11（Day 43 · v8 终极完全体 · Deep Tutor 长期教学启动）
+> **最后更新**：2026-08-13（Day 44 · Session `019ff6c7` · 在 `019feb03` 终极底座上继续，非 main）
 > **项目线上地址**：`https://turbine-blade-ai-scz.pages.dev/`（Cloudflare Pages 全球 CDN）
 > **关联大创仓库**：`sunccchengze/wind_farm_viz`（风电场偏航优化可视化系统，技能库已 100% 对齐）
+> **当前会话分支**：`arena/019ff6c7-turbine-blade-ai-platform`
+> **继承提交**：`eacef427`（`arena/019feb03-turbine-blade-ai-platform` 的 HANDOFF v8 终极完全体）
 
 ---
 
 ## ‼️ 0.-1 七条铁律（全代 Agent 必须时刻铭记）
 
-1. **推送优先于一切。** 每完成一个可交付单元，立刻 `git add -A` + `git commit` + `git push origin arena/019feb03-turbine-blade-ai-platform`（以当前会话分支为准）。**绝不攒提交**。
+1. **推送优先于一切。** 每完成一个可交付单元，立刻 `git add -A` + `git commit` + `git push origin arena/019ff6c7-turbine-blade-ai-platform`（本 Session 铁律：只推当前会话分支，绝不推 main，也不再回推 `019feb03`）。**绝不攒提交**。
 2. **严禁破坏纯前端 WASM 架构。** 平台已彻底从 SnapDeploy 60~90s 冷启动解脱出来，推断全部跑在浏览器 WASM（`onnxruntime-web/wasm` 13.4 MB CPU SIMD），严禁擅自引入会超 Cloudflare Pages 25 MiB 限制的 WebGPU JSEP 包。
 3. **严格执行零 AI 模板味（Anti-AI Slop）。** 
    - 杜绝通用圆角卡片、粗边框与弥散投影；
@@ -27,7 +29,7 @@
 6. **始终默认深色模式（Dark Mode First）。** `index.html` 根节点锁定 `data-theme="dark"`，LocalStorage 使用 `turbine-theme-v2`，保证首屏零闪烁。
 7. **Windows 同步命令协议（Rule 13）。** 凡指导用户本地操作，一律提供单行绝对路径命令：
    ```bat
-   cd /d D:\turbine-blade-ai-platform && git pull origin arena/019feb03-turbine-blade-ai-platform
+   cd /d D:\turbine-blade-ai-platform && git fetch origin && git checkout arena/019ff6c7-turbine-blade-ai-platform && git pull origin arena/019ff6c7-turbine-blade-ai-platform
    ```
 
 ---
