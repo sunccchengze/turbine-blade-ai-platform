@@ -6,6 +6,7 @@
 > **项目线上地址**：`https://turbine-blade-ai-scz.pages.dev/`（Cloudflare Pages 全球 CDN）
 > **关联大创仓库**：`sunccchengze/wind_farm_viz`（风电场偏航优化可视化系统，技能库已 100% 对齐）
 > **当前会话分支**：`arena/019ff6c7-turbine-blade-ai-platform`
+> **对外名称**：气动代理筛选站（结构/热接入前禁用 MDO）
 > **继承提交**：`eacef427`（`arena/019feb03-turbine-blade-ai-platform` 的 HANDOFF v8 终极完全体）
 
 ---

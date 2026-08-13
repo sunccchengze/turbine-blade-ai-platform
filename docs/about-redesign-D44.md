@@ -1,5 +1,7 @@
 # About 页重构方案（D44）
 
+> **2026-08-13 已落地** `AboutPage.jsx`。学长七条已写入：不叫 MDO、74 维不是设计变量、启发式 UQ、边界正则不是 PINN。首页仍是旧口径。
+
 > 给实现用，不是给郭老师发的文。页面是 `frontend/src/pages/AboutPage.jsx`，导航代号 `07 / 关于`。
 > 读者顺序：郭老师三分钟扫一眼 → 六个月后的自己 → 路人。
 > 视觉继续 D43：Control Room 骨架 + Rotor Editorial 排版。不写独立立项，不写科研成果，不点宋老师。

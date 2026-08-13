@@ -1,331 +1,321 @@
 import { Link } from 'react-router-dom'
-import { motion } from 'framer-motion'
-import {
-  Database,
-  Rocket,
-  ShieldCheck,
-  FlaskConical,
-  Orbit,
-  CircleDot,
-  Terminal,
-} from 'lucide-react'
+import { useEffect } from 'react'
 
-const milestones = [
+const STAGES = [
   {
-    day: '01–08',
-    icon: Database,
-    title: '基准数据与代理模型构建',
-    desc: '从公开 PLAID NASA Rotor 37 数据集提取 1,000 组 CFD 样本与 74 维统计特征，完成 PyTorch 残差代理网络、MC Dropout UQ 与 NSGA-II 算法闭环。',
-    tone: 'var(--teal-bright)'
+    id: '01',
+    era: '1970s–90s',
+    title: '公共考题',
+    body: 'NASA Rotor 37 成为跨音速压气机验 CFD 的基准。对象是压气机转子，不是涡轮。',
+    here: false,
   },
   {
-    day: '09–18',
-    icon: Rocket,
-    title: '全栈交互平台上线',
-    desc: 'FastAPI、React 19、Three.js 3D 叶片渲染、Plotly.js 与 ONNX 运行时组成第一版可用平台，打通多学科设计空间实时联动。',
-    tone: 'var(--teal-bright)'
+    id: '02',
+    era: '2010s',
+    title: '少样本设计',
+    body: '伴随、叶型参数化，再是 Kriging / EGO / 多保真。问的是：少算几次真计算，空间能不能探清。',
+    here: false,
   },
   {
-    day: '19–37',
-    icon: ShieldCheck,
-    title: '证据链分级与口径修正',
-    desc: '修正 R² 与 Pareto 口径，区分“代理预测”与“CFD 事实”，引入多 Agent 独立红蓝对抗机制，补齐方法论与答辩防守体系。',
-    tone: 'var(--yellow)'
+    id: '03',
+    era: '本站',
+    title: '标量代理筛选',
+    body: '1000 组公开 CFD → 74 维统计特征 → 三个气动标量 → 离线 NSGA-II。能筛，还不能造叶子。',
+    here: true,
   },
   {
-    day: '39–41',
-    icon: FlaskConical,
-    title: '真实点云与表面网格拓扑审计',
-    desc: '接入真实点云 (1000×2048×9)，完成 0 非流形边拓扑审计、Ball Pivoting / Poisson 表面保真对照，确认原始叶片几何流道无畸变。',
-    tone: 'var(--teal-bright)'
-  },
-  {
-    day: '42–43',
-    icon: Orbit,
-    title: 'SU2 真实物理闭环与纯前端 WASM 改造',
-    desc: '跑通 SU2 coarse 网格 10 阶段流动性能趋势提取（E3 级），公开演示全量改造为浏览器 ONNX Runtime Web (WASM) 纯前端极速架构，践行 D43 瑞士工科设计系统。',
-    tone: 'var(--rust)'
+    id: '04',
+    era: '2024–26',
+    title: '场与加点',
+    body: '神经算子先报场再报性能；主动学习用有限次高保真改可制造几何。这是下一步，不是现状。',
+    here: false,
   },
 ]
 
+const WORKSPACES = [
+  { n: '00', to: '/', name: '总览', note: '证据分档。E2 / E3 写在脸上。' },
+  { n: '01', to: '/predict', name: '预测', note: '74 维滑块 → π, η, ṁ。本地推断。' },
+  { n: '02', to: '/explore', name: '探索', note: '两维切片。代理只在训练分布里插值。' },
+  { n: '03', to: '/optimize', name: '优化', note: '特征空间里的非支配候选，不是可制造叶片。' },
+  { n: '04', to: '/uq', name: '不确定度', note: '启发式区间。η 覆盖率约 65%，不是校准 95%。' },
+  { n: '05', to: '/generate', name: '生成', note: '库内近邻检索，不是新叶型。' },
+  { n: '06', to: '/methodology', name: '方法', note: '数据怎么切、损失怎么写、粗网格为什么停。' },
+]
+
+const NUMBERS = [
+  { v: '0.9844 / 0.9561 / 0.9827', k: '留出集 R²  π / η / ṁ', s: 'n=100, seed=42，训练未见。工程开发划分，不是跨几何族泛化证明。' },
+  { v: '0.9173', k: '代理最高效率', s: '相对训练均值约 +5.4%。未用收敛 RANS 核。' },
+  { v: '65%', k: 'η 区间覆盖率', s: 'MC Dropout 启发式带。系统说 95% 时并没有盖住 95%。' },
+  { v: '−3.39', k: '粗网格残差平台', s: '14 万单元、一阶迎风。E3 趋势，不是细网格闭环。' },
+]
+
+const REDLINES = [
+  '三个输出都是气动性能。结构、热、振动、寿命、制造约束都还没接。所以不叫多学科设计优化。',
+  '74 维是从流场抽出来的统计量，不是 CST / FFD 那种能进求解器的设计变量。NSGA-II 找到的是特征空间里的向量。',
+  '100 个点叫代理候选，不叫可制造的 Pareto 最优叶片。',
+  '输出上下界（η、π、流量非负）是物理引导的边界正则，不是 PINN，也不是 N-S 残差。',
+]
+
+const LOG = [
+  { d: '01–08', t: '数据与标量网络', b: 'PLAID 1000×74。残差网。MC Dropout。NSGA-II。' },
+  { d: '09–18', t: '能在浏览器里跑', b: '走过容器冷启动，再改到 Cloudflare Pages + WASM。' },
+  { d: '19–37', t: '口径收回来', b: 'R²、Pareto 按可复现脚本对齐。代理和 CFD 分开写。' },
+  { d: '39–43', t: '几何审计与粗网格', b: '点云拓扑。SU2 粗网格停在 −3.39。细网格内存不够。' },
+]
+
+function Label({ children }) {
+  return (
+    <div style={{
+      color: 'var(--yellow)',
+      font: '10px var(--mono)',
+      letterSpacing: '0.12em',
+      marginBottom: 12,
+    }}>
+      {children}
+    </div>
+  )
+}
+
 export default function AboutPage() {
+  useEffect(() => { window.scrollTo(0, 0) }, [])
+
   return (
     <main style={{ minHeight: '100vh', background: 'transparent', padding: '56px 28px 88px' }}>
       <div style={{ maxWidth: 1240, margin: '0 auto' }}>
-        
-        {/* 01. 页面头部 (严格 28px 左对齐) */}
-        <motion.header
-          initial={{ opacity: 0, y: 14 }}
-          animate={{ opacity: 1, y: 0 }}
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'flex-end',
-            gap: 28,
-            flexWrap: 'wrap',
-            marginBottom: 28,
-            paddingBottom: 18,
-            borderBottom: '1px solid var(--line)'
-          }}
-        >
-          <div>
-            <div style={{ color: 'var(--yellow)', font: '10px var(--mono)', letterSpacing: '0.14em' }}>
-              07 / 关于项目 · ABOUT THE RESEARCH PLATFORM
-            </div>
-            <h1 style={{
-              color: 'var(--paper)',
-              font: '700 clamp(32px, 4.5vw, 54px)/1.1 var(--display)',
-              letterSpacing: '-0.045em',
-              marginTop: 12
-            }}>
-              独立科研与完整工程记录<br />
-              <span style={{ color: 'var(--teal-bright)' }}>Built Independently from Problem to Code</span>
-            </h1>
+
+        <header style={{
+          paddingBottom: 22,
+          marginBottom: 8,
+          borderBottom: '1px solid var(--line)',
+        }}>
+          <div style={{ color: 'var(--yellow)', font: '10px var(--mono)', letterSpacing: '0.14em' }}>
+            07 / 关于 · ABOUT
           </div>
-          <p style={{ maxWidth: 420, color: 'var(--muted)', fontSize: 13, lineHeight: 1.8 }}>
-            西安交通大学 · 孙承泽（本科二年级）独立立项研发。从一个工业命题开始，最终演化为数据、模型、3D 视口、纯前端 WASM 推理与物理闭环的完整科研生态。
+          <h1 style={{
+            color: 'var(--paper)',
+            font: '700 clamp(28px, 4vw, 44px)/1.12 var(--display)',
+            letterSpacing: '-0.04em',
+            marginTop: 12,
+          }}>
+            气动代理筛选站
+            <span style={{
+              display: 'block',
+              marginTop: 10,
+              color: 'var(--muted)',
+              font: '500 16px/1.5 var(--body)',
+              letterSpacing: 0,
+            }}>
+              Aerodynamic surrogate screening, not a closed MDO loop
+            </span>
+          </h1>
+          <p style={{ maxWidth: 640, color: 'var(--muted)', fontSize: 14, lineHeight: 1.85, marginTop: 16 }}>
+            孙承泽 · 交大能动强基 2501。暑假小尝试。载体是 NASA Rotor 37 压气机公开 CFD，不是涡轮，也还不是多学科。代理筛路，物理没定音。
           </p>
-        </motion.header>
-
-        {/* 顶部系统遥测条 (无框工科 Token) */}
-        <div style={{
-          display: 'flex',
-          gap: 16,
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          fontSize: '11px',
-          fontFamily: 'var(--mono)',
-          color: 'var(--muted)',
-          marginBottom: 24
-        }}>
-          <span style={{ color: 'var(--teal-bright)', display: 'inline-flex', alignItems: 'center', gap: 6, fontWeight: 600 }}>
-            <CircleDot size={8} className="spin" style={{ animationDuration: '4s' }} />
-            RESEARCH RECORD · D43 STAGE
-          </span>
-          <span style={{ color: 'var(--line-strong)' }}>|</span>
-          <span>作者：孙承泽 (本科二年级)</span>
-          <span style={{ color: 'var(--line-strong)' }}>|</span>
-          <span>技术载体：NASA Rotor 37 压气机</span>
-          <span style={{ color: 'var(--line-strong)' }}>|</span>
-          <span style={{ color: 'var(--yellow)' }}>开源透明 · 全套可复现</span>
-        </div>
-
-        {/* 02. 项目缘起与核心数据概览 (严格水平对齐 2 列) */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'minmax(0, 1.2fr) minmax(320px, 0.8fr)',
-          gap: 20,
-          alignItems: 'stretch',
-          marginBottom: 32
-        }}>
-          {/* 左侧：项目缘起 */}
           <div style={{
-            background: 'var(--panel)',
-            border: '1px solid var(--line)',
-            borderRadius: 6,
-            padding: '28px 26px',
+            marginTop: 16,
             display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between'
+            flexWrap: 'wrap',
+            gap: '8px 18px',
+            color: 'var(--faint)',
+            font: '11px var(--mono)',
           }}>
-            <div>
-              <div style={{ color: 'var(--yellow)', font: '10px var(--mono)', letterSpacing: '0.12em', marginBottom: 14 }}>
-                ORIGIN / 项目缘起与技术背景
-              </div>
-              <h2 style={{
-                color: 'var(--paper)',
-                font: '700 24px/1.25 var(--display)',
-                letterSpacing: '-0.03em',
-                marginBottom: 16
-              }}>
-                KIT 的新闻是起点，<br />
-                <span style={{ color: 'var(--teal-bright)' }}>NASA Rotor 37 是可复现的验证载体</span>
-              </h2>
-              <p style={{ color: 'var(--muted)', fontSize: 13, lineHeight: 1.85, marginBottom: 14 }}>
-                2026 年 2 月，卡尔斯鲁厄理工学院 (KIT) 发布无压气机燃气轮机连续运行 303 秒测试成果，打破了 NASA 保持 25 年的 250 秒世界纪录。这个事件引发了对叶轮机械设计极限与更广阔气动构型空间的探索兴趣。
-              </p>
-              <p style={{ color: 'var(--faint)', fontSize: 12, lineHeight: 1.8 }}>
-                为确保研究结论的完全可审查与第三方复现，本项目选取公开的 NASA Rotor 37 跨音速压气机转子作为研究载体，坚守工科诚实原则，明确区分涡轮新闻引子与当前压气机实验对象。
-              </p>
-            </div>
-
-            <div style={{
-              marginTop: 20,
-              paddingTop: 14,
-              borderTop: '1px solid var(--line)',
-              fontFamily: 'var(--mono)',
-              fontSize: '11px',
-              color: 'var(--teal-bright)'
-            }}>
-              独立立项 · 严守学术诚信 · 第一性原理
-            </div>
+            <span style={{ color: 'var(--teal-bright)' }}>LOCAL WASM</span>
+            <span>Rotor 37 / PLAID</span>
+            <span>证据停在 E2</span>
+            <span style={{ color: 'var(--yellow)' }}>下一步：校准加点</span>
           </div>
+        </header>
 
-          {/* 右侧：核心数字看板 */}
-          <div style={{
-            background: 'var(--panel)',
-            border: '1px solid var(--line)',
-            borderRadius: 6,
-            padding: '28px 24px',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between'
-          }}>
+        <section style={{ padding: '36px 0 8px' }}>
+          <Label>WHERE THIS SITS / 我停在哪</Label>
+          <p style={{ color: 'var(--faint)', fontSize: 13, lineHeight: 1.7, marginBottom: 18, maxWidth: 720 }}>
+            这一页先回答位置，再谈自己做了什么。第三档是本站。第四档是要往上走的地方。
+          </p>
+          {STAGES.map((row) => (
+            <div
+              key={row.id}
+              className="about-stage"
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '44px 92px minmax(96px, 0.26fr) 1fr',
+                gap: 16,
+                alignItems: 'baseline',
+                padding: '14px 0 14px 12px',
+                borderTop: '1px solid var(--line)',
+                borderLeft: row.here ? '2px solid var(--yellow)' : '2px solid transparent',
+              }}
+            >
+              <span className="num" style={{ color: row.here ? 'var(--yellow)' : 'var(--faint)', fontSize: 12 }}>{row.id}</span>
+              <span className="num" style={{ color: 'var(--faint)', fontSize: 11 }}>{row.era}</span>
+              <span style={{ color: 'var(--paper)', fontSize: 14, fontWeight: 650 }}>
+                {row.title}
+                {row.here && (
+                  <span style={{ marginLeft: 8, color: 'var(--yellow)', font: '10px var(--mono)' }}>HERE</span>
+                )}
+              </span>
+              <span style={{ color: 'var(--muted)', fontSize: 13, lineHeight: 1.7 }}>{row.body}</span>
+            </div>
+          ))}
+          <div style={{ borderTop: '1px solid var(--line)' }} />
+          <p style={{ color: 'var(--faint)', fontSize: 12, lineHeight: 1.85, marginTop: 16, maxWidth: 780 }}>
+            02 这一档里，多保真该不该掺低保真、下一个真样本落在哪，是郭振东老师公开工作里反复问的问题。
+            04 里，同一转子上已经有先报场再报性能的算子。本站没有场，也没有加点闭环。所以它是筛选器，不是设计器。
+          </p>
+        </section>
+
+        <section style={{ padding: '32px 0 8px' }}>
+          <div
+            className="about-split"
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'minmax(0, 1.15fr) minmax(280px, 0.85fr)',
+              gap: 32,
+              alignItems: 'start',
+            }}
+          >
             <div>
-              <div style={{ color: 'var(--faint)', font: '10px var(--mono)', letterSpacing: '0.12em', marginBottom: 16 }}>
-                AT A GLANCE / 核心数字看板
-              </div>
-              <div style={{ display: 'grid', gap: 16 }}>
-                {[
-                  ['1,000', '公开 CFD 样本库', 'var(--teal-bright)', 'PLAID Rotor 37 全流道数据'],
-                  ['74', '输入特征维度', 'var(--yellow)', '前缘/压力面/吸力面统计特征'],
-                  ['523k', '生产模型参数量', 'var(--paper)', '2.01 MB 单文件 ONNX WASM'],
-                  ['0.23 ms', '单次推理延迟', 'var(--rust)', '~100,000× 相比 3D CFD 加速比']
-                ].map(([num, label, color, note]) => (
-                  <div key={label} style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'baseline',
-                    borderBottom: '1px solid var(--line)',
-                    paddingBottom: 8
-                  }}>
-                    <div>
-                      <div style={{ color: 'var(--paper)', fontSize: 13, fontWeight: 600 }}>{label}</div>
-                      <div style={{ color: 'var(--faint)', font: '9px var(--mono)' }}>{note}</div>
-                    </div>
-                    <span className="num" style={{ color, fontSize: 20, fontWeight: 700 }}>
-                      {num}
-                    </span>
-                  </div>
-                ))}
-              </div>
+              <Label>WHAT IT IS / 这个站</Label>
+              {WORKSPACES.map((w) => (
+                <Link
+                  key={w.n}
+                  to={w.to}
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: '36px 64px 1fr',
+                    gap: 12,
+                    padding: '10px 0',
+                    borderTop: '1px solid var(--line)',
+                    textDecoration: 'none',
+                  }}
+                >
+                  <span className="num" style={{ color: 'var(--faint)', fontSize: 11 }}>{w.n}</span>
+                  <span style={{ color: 'var(--paper)', fontSize: 13, fontWeight: 650 }}>{w.name}</span>
+                  <span style={{ color: 'var(--muted)', fontSize: 13 }}>{w.note}</span>
+                </Link>
+              ))}
+              <div style={{ borderTop: '1px solid var(--line)' }} />
             </div>
-
-            <div style={{
-              marginTop: 20,
-              paddingTop: 14,
-              borderTop: '1px solid var(--line)',
-              fontFamily: 'var(--mono)',
-              fontSize: '11px',
-              color: 'var(--faint)'
-            }}>
-              全套数据与模型均可在浏览器本地完整复现
-            </div>
-          </div>
-        </div>
-
-        {/* 03. 技术旅程时间线 (43 天科研演化史) */}
-        <section style={{ marginBottom: 32 }}>
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: 16
-          }}>
             <div>
-              <div style={{ color: 'var(--yellow)', font: '10px var(--mono)', letterSpacing: '0.12em' }}>
-                TECHNOLOGY JOURNEY / 43 天研发演化历程
-              </div>
-              <div style={{ color: 'var(--paper)', fontSize: 16, fontWeight: 700, marginTop: 2 }}>
-                从 Day 01 到 D43 的完整科研攻坚轨迹
-              </div>
-            </div>
-            <span style={{ font: '10px var(--mono)', color: 'var(--faint)' }}>
-              5 大关键技术里程碑
-            </span>
-          </div>
-
-          <div style={{ display: 'grid', gap: 12 }}>
-            {milestones.map(({ day, icon: Icon, title, desc, tone }) => (
-              <div
-                key={day}
-                style={{
-                  background: 'var(--panel)',
-                  border: '1px solid var(--line)',
-                  borderRadius: 6,
-                  padding: '22px 24px',
-                  display: 'grid',
-                  gridTemplateColumns: '72px 32px minmax(200px, 0.32fr) 1fr',
-                  gap: 18,
-                  alignItems: 'center'
-                }}
-                className="card-glow"
-              >
-                <span className="num" style={{ color: tone, fontSize: 12, fontWeight: 700 }}>
-                  DAY {day}
-                </span>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <Icon size={18} style={{ color: tone }} />
+              <Label>NUMBERS / 口径</Label>
+              {NUMBERS.map((n) => (
+                <div key={n.k} style={{ padding: '12px 0', borderTop: '1px solid var(--line)' }}>
+                  <div className="num" style={{ color: 'var(--paper)', fontSize: 18, fontWeight: 600 }}>{n.v}</div>
+                  <div style={{ color: 'var(--paper)', fontSize: 12, marginTop: 4 }}>{n.k}</div>
+                  <div style={{ color: 'var(--faint)', fontSize: 12, lineHeight: 1.65, marginTop: 4 }}>{n.s}</div>
                 </div>
-                <div style={{ color: 'var(--paper)', fontSize: 14, fontWeight: 700 }}>
-                  {title}
-                </div>
-                <p style={{ color: 'var(--muted)', fontSize: 12, lineHeight: 1.8 }}>
-                  {desc}
-                </p>
-              </div>
-            ))}
+              ))}
+              <div style={{ borderTop: '1px solid var(--line)' }} />
+            </div>
           </div>
         </section>
 
-        {/* 04. 终端复现与操作指令 */}
-        <section style={{
-          background: 'var(--panel)',
-          border: '1px solid var(--line)',
-          borderRadius: 6,
-          padding: '24px 26px',
-          marginBottom: 32
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
-            <Terminal size={16} style={{ color: 'var(--yellow)' }} />
-            <span style={{ font: '11px var(--mono)', color: 'var(--paper)', fontWeight: 700 }}>
-              REPRODUCIBLE TERMINAL COMMANDS / 本地一键复现指令
-            </span>
-          </div>
+        <section style={{ padding: '32px 0 8px' }}>
+          <Label>DO NOT CLAIM / 不能写成</Label>
+          {REDLINES.map((t, i) => (
+            <div
+              key={t}
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '36px 1fr',
+                gap: 12,
+                padding: '14px 0',
+                borderTop: '1px solid var(--line)',
+                borderBottom: i === REDLINES.length - 1 ? '1px solid var(--line)' : 'none',
+              }}
+            >
+              <span className="num" style={{ color: 'var(--yellow)', fontSize: 12 }}>0{i + 1}</span>
+              <span style={{ color: 'var(--muted)', fontSize: 14, lineHeight: 1.75 }}>{t}</span>
+            </div>
+          ))}
+        </section>
 
-          <div style={{
-            background: 'var(--ink)',
+        <section style={{ padding: '32px 0 8px' }}>
+          <Label>NEXT / 下一件事</Label>
+          <h2 style={{
+            color: 'var(--paper)',
+            font: '650 22px/1.3 var(--display)',
+            letterSpacing: '-0.02em',
+            marginBottom: 10,
+          }}>
+            把 65% 覆盖率当成加点传感器
+          </h2>
+          <p style={{ color: 'var(--muted)', fontSize: 14, lineHeight: 1.85, maxWidth: 740 }}>
+            几何改成 CST 或 FFD，让优化器搜可实现参数，而不是任意搜派生统计量。
+            不确定度改成集成加保形校准：系统说 90%，真值大约就要有 90% 落在区间里。
+            再用几十次收敛 RANS 核基准、近邻对照、若干候选和一两个高不确定反例。
+            场预报跟已有算子学，不另起一套。最优候选被 RANS 否决，也算结果。
+          </p>
+          <div style={{ marginTop: 16, display: 'flex', gap: 20, flexWrap: 'wrap', fontSize: 13 }}>
+            <Link to="/uq" style={{ color: 'var(--yellow)', textDecoration: 'none' }}>看不确定度页 →</Link>
+            <Link to="/methodology" style={{ color: 'var(--muted)', textDecoration: 'none' }}>看方法页 →</Link>
+            <Link to="/optimize" style={{ color: 'var(--muted)', textDecoration: 'none' }}>看代理候选 →</Link>
+          </div>
+        </section>
+
+        <section style={{ padding: '32px 0 8px' }}>
+          <Label>LOG / 工程日志</Label>
+          {LOG.map((r) => (
+            <div
+              key={r.d}
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '72px minmax(120px, 0.28fr) 1fr',
+                gap: 14,
+                padding: '10px 0',
+                borderTop: '1px solid var(--line)',
+              }}
+            >
+              <span className="num" style={{ color: 'var(--faint)', fontSize: 11 }}>DAY {r.d}</span>
+              <span style={{ color: 'var(--paper)', fontSize: 13 }}>{r.t}</span>
+              <span style={{ color: 'var(--muted)', fontSize: 13 }}>{r.b}</span>
+            </div>
+          ))}
+          <div style={{ borderTop: '1px solid var(--line)' }} />
+        </section>
+
+        <section style={{ padding: '32px 0 8px' }}>
+          <Label>REPRODUCE</Label>
+          <pre style={{
+            margin: 0,
+            padding: '16px 18px',
+            background: 'var(--ink-2)',
             border: '1px solid var(--line)',
-            borderRadius: 4,
-            padding: '14px 18px',
-            fontFamily: 'var(--mono)',
-            fontSize: '12px',
             color: 'var(--teal-bright)',
-            lineHeight: 1.8,
-            overflowX: 'auto'
+            font: '12px/1.8 var(--mono)',
+            overflowX: 'auto',
           }}>
-            <code>
-              # 1. 克隆代码仓库并同步当前会话分支<br />
-              git clone -b arena/019feb03-turbine-blade-ai-platform https://github.com/sunccchengze/turbine-blade-ai-platform.git<br />
-              cd turbine-blade-ai-platform<br /><br />
-              # 2. 运行模型与静态数据资产一致性体检<br />
-              python3 scripts/sync_model_assets.py<br /><br />
-              # 3. 启动前端纯本地 WASM 推理服务<br />
-              cd frontend && npm install && npm run dev
-            </code>
-          </div>
+{`git clone -b arena/019ff6c7-turbine-blade-ai-platform \\
+  https://github.com/sunccchengze/turbine-blade-ai-platform.git
+cd turbine-blade-ai-platform/frontend && npm install && npm run dev`}
+          </pre>
+          <p style={{ color: 'var(--faint)', fontSize: 12, marginTop: 10 }}>
+            打开即本地 WASM，不必起后端。数字应能对上 README 复现脚本，对不上就以脚本为准。
+          </p>
         </section>
 
-        {/* 05. 底部作者致谢 */}
-        <div style={{
+        <footer style={{
+          marginTop: 28,
+          paddingTop: 18,
+          borderTop: '1px solid var(--line)',
           display: 'flex',
           justifyContent: 'space-between',
-          alignItems: 'center',
-          paddingTop: 20,
-          borderTop: '1px solid var(--line)',
-          fontSize: '12px',
-          fontFamily: 'var(--mono)',
-          color: 'var(--faint)',
+          gap: 12,
           flexWrap: 'wrap',
-          gap: 12
+          font: '12px var(--mono)',
+          color: 'var(--faint)',
         }}>
-          <span>西安交通大学 · 能源与动力工程学院 · 孙承泽</span>
-          <Link to="/" style={{ color: 'var(--teal-bright)', textDecoration: 'none' }}>
-            返回首页 Overview →
-          </Link>
-        </div>
-
+          <span>西安交通大学 · 能源与动力工程学院 · 能动强基 2501 · 孙承泽</span>
+          <Link to="/" style={{ color: 'var(--yellow)', textDecoration: 'none' }}>返回总览 →</Link>
+        </footer>
       </div>
+
+      <style>{`
+        @media (max-width: 800px) {
+          .about-stage { grid-template-columns: 36px 1fr !important; }
+          .about-stage span:nth-child(2) { display: none; }
+          .about-split { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
     </main>
   )
 }
