@@ -22,6 +22,13 @@ Command failures, integration errors, and critical precedent rollbacks.
 
 ---
 
+## [ERR-20260813-02] 教材第一章用未定义名词开讲，不能自学 (Critical)
+- **Severity**: critical
+- **Context**: 教材 U01 旧版「红线与证据等级」
+- **Error Description**: 一上来甩代理、ONNX、留出集、R²、SU2（被听成 SUR）、relrms、RANS、null、细网格多点，且练习考本章没教的 PINN/TNO。
+- **Root Cause**: 把「郭老师会先问证据档」做成第一章，违反先认机器；未执行先认词。
+- **Resolution / Prevention**: changelog A3；目录机器先行、证据档 U11；每章先认词；练习不超纲。
+
 ## [ERR-20260813-01] 把深入浅出做成儿童故事，深度被抽空 (Critical)
 - **Severity**: critical
 - **Context**: teach-back Q4（MC Dropout / 覆盖率 / 保形）

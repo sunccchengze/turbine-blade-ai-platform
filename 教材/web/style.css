@@ -240,6 +240,14 @@ kbd {
 .hub-card:hover { border-color: var(--color-primary); }
 .hub-card h3 { margin: 0 0 6px; font-size: 16px; }
 .hub-card p { margin: 0; font-size: 13px; color: var(--color-text-muted); }
+img.fig {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 18px 0;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-1);
+}
 .katex { font-size: 1.08em; }
 .katex-display, .tex-display {
   display: block;

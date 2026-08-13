@@ -4,6 +4,19 @@ Q5 + 送信后的口答。本单元是全书收口。
 
 ---
 
+先认词（本章新出现的）：
+
+| 中文 | 英文 | 一句操作定义 |
+|---|---|---|
+| MDO | Multidisciplinary Design Optimization | 多个学科的模型耦合进同一个优化问题。本项目只有气动标量，故不称 MDO |
+| Level 2 三块铁证 | three iron proofs | ①CST/FFD ②Top-k 收敛 RANS 与排名对比 ③一次主动学习或 abstain |
+| TNO | 2025 CJA | 郭老师线：Rotor 37 子午面先报 T,p,ρ 再报性能。你没有做 TNO |
+| 加点 | infill | 用不确定度/覆盖率决定下一次贵 CFD 算哪 |
+| Haftka | Haftka | 2018 SMO 多保真选数据集的合作者。信里可写，不点宋老师 |
+
+仓库指认：`docs/暑期总结-致郭振东-发送正文.txt`；`docs/郭老师发送包.md` 第 5 节十问。
+
+
 ## 12.1 为什么现在不能叫 MDO
 
 **MDO**（Multidisciplinary Design Optimization）：多个学科的模型耦合进同一个优化问题。气动 + 结构 + 热 + …  

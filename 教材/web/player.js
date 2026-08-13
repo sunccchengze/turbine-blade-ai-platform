@@ -153,6 +153,8 @@
       keep("<pre><code>" + esc(code.trim()) + "</code></pre>"));
     result = result.replace(/`([^`\n]+?)`/g, (_, code) =>
       keep("<code>" + esc(code) + "</code>"));
+    result = result.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_, alt, src) =>
+      keep("<img alt=\"" + esc(alt) + "\" src=\"" + src + "\" class=\"fig\"/>"));
 
     const extracted = extractAndRenderTex(result);
     result = extracted.text;

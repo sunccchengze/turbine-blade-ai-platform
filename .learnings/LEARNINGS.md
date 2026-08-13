@@ -66,6 +66,18 @@ Corrections, insights, and knowledge gaps captured during development.
 
 ---
 
+## [LRN-20260813-03] 教材必须先认机器，证据档后置；练习不超纲
+- **Logged**: 2026-08-13
+- **Priority**: critical
+- **Status**: verified
+- **Category**: correction
+- **Trigger**: user_rule（第一章读不懂；要求全部重塑）
+- **Correct Approach**:
+  1. 高数可当桥；马赫/等熵/RANS/神经网/代理/ONNX 从零定义；
+  2. 目录：U01 机器与三个数 … U11 证据档 … U12 郭老师线；
+  3. 每章先认词 + 仓库指认；本章题不得出现本章没讲的专名；
+  4. 日历服从深度；验收=十问+能指仓库。
+
 ## [LRN-20260813-02] 教材练习必须 选择:填空:问答 = 2:2:6
 - **Logged**: 2026-08-13
 - **Priority**: high

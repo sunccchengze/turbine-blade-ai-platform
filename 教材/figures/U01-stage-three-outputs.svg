@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 280" width="720" height="280" role="img" aria-label="轴流级示意：上游来流、转子做功、三个气动输出">
+  <rect width="720" height="280" fill="#F4F3EE"/>
+  <g fill="none" stroke="#141413" stroke-width="1">
+    <rect x="40" y="40" width="280" height="160"/>
+    <line x1="40" y1="70" x2="320" y2="70"/>
+    <line x1="40" y1="170" x2="320" y2="170"/>
+    <path d="M90 88 C110 100 110 130 90 152"/>
+    <path d="M150 80 C176 98 176 138 150 160"/>
+    <path d="M210 88 C230 100 230 130 210 152"/>
+    <path d="M48 120 H88" marker-end="url(#arr)"/>
+    <path d="M250 120 H312" marker-end="url(#arr)"/>
+  </g>
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#141413"/>
+    </marker>
+  </defs>
+  <text x="48" y="32" font-family="Source Han Serif SC, Songti SC, serif" font-size="13" fill="#141413">上游来流</text>
+  <text x="148" y="214" font-family="Source Han Serif SC, Songti SC, serif" font-size="13" fill="#141413">转子（跟着轴转）</text>
+  <text x="248" y="32" font-family="Source Han Serif SC, Songti SC, serif" font-size="13" fill="#141413">下游</text>
+  <g font-family="Source Han Serif SC, Songti SC, serif" font-size="13" fill="#141413">
+    <text x="380" y="70">三个要交代的数</text>
+    <text x="380" y="108">π　总压比　= 出口总压 / 进口总压</text>
+    <text x="380" y="148">η　等熵效率　= 等熵焓升 / 实际焓升</text>
+    <text x="380" y="188">ṁ　质量流量　= 每秒穿过的质量（kg/s）</text>
+  </g>
+</svg>
