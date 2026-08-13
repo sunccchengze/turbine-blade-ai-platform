@@ -30,7 +30,7 @@
 4. 建失败地图：可信 / 谨慎 / 拒绝。系统必须能 abstain。
 5. 公开数字只出自 `evidence/`。README、网站、API、论文、PPT 不得各写一套。
 6. 关键 Gate 必须有未参与实现的 Reviewer，读数据、代码、原始输出和 RANS 日志，不读作者摘要。
-7. 每过一个 Gate，给承泽一次 teach-back。他先答，Agent 只纠错，不代写。
+7. 每过一个 Gate，给承泽一次 teach-back。他先答，Agent 只纠错，不代写。他明确要求重讲时，按 `技能库&准则/chengze-deep-tutor/SKILL.md` 六层讲完再回收；禁止儿童故事，禁止只给大概。风格调整追加 `docs/tutor-style-changelog.md`。
 8. 不虚构引用、数据、实验、几何、审批、CFD。失败算例保留。
 9. ARIS 等自动循环必须有轮次、花费、目录、停止条件。未批准不得买算力、发布、投稿、删原始数据。
 10. 技能最小组队：research-expert-system、ARS-Codex、统计/UQ、PaperSpine、Nature Skills（证据冻结后才写）、ARIS（预算清楚后才开）。

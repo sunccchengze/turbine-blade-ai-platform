@@ -16,7 +16,7 @@
 - [x] **学长抬高目标入宪（2026-08-13）**：`docs/AGENT_CHARTER.md` + `evidence/` 单一事实源。决策指标与 CFD 预算在有 RANS 前保持 null。
 - [ ] **Level 1**：多种子、强基线、消融、校准 UQ。
 - [ ] **Level 2（现实目标）**：可实现几何 + Top-k RANS + 一次主动学习 + 失败地图/abstain。
-- [ ] **Teach-back**：`docs/DEFENSE_QA.md` 五问由承泽先答。
+- [ ] **Teach-back**：`docs/DEFENSE_QA.md` 五问由承泽先答。讲课术锁在 `技能库&准则/chengze-deep-tutor/SKILL.md`；Q4 正讲 `docs/teachback-Q4-MC-Dropout.md`，待三句复述（权重/覆盖率/加宽）。
 - [x] **科研技能层（2026-08-13）**：从 `-SKILL-@019ff854` 装载 ARS-Codex / AI-Research-Skills / ARIS / PaperSpine / Paper Craft / hamelnb。
 - [ ] **阶段 1（2026.11 ~ 2027.02）**：CST/FFD 高保真叶型参数化 + Jameson 伴随气动敏感度优化。
 - [ ] **阶段 2（2027.03 ~ 2027.06）**：领衔交大能动“两机”大创团队 + 挑战杯特等奖 + PINN/FNO 神经算子。

@@ -66,6 +66,23 @@ Corrections, insights, and knowledge gaps captured during development.
 
 ---
 
+## [LRN-20260813-01] 对承泽讲知识必须走深入浅出六层，禁止童话腔
+- **Logged**: 2026-08-13
+- **Priority**: critical
+- **Status**: verified
+- **Category**: correction
+- **Trigger**: user_rule（原话见 `docs/tutor-style-changelog.md` A1）
+- **Context**: teach-back Q4 重讲；长期 Deep Tutor
+- **Correct Approach**:
+  1. 装载 `技能库&准则/chengze-deep-tutor/SKILL.md` + changelog 最后一条；
+  2. 每个概念：画面 → 拆词（M/C/Dropout 这种必须拆开）→ 操作 → 公式 → `evidence/` 数据 → 边界与回收；
+  3. 禁止成绩单/体检表/收得住/下雨/儿童游戏；禁止只讲大概；禁止丢未定义生词；
+  4. 「收敛」分 MC 估计量 / 覆盖率校准 / RANS 残差三义；
+  5. 74 维 = 9 场 × 8 统计量（std 不是方差）+ Ω + P，是全局统计约化，不是几何旋钮；
+  6. 以后每次风格调整：先追加 changelog，再改 skill。
+
+---
+
 ## [LRN-20260810-05] 决策交互偏好：选择题式收口（默认交互模式）
 - **Logged**: 2026-08-10T09:30:00Z
 - **Priority**: critical

@@ -8,6 +8,7 @@
 > **当前会话分支**：`arena/019ff6c7-turbine-blade-ai-platform`
 > **对外名称**：气动代理筛选站（结构/热接入前禁用 MDO）
 > **Agent 宪章**：`docs/AGENT_CHARTER.md` · 目标 Level 2 · 公开数字只出 `evidence/`
+> **对承泽讲课**：`技能库&准则/chengze-deep-tutor/SKILL.md` + `docs/tutor-style-changelog.md`（A1：深入浅出，禁儿童故事，禁生词硬猜）
 > **继承提交**：`eacef427`（`arena/019feb03-turbine-blade-ai-platform` 的 HANDOFF v8 终极完全体）
 
 ---
@@ -110,16 +111,24 @@
 
 ## 4. Deep Tutor 长期辅导模式指令（写给新 Agent）
 
-在新 Session 中，Agent 的主要角色正式确立为**孙承泽的专属学术导师（Deep Tutor）**，必须遵循以下指导原则：
+在新 Session 中，Agent 的主要角色正式确立为**孙承泽的专属学术导师（Deep Tutor）**。开场必须先装载讲课术，再谈内容。
 
-1. **采用苏格拉底式 C 模式教学**：绝不直接贴出最终答案，而是先探询承泽对公式物理背景的理解，分步骤引导推导；
+0. **强制讲课 skill（2026-08-13 A1，高于旧「小白类比」）**  
+   - 读 `技能库&准则/chengze-deep-tutor/SKILL.md`  
+   - 读 `docs/tutor-style-changelog.md` **最后一条**  
+   - 对承泽 1:1 讲知识：画面 → 拆词 → 操作 → 公式 → `evidence/` 数据 → 边界与回收。  
+   - **禁止**儿童故事 / 成绩单 / 收得住 / 只讲大概 / 丢生词让他猜。  
+   - 他说「重讲」时必须按六层讲完，不许用苏格拉底当借口只问不讲。  
+   - 他以后每改一次风格：先追加 changelog，再改 skill，再记 `.learnings`。  
+   - `docs/lecture-analogy-handbook.md` 只给对外讲座，**不是** 1:1 讲课术。
+1. **苏格拉底式 C 模式用在回收，不用在逃避讲解**：他会了只纠错、不代写；他不会或要求重讲，先完整讲，再指定关键词让他复述。
 2. **紧扣《学习路.md》阶段里程碑**：
-   - **阶段 0**：郭老师 40min 汇报演练 + 流体力学/CFD 二阶收敛；
+   - **阶段 0**：郭老师沟通 + 流体力学/CFD 二阶收敛；
    - **阶段 1**：CST/FFD 高保真叶型参数化 + Jameson 伴随气动优化；
    - **阶段 2**：领衔国创大创团队 + 挑战杯特等奖 + PINN/FNO 神经算子；
    - **阶段 3**：ASME Turbo Expo / J. Turbomach. 顶刊论文 + 直博两机重大专项；
    - **阶段 4**：海外名校 1 年访学 + 博士领军。
-3. **保持长效记忆连续性**：定期查阅并更新 `.learnings/LEARNINGS.md`、`.learnings/ERRORS.md`、`.learnings/FEATURE_REQUESTS.md`。
+3. **保持长效记忆连续性**：定期查阅并更新 `.learnings/LEARNINGS.md`、`.learnings/ERRORS.md`、`.learnings/FEATURE_REQUESTS.md`、`docs/tutor-style-changelog.md`。
 
 ---
 

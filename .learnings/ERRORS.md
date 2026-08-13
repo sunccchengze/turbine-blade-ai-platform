@@ -22,6 +22,15 @@ Command failures, integration errors, and critical precedent rollbacks.
 
 ---
 
+## [ERR-20260813-01] 把深入浅出做成儿童故事，深度被抽空 (Critical)
+- **Severity**: critical
+- **Context**: teach-back Q4（MC Dropout / 覆盖率 / 保形）
+- **Error Description**: 用成绩单、收得住、儿童游戏式比喻代替定义、操作、公式和 `evidence/` 数字；74 维被说成成绩单/总结数字；该出现的「收敛」被口语「收得住」替换。承泽判定为小儿科，要求重做。
+- **Root Cause**: 把「零先验」理解成「讲给小孩」；只降门槛、不挖深层；`docs/lecture-analogy-handbook.md` 的讲座短类比被误当成 1:1 讲课术。
+- **Resolution / Prevention**: 强制 skill `技能库&准则/chengze-deep-tutor/SKILL.md`；风格变更只追加 `docs/tutor-style-changelog.md`；Q4 正讲见 `docs/teachback-Q4-MC-Dropout.md`。
+
+---
+
 ## [ERR-20260810-03] AI 模板腔与非工程化视觉污染 (High)
 - **Severity**: high
 - **Context**: 前端界面与 PPT 制作

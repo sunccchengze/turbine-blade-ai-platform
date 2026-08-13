@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1040" width="1600" height="1040" role="img" aria-label="Q4 MC Dropout mechanism">
+  <rect width="1600" height="1040" fill="#f4f1ea"/>
+  <text x="40" y="42" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" letter-spacing="2" fill="#6b6458">FIG. Q4  ·  TRANSONIC PASSAGE  →  DROPOUT MASK  →  COVERAGE</text>
+  <text x="40" y="78" font-family="Iowan Old Style, Palatino, Georgia, serif" font-size="26" fill="#1a1a1a">MC Dropout：从叶栅里的激波，到区间为什么盖不住 η</text>
+  <line x1="40" y1="92" x2="1560" y2="92" stroke="#1a1a1a" stroke-width="1"/>
+
+  <!-- ===== A: passage ===== -->
+  <rect x="40" y="112" width="1520" height="300" fill="none" stroke="#1a1a1a" stroke-width="1"/>
+  <text x="56" y="136" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="12" letter-spacing="1.5" fill="#6b6458">A  ·  跨音速压气机叶栅通道（示意，不是你们的 CAD）</text>
+
+  <!-- incoming flow arrows -->
+  <g stroke="#1a1a1a" stroke-width="1" fill="none">
+    <line x1="70" y1="200" x2="210" y2="200"/>
+    <line x1="70" y1="230" x2="210" y2="230"/>
+    <line x1="70" y1="260" x2="210" y2="260"/>
+    <line x1="70" y1="290" x2="210" y2="290"/>
+    <line x1="70" y1="320" x2="210" y2="320"/>
+  </g>
+  <g fill="#1a1a1a">
+    <polygon points="210,200 198,196 198,204"/>
+    <polygon points="210,230 198,226 198,234"/>
+    <polygon points="210,260 198,256 198,264"/>
+    <polygon points="210,290 198,286 198,294"/>
+    <polygon points="210,320 198,316 198,324"/>
+  </g>
+  <text x="70" y="184" font-family="Iowan Old Style, Palatino, Georgia, serif" font-size="14" fill="#1a1a1a">相对来流  M_rel &gt; 1</text>
+
+  <!-- blade 1 (pressure side lower) -->
+  <path d="M240,360 C320,350 420,300 560,280 C700,260 820,270 960,310 C1080,340 1180,360 1280,368 L1280,390 L240,390 Z" fill="#d9d3c5" stroke="#1a1a1a" stroke-width="1"/>
+  <text x="700" y="378" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="11" fill="#1a1a1a">PRESSURE SIDE / 压力面（叶盆）</text>
+
+  <!-- blade 2 (suction side upper) -->
+  <path d="M300,130 C420,150 560,168 720,160 C880,152 1020,148 1180,170 C1280,182 1360,200 1420,220 L1420,130 Z" fill="#d9d3c5" stroke="#1a1a1a" stroke-width="1"/>
+  <text x="760" y="148" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="11" fill="#1a1a1a">SUCTION SIDE / 吸力面（叶背）</text>
+
+  <!-- boundary layer thickness along suction -->
+  <path d="M520,168 C640,172 780,178 900,190 C1020,204 1140,228 1260,250" fill="none" stroke="#1a1a1a" stroke-width="1" stroke-dasharray="3 3"/>
+  <text x="980" y="236" font-family="Iowan Old Style, Palatino, Georgia, serif" font-size="13" fill="#1a1a1a">附面层（贴壁慢速薄层）</text>
+
+  <!-- shock -->
+  <line x1="900" y1="188" x2="860" y2="300" stroke="#8b1a1a" stroke-width="2"/>
+  <text x="872" y="176" font-family="Iowan Old Style, Palatino, Georgia, serif" font-size="14" fill="#8b1a1a">passage shock / 槽道激波</text>
+  <text x="868" y="318" font-family="Iowan Old Style, Palatino, Georgia, serif" font-size="13" fill="#8b1a1a">打在附面层上 → 增厚 / 分离 → η 跳</text>
+
+  <!-- after shock arrows slower -->
+  <g stroke="#1a1a1a" stroke-width="1" fill="none" opacity="0.7">
+    <line x1="920" y1="250" x2="1040" y2="268"/>
+    <line x1="930" y1="280" x2="1050" y2="292"/>
+  </g>
+  <text x="1056" y="280" font-family="Iowan Old Style, Palatino, Georgia, serif" font-size="13" fill="#1a1a1a">波后亚音、掺混损失升</text>
+
+  <text x="56" y="396" font-family="Iowan Old Style, Palatino, Georgia, serif" font-size="13" fill="#4a453c">η 对「激波站在弦向何处」极敏感。74 维全局统计把这个位置信息约化掉了。</text>
+
+  <!-- ===== B: network ===== -->
+  <rect x="40" y="428" width="760" height="560" fill="none" stroke="#1a1a1a" stroke-width="1"/>
+  <text x="56" y="452" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="12" letter-spacing="1.5" fill="#6b6458">B  ·  一次前向里 Dropout 在干什么</text>
+
+  <text x="56" y="486" font-family="Iowan Old Style, Palatino, Georgia, serif" font-size="15" fill="#1a1a1a">残差块（你们的代码，p = 0.1）</text>
+  <text x="56" y="510" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#1a1a1a">x → Linear → BN → ReLU → Dropout → Linear → BN → (+x) → ReLU</text>
+
+  <!-- neurons -->
+  <g font-family="ui-monospace, Menlo, Consolas, monospace" font-size="11">
+    <circle cx="110" cy="580" r="16" fill="#1a1a1a"/>
+    <circle cx="170" cy="580" r="16" fill="#f4f1ea" stroke="#1a1a1a" stroke-width="1" stroke-dasharray="3 2"/>
+    <circle cx="230" cy="580" r="16" fill="#1a1a1a"/>
+    <circle cx="290" cy="580" r="16" fill="#1a1a1a"/>
+    <circle cx="350" cy="580" r="16" fill="#f4f1ea" stroke="#1a1a1a" stroke-width="1" stroke-dasharray="3 2"/>
+    <circle cx="410" cy="580" r="16" fill="#1a1a1a"/>
+    <circle cx="470" cy="580" r="16" fill="#1a1a1a"/>
+    <circle cx="530" cy="580" r="16" fill="#f4f1ea" stroke="#1a1a1a" stroke-width="1" stroke-dasharray="3 2"/>
+    <text x="102" y="616" fill="#1a1a1a">keep</text>
+    <text x="158" y="616" fill="#8b1a1a">drop</text>
+    <text x="222" y="616" fill="#1a1a1a">keep</text>
+    <text x="282" y="616" fill="#1a1a1a">keep</text>
+    <text x="338" y="616" fill="#8b1a1a">drop</text>
+    <text x="402" y="616" fill="#1a1a1a">keep</text>
+    <text x="462" y="616" fill="#1a1a1a">keep</text>
+    <text x="518" y="616" fill="#8b1a1a">drop</text>
+  </g>
+  <text x="56" y="648" font-family="Iowan Old Style, Palatino, Georgia, serif" font-size="14" fill="#1a1a1a">实心 = 这次还在参与计算的神经元；虚线空心 = 本次输出被置 0。</text>
+  <text x="56" y="672" font-family="Iowan Old Style, Palatino, Georgia, serif" font-size="14" fill="#1a1a1a">被置 0 的是激活值。权重矩阵还在磁盘上，只是这条通路乘了 0。</text>
+
+  <line x1="56" y1="692" x2="780" y2="692" stroke="#1a1a1a" stroke-width="0.6"/>
+
+  <text x="56" y="720" font-family="Iowan Old Style, Palatino, Georgia, serif" font-size="15" fill="#1a1a1a">MC 循环（同一条 74 维输入，换面具）</text>
+  <text x="56" y="748" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#1a1a1a">for t = 1 … T=100:</text>
+  <text x="80" y="772" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#1a1a1a">z^(t) ~ Bernoulli(0.9)    # 每个神经元独立抽一次</text>
+  <text x="80" y="796" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#1a1a1a">y^(t) = f( x ;  θ ⊙ z^(t) )   # 有效权重被面具改写</text>
+  <text x="56" y="828" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#1a1a1a">μ = mean({y^(t)})     σ = std({y^(t)})</text>
+  <text x="56" y="852" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#1a1a1a">band = [ μ − 1.96 σ ,  μ + 1.96 σ ]     # 名义 95%，假定高斯</text>
+
+  <text x="56" y="888" font-family="Iowan Old Style, Palatino, Georgia, serif" font-size="14" fill="#1a1a1a">Monte Carlo 估计量收敛：SE(μ) = σ/√T ≈ 0.1 σ（T=100）。</text>
+  <text x="56" y="912" font-family="Iowan Old Style, Palatino, Georgia, serif" font-size="14" fill="#1a1a1a">采样次数已经够。覆盖率失败不是因为 T 太小。</text>
+
+  <text x="56" y="952" font-family="Iowan Old Style, Palatino, Georgia, serif" font-size="13" fill="#4a453c">生产 API 的 ONNX 没有 Dropout，用的是训练期平均 σ 常数带，</text>
+  <text x="56" y="972" font-family="Iowan Old Style, Palatino, Georgia, serif" font-size="13" fill="#4a453c">不是对每一个新 x 再抽 100 次。见 backend/app/model.py。</text>
+
+  <!-- ===== C: coverage ===== -->
+  <rect x="820" y="428" width="740" height="560" fill="none" stroke="#1a1a1a" stroke-width="1"/>
+  <text x="836" y="452" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="12" letter-spacing="1.5" fill="#6b6458">C  ·  留出集 n=100 上的经验覆盖率（E2，已冻结）</text>
+
+  <text x="836" y="486" font-family="Iowan Old Style, Palatino, Georgia, serif" font-size="15" fill="#1a1a1a">覆盖率  Ĉ = (1/N) Σ 1{ y_i ∈ [μ_i ± 1.96 σ_i] }</text>
+  <text x="836" y="510" font-family="Iowan Old Style, Palatino, Georgia, serif" font-size="14" fill="#1a1a1a">名义水平 1−α = 0.95。校准收敛要求 Ĉ ≈ 0.95。下面三根不是。</text>
+
+  <!-- bars -->
+  <!-- axis -->
+  <line x1="980" y1="540" x2="980" y2="820" stroke="#1a1a1a" stroke-width="1"/>
+  <line x1="980" y1="820" x2="1500" y2="820" stroke="#1a1a1a" stroke-width="1"/>
+  <!-- 95% reference -->
+  <line x1="1474" y1="540" x2="1474" y2="820" stroke="#8b1a1a" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="1428" y="534" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="11" fill="#8b1a1a">0.95 名义</text>
+
+  <!-- pi 0.89 : width = 520*0.89 = 462.8 -->
+  <rect x="980" y="560" width="463" height="44" fill="#2c4a3a"/>
+  <text x="836" y="588" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="14" fill="#1a1a1a">π</text>
+  <text x="1460" y="588" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#1a1a1a" text-anchor="end">0.89</text>
+  <text x="990" y="588" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="12" fill="#f4f1ea">σ̄=0.0064</text>
+
+  <!-- eta 0.65 : 520*0.65 = 338 -->
+  <rect x="980" y="640" width="338" height="44" fill="#8b1a1a"/>
+  <text x="836" y="668" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="14" fill="#1a1a1a">η</text>
+  <text x="1330" y="668" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#1a1a1a">0.65</text>
+  <text x="990" y="668" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="12" fill="#f4f1ea">σ̄=0.0010</text>
+
+  <!-- mdot 0.88 : 520*0.88 = 457.6 -->
+  <rect x="980" y="720" width="458" height="44" fill="#2c4a3a"/>
+  <text x="836" y="748" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="14" fill="#1a1a1a">ṁ</text>
+  <text x="1450" y="748" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#1a1a1a" text-anchor="end">0.88</text>
+  <text x="990" y="748" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="12" fill="#f4f1ea">σ̄=0.0611</text>
+
+  <text x="980" y="844" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="11" fill="#6b6458">0</text>
+  <text x="1494" y="844" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="11" fill="#6b6458">1</text>
+
+  <text x="836" y="880" font-family="Iowan Old Style, Palatino, Georgia, serif" font-size="14" fill="#1a1a1a">保形预测补的是宽度：把 1.96 换成校准集上的分位数 q。</text>
+  <text x="836" y="904" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#1a1a1a">s = |y−μ|/σ     q = Quantile_ceil((n+1)(1−α))/n     band = μ ± q σ</text>
+  <text x="836" y="932" font-family="Iowan Old Style, Palatino, Georgia, serif" font-size="14" fill="#1a1a1a">q &gt; 1.96 就是加宽。它不把激波位置补回 74 维，也不代替 RANS 残差收敛。</text>
+  <text x="836" y="964" font-family="Iowan Old Style, Palatino, Georgia, serif" font-size="13" fill="#4a453c">fig14：η 的 σ 与 |误差| 相关系数 r≈0.027。带宽几乎不跟踪谁更难。</text>
+
+  <text x="40" y="1020" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="11" fill="#6b6458">numbers from evidence/metrics.json  ·  architecture from notebooks/04  ·  production path backend/app/model.py  ·  Swiss grid, 1 px</text>
+</svg>
