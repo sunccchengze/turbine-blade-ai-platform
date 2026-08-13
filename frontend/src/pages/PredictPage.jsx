@@ -422,7 +422,7 @@ export default function PredictPage() {
                 hint="转子角速度，直接决定叶顶马赫数与通流做功能力。"
               />
               <ParamSlider
-                label="进口总压 P (Inlet Total Pressure)"
+                label="背压 P (Back / Outlet Static Pressure)"
                 value={features.P}
                 min={stats.P.min}
                 max={stats.P.max}
@@ -430,7 +430,7 @@ export default function PredictPage() {
                 unit="Pa"
                 tone="teal"
                 onChange={v => handleChange('P', v)}
-                hint="级入口滞止总压，影响雷诺数与激波强度。"
+                hint="出口静压，用来节流。不是进口总压。"
               />
             </div>
 
@@ -610,7 +610,7 @@ export default function PredictPage() {
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 10 }}>
                 {[
                   ['转速 Ω', features.Omega?.toFixed(0), 'rad/s'],
-                  ['进口总压 P', features.P?.toFixed(0), 'Pa'],
+                  ['背压 P', features.P?.toFixed(0), 'Pa'],
                   ['静压均值 P_mean', features.Pressure_mean?.toFixed(0), 'Pa'],
                   ['温度均值 T_mean', features.Temperature_mean?.toFixed(1), 'K'],
                   ['级做功焓升 Δh₀', (1.005 * 288.15 * (Math.pow(Math.max(1, getPredVal('Compression_ratio') || 2.05), 0.2857) - 1)).toFixed(1), 'kJ/kg'],
@@ -658,7 +658,7 @@ export default function PredictPage() {
                 </div>
                 <div style={{ display: 'grid', gap: 8, color: 'var(--muted)', fontSize: 12 }}>
                   <div><strong style={{ color: 'var(--paper)' }}>E2 级证据：</strong> 生产 ONNX 留出测试集 R²=0.9844 已复现</div>
-                  <div><strong style={{ color: 'var(--paper)' }}>E3 级证据：</strong> 真实 Rotor 37 网格 SU2 通路已跑通</div>
+                  <div><strong style={{ color: 'var(--paper)' }}>E3 级证据：</strong> 粗网格一阶 SU2 残差停在 −3.39，未收敛</div>
                   <div><strong style={{ color: 'var(--paper)' }}>物理终审：</strong> 极端工况候选需交付超算集群完成二阶收敛</div>
                 </div>
               </div>

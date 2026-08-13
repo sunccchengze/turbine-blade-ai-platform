@@ -238,8 +238,8 @@ export default function OptimizePage() {
               letterSpacing: '-0.045em',
               marginTop: 12
             }}>
-              帕累托前沿多学科权衡<br />
-              <span style={{ color: 'var(--teal-bright)' }}>Pareto Trade-Offs & Blade Reconstruction</span>
+              代理 Pareto 气动权衡<br />
+              <span style={{ color: 'var(--teal-bright)' }}>Surrogate Pareto · schematic blade, not CAD</span>
             </h1>
           </div>
           <p style={{ maxWidth: 420, color: 'var(--muted)', fontSize: 13, lineHeight: 1.8 }}>
@@ -764,9 +764,9 @@ export default function OptimizePage() {
               </div>
 
               <div>
-                <div style={{ color: 'var(--faint)', font: '9px var(--mono)' }}>超体积收敛 HV</div>
-                <div className="num" style={{ color: 'var(--rust)', fontSize: 13, fontWeight: 700, marginTop: 2 }}>
-                  {(0.842 + ((currentGen?.generation || 1) / 200) * 0.146).toFixed(3)}
+                <div style={{ color: 'var(--faint)', font: '9px var(--mono)' }}>超体积 HV</div>
+                <div className="num" style={{ color: 'var(--faint)', fontSize: 13, fontWeight: 700, marginTop: 2 }}>
+                  —
                 </div>
               </div>
             </div>

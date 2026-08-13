@@ -120,7 +120,7 @@ export default function HomePage() {
           </span>
           <span style={{ color: 'var(--line-strong)' }}>|</span>
           <span style={{ color: 'var(--muted)' }}>
-            筛选加速: <strong style={{ color: 'var(--yellow)' }}>~100,000×</strong> (vs 3D RANS)
+            单点推断: <strong style={{ color: 'var(--yellow)' }}>0.23 ms</strong> · 不含离线 1000 组 CFD
           </span>
           <span style={{ color: 'var(--line-strong)' }}>|</span>
           <span style={{ color: 'var(--muted)' }}>
@@ -309,7 +309,7 @@ export default function HomePage() {
                   <div className="num" style={{ color: 'var(--paper)', fontSize: 22, fontWeight: 700, marginTop: 4 }}>
                     523k <span style={{ fontSize: 12, fontWeight: 400, color: 'var(--muted)' }}>params</span>
                   </div>
-                  <div style={{ color: 'var(--faint)', font: '10px var(--mono)', marginTop: 2 }}>2.01 MB single ONNX</div>
+                  <div style={{ color: 'var(--faint)', font: '10px var(--mono)', marginTop: 2 }}>2.11 MB single ONNX</div>
                 </div>
 
                 <div style={{ background: 'var(--panel)', padding: '14px 18px' }}>
@@ -645,7 +645,7 @@ export default function HomePage() {
               step: '03',
               label: 'OPTIMIZE',
               title: '多目标 Pareto 权衡',
-              desc: 'NSGA-II 算法进行 20 代进化寻优，生成 100 组压比、效率与质量流量的三目标非支配候选解集。',
+              desc: 'NSGA-II 种群 100、200 代，在特征空间里留下 100 个非支配候选。不是可制造叶片。',
               icon: Layers3,
               color: 'var(--yellow)'
             },
