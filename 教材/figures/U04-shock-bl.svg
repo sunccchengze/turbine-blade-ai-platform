@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 420" width="1100" height="420">
+  <rect width="1100" height="420" fill="#f4f1ea"/>
+  <text x="28" y="28" font-family="ui-monospace, Menlo, monospace" font-size="12" fill="#6b6458" letter-spacing="1.5">FIG. U04  ·  跨音速叶栅通道（示意）</text>
+  <line x1="28" y1="40" x2="1072" y2="40" stroke="#1a1a1a" stroke-width="1"/>
+  <text x="28" y="70" font-family="Georgia, serif" font-size="14" fill="#1a1a1a">相对来流 M_rel &gt; 1</text>
+  <g stroke="#1a1a1a" stroke-width="1" fill="none">
+    <line x1="40" y1="120" x2="180" y2="120"/><line x1="40" y1="160" x2="180" y2="160"/>
+    <line x1="40" y1="200" x2="180" y2="200"/><line x1="40" y1="240" x2="180" y2="240"/>
+  </g>
+  <path d="M200,90 C360,120 560,130 780,110 C900,100 1000,120 1060,150 L1060,90 Z" fill="#d9d3c5" stroke="#1a1a1a" stroke-width="1"/>
+  <text x="520" y="84" font-family="ui-monospace, Menlo, monospace" font-size="12" fill="#1a1a1a">吸力面 / 叶背</text>
+  <path d="M180,330 C340,300 560,270 780,290 C920,305 1020,330 1060,340 L180,350 Z" fill="#d9d3c5" stroke="#1a1a1a" stroke-width="1"/>
+  <text x="500" y="368" font-family="ui-monospace, Menlo, monospace" font-size="12" fill="#1a1a1a">压力面 / 叶盆</text>
+  <path d="M420,118 C560,128 700,145 840,175" fill="none" stroke="#1a1a1a" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="700" y="200" font-family="Georgia, serif" font-size="14" fill="#1a1a1a">附面层</text>
+  <line x1="700" y1="140" x2="660" y2="280" stroke="#8b1a1a" stroke-width="2"/>
+  <text x="708" y="136" font-family="Georgia, serif" font-size="14" fill="#8b1a1a">槽道激波</text>
+  <text x="668" y="300" font-family="Georgia, serif" font-size="13" fill="#8b1a1a">打在附面层上 → 增厚 / 分离 → η 跳</text>
+  <text x="28" y="400" font-family="Georgia, serif" font-size="13" fill="#4a453c">74 维全局统计不记录激波的弦向位置。网络看不见这根红线站在哪。</text>
+</svg>
