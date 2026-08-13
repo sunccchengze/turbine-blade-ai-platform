@@ -3,7 +3,7 @@
 双击 `教材/打开学习站.bat`，或用浏览器打开本目录的 `index.html`。
 
 - 不需要 npm / Node。
-- 公式用 CDN 上的 KaTeX，需要能上网。
+- 公式用内置的 KaTeX（`vendor/katex/`），离线也能显示，不会再露出 `\(` `\)` 源码。
 - 「已掌握」存在浏览器 localStorage，清缓存会丢。
 - 答案已按 `evidence/` 与 `教材配套答案详解.md` 对齐。
 

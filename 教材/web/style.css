@@ -240,7 +240,26 @@ kbd {
 .hub-card:hover { border-color: var(--color-primary); }
 .hub-card h3 { margin: 0 0 6px; font-size: 16px; }
 .hub-card p { margin: 0; font-size: 13px; color: var(--color-text-muted); }
-.katex { font-size: 1.05em; }
+.katex { font-size: 1.08em; }
+.katex-display, .tex-display {
+  display: block;
+  margin: 18px 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  text-align: center;
+}
+.tex-fallback {
+  font-family: "Latin Modern Math", "STIX Two Math", "Cambria Math", "Times New Roman", serif;
+  font-style: italic;
+  white-space: nowrap;
+}
+.tex-display.tex-fallback {
+  white-space: normal;
+  font-style: normal;
+  padding: 8px 0;
+}
+td .katex, th .katex { font-size: 1.12em; }
+table .katex-display { margin: 8px 0; }
 @media (max-width: 800px) {
   .app { flex-direction: column; }
   .sidebar { width: 100%; height: auto; position: relative; }

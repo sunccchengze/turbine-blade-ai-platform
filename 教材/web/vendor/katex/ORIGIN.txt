@@ -1,0 +1,4 @@
+KaTeX 0.16.11 (MIT)
+https://github.com/KaTeX/KaTeX
+Vendored so the local study site can render math without a CDN.
+Only woff2 fonts are kept.

@@ -13,34 +13,150 @@
     localStorage.setItem(STORAGE, JSON.stringify([...set]));
   }
 
-  function renderMath(text) {
-    if (!text) return "";
-    let result = String(text);
-    result = result.replace(/```([\s\S]*?)```/g, (_, code) =>
-      "<pre><code>" + code.trim().replace(/</g, "&lt;").replace(/>/g, "&gt;") + "</code></pre>");
-    result = result.replace(/`([^`\n]+?)`/g, "<code>$1</code>");
+  function esc(s) {
+    return String(s).replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+  }
+
+  /* Collapse leftover JSON/object-literal backslashes so \( \) \[ \] are real delimiters. */
+  function normalizeDelimiters(s) {
+    let prev;
+    do {
+      prev = s;
+      s = s.replace(/\\{2,}\(/g, "\\(")
+           .replace(/\\{2,}\)/g, "\\)")
+           .replace(/\\{2,}\[/g, "\\[")
+           .replace(/\\{2,}\]/g, "\\]");
+    } while (s !== prev);
+    return s;
+  }
+
+  const GREEK = {
+    alpha: "α", beta: "β", gamma: "γ", delta: "δ", epsilon: "ε", zeta: "ζ",
+    eta: "η", theta: "θ", iota: "ι", kappa: "κ", lambda: "λ", mu: "μ",
+    nu: "ν", xi: "ξ", pi: "π", rho: "ρ", sigma: "σ", tau: "τ",
+    upsilon: "υ", phi: "φ", chi: "χ", psi: "ψ", omega: "ω",
+    Gamma: "Γ", Delta: "Δ", Theta: "Θ", Lambda: "Λ", Xi: "Ξ",
+    Pi: "Π", Sigma: "Σ", Phi: "Φ", Psi: "Ψ", Omega: "Ω",
+  };
+
+  function fallbackTex(src, display) {
+    let s = String(src || "").trim();
+    s = s.replace(/\\(?:left|right|big|Big|bigg|Bigg)\s*/g, "");
+    s = s.replace(/\\(?:quad|qquad|,|;|!)/g, " ");
+    s = s.replace(/\\dot\s*\{\s*m\s*\}/g, "ṁ");
+    s = s.replace(/\\dot\s+m\b/g, "ṁ");
+    s = s.replace(/\\hat\s*\{\s*C\s*\}/g, "Ĉ");
+    s = s.replace(/\\hat\s*C\b/g, "Ĉ");
+    s = s.replace(/\\hat\s*\{\s*y\s*\}/g, "ŷ");
+    s = s.replace(/\\hat\s*\{\s*\\mu\s*\}/g, "μ̂");
+    s = s.replace(/\\hat\s*\{\s*\\sigma\s*\}/g, "σ̂");
+    s = s.replace(/\\bar\s*\{\s*y\s*\}/g, "ȳ");
+    s = s.replace(/\\bar\s*\{\s*\\sigma\s*\}/g, "σ̄");
+    s = s.replace(/\\langle/g, "⟨").replace(/\\rangle/g, "⟩");
+    s = s.replace(/\\(?:mathrm|mathbf|boldsymbol|textit|textrm|text|operatorname)\s*\{([^{}]*)\}/g, "$1");
+    s = s.replace(/\\mathbb\s*\{R\}/g, "ℝ");
+    s = s.replace(/\\mathcal\s*\{N\}/g, "𝒩");
+    s = s.replace(/\\infty/g, "∞");
+    s = s.replace(/\\pm/g, "±");
+    s = s.replace(/\\times/g, "×");
+    s = s.replace(/\\cdot/g, "·");
+    s = s.replace(/\\approx/g, "≈");
+    s = s.replace(/\\leq|\\le\b/g, "≤");
+    s = s.replace(/\\geq|\\ge\b/g, "≥");
+    s = s.replace(/\\neq|\\ne\b/g, "≠");
+    s = s.replace(/\\mapsto/g, "↦");
+    s = s.replace(/\\to\b/g, "→");
+    s = s.replace(/\\in\b/g, "∈");
+    s = s.replace(/\\cap/g, "∩");
+    s = s.replace(/\\sum/g, "∑");
+    s = s.replace(/\\int/g, "∫");
+    s = s.replace(/\\partial/g, "∂");
+    s = s.replace(/\\odot/g, "⊙");
+    s = s.replace(/\\sqrt\s*\{([^{}]*)\}/g, "√($1)");
+    s = s.replace(/\\log(?:_\{?10\}?)?/g, "log");
+    s = s.replace(/\\tanh/g, "tanh");
+    s = s.replace(/\\max/g, "max");
+    s = s.replace(/\\min/g, "min");
+    Object.keys(GREEK).forEach((k) => {
+      s = s.replace(new RegExp("\\\\" + k + "\\b", "g"), GREEK[k]);
+    });
+    s = s.replace(/\\frac\s*\{([^{}]+)\}\s*\{([^{}]+)\}/g, "($1)/($2)");
+    s = s.replace(/\^\{([^{}]+)\}/g, "<sup>$1</sup>");
+    s = s.replace(/_\{([^{}]+)\}/g, "<sub>$1</sub>");
+    s = s.replace(/\^([A-Za-z0-9])/g, "<sup>$1</sup>");
+    s = s.replace(/_([A-Za-z0-9])/g, "<sub>$1</sub>");
+    s = s.replace(/\\([A-Za-z]+)/g, "$1");
+    s = s.replace(/[{}]/g, "");
+    s = s.replace(/\s{2,}/g, " ").trim();
+    const cls = display ? "tex-fallback tex-display" : "tex-fallback";
+    const tag = display ? "div" : "span";
+    return "<" + tag + " class=\"" + cls + "\">" + s + "</" + tag + ">";
+  }
+
+  function preprocessTex(src) {
+    return String(src || "")
+      .replace(/_\\max\b/g, "_{\\max}")
+      .replace(/_\\min\b/g, "_{\\min}")
+      .replace(/\\dot\s+m\b/g, "\\dot{m}");
+  }
+
+  function texToHtml(math, display) {
+    const src = preprocessTex(String(math || "").trim());
+    if (!src) return "";
     if (window.katex) {
-      result = result.replace(/\\\\\[([\s\S]*?)\\\\\]/g, (_, math) => {
-        try {
-          return katex.renderToString(math.trim(), { displayMode: true, throwOnError: false });
-        } catch { return math; }
-      });
-      result = result.replace(/\\\\\(([\s\S]*?)\\\\\)/g, (_, math) => {
-        try {
-          return katex.renderToString(math.trim(), { displayMode: false, throwOnError: false });
-        } catch { return math; }
-      });
-      result = result.replace(/\$\$([\s\S]*?)\$\$/g, (_, math) => {
-        try {
-          return katex.renderToString(math.trim(), { displayMode: true, throwOnError: false });
-        } catch { return math; }
-      });
-      result = result.replace(/\$([^$\n]+?)\$/g, (_, math) => {
-        try {
-          return katex.renderToString(math.trim(), { displayMode: false, throwOnError: false });
-        } catch { return math; }
-      });
+      try {
+        const html = katex.renderToString(src, {
+          displayMode: !!display,
+          throwOnError: false,
+          strict: "ignore",
+          output: "html",
+        });
+        if (html && html.indexOf("katex-error") === -1) return html;
+      } catch (_) { /* fallback */ }
     }
+    return fallbackTex(src, display);
+  }
+
+  function extractAndRenderTex(text) {
+    const slots = [];
+    const put = (html) => {
+      const tok = "\uE000" + slots.length + "\uE001";
+      slots.push(html);
+      return tok;
+    };
+    let s = normalizeDelimiters(String(text || ""));
+    s = s.replace(/\\\[([\s\S]*?)\\\]/g, (_, m) => put(texToHtml(m, true)));
+    s = s.replace(/\$\$([\s\S]*?)\$\$/g, (_, m) => put(texToHtml(m, true)));
+    s = s.replace(/\\\(([\s\S]*?)\\\)/g, (_, m) => put(texToHtml(m, false)));
+    s = s.replace(/\$([^$\n]+?)\$/g, (_, m) => put(texToHtml(m, false)));
+    return { text: s, slots };
+  }
+
+  function restoreSlots(text, slots) {
+    let s = text;
+    slots.forEach((html, i) => {
+      s = s.split("\uE000" + i + "\uE001").join(html);
+    });
+    return s;
+  }
+
+  function renderMath(text) {
+    if (!text) return "<div></div>";
+    const fences = [];
+    const keep = (html) => {
+      const tok = "\uE010" + fences.length + "\uE011";
+      fences.push(html);
+      return tok;
+    };
+    let result = String(text);
+    result = result.replace(/```[\w]*\n?([\s\S]*?)```/g, (_, code) =>
+      keep("<pre><code>" + esc(code.trim()) + "</code></pre>"));
+    result = result.replace(/`([^`\n]+?)`/g, (_, code) =>
+      keep("<code>" + esc(code) + "</code>"));
+
+    const extracted = extractAndRenderTex(result);
+    result = extracted.text;
+
     const tableRe = /\n\|(.+)\|\n\|[-|\s:]+\|\n((?:\|.+\|\n?)+)/g;
     result = result.replace(tableRe, (_, headerRow, bodyRows) => {
       const headers = headerRow.split("|").map((h) => h.trim()).filter(Boolean);
@@ -63,7 +179,45 @@
     result = result.replace(/^[-•]\s+(.+)$/gm, "<li>$1</li>");
     result = result.replace(/\n\n/g, "</p><p>");
     result = result.replace(/\n/g, "<br/>");
+    result = restoreSlots(result, extracted.slots);
+    fences.forEach((html, i) => {
+      result = result.split("\uE010" + i + "\uE011").join(html);
+    });
     return "<div>" + result + "</div>";
+  }
+
+  function renderInline(text) {
+    if (!text) return "";
+    const extracted = extractAndRenderTex(String(text));
+    let s = extracted.text.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+    return restoreSlots(s, extracted.slots);
+  }
+
+  function leftoverTex(root) {
+    if (!root) return;
+    if (window.renderMathInElement) {
+      try {
+        window.renderMathInElement(root, {
+          delimiters: [
+            { left: "\\[", right: "\\]", display: true },
+            { left: "$$", right: "$$", display: true },
+            { left: "\\(", right: "\\)", display: false },
+          ],
+          throwOnError: false,
+          strict: "ignore",
+        });
+      } catch (_) { /* ignore */ }
+    }
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    nodes.forEach((node) => {
+      const v = node.nodeValue;
+      if (!v || !/\\[(\[]/.test(v)) return;
+      const span = document.createElement("span");
+      span.innerHTML = renderInline(v);
+      if (node.parentNode) node.parentNode.replaceChild(span, node);
+    });
   }
 
   function toast(msg) {
@@ -142,13 +296,13 @@
     ).join("");
 
     const cnav = (DATA.contentSections || []).map((s) =>
-      `<a href="#${s.id}">${s.number} ${s.title}</a>`
+      `<a href="#${s.id}">${s.number} ${renderInline(s.title)}</a>`
     ).join("");
 
     $("#sidebar").innerHTML = `
       <div class="sidebar-head">
         <a href="index.html" style="font-size:12px;color:var(--color-text-faint);text-decoration:none">← 目录</a>
-        <h1>${DATA.title || ""}</h1>
+        <h1>${renderInline(DATA.title || "")}</h1>
         <p>${DATA.subtitle || "本地学习"}</p>
         <div class="progress-row"><span>掌握进度</span><span>${masteredN}/${total}</span></div>
         <div class="progress-bar"><span style="width:${pct}%"></span></div>
@@ -167,16 +321,17 @@
   function renderContent() {
     const secs = DATA.contentSections || [];
     let html = `<div id="section-intro">
-      <h1 style="font-size:30px;margin:0 0 14px">${DATA.title || ""}</h1>
+      <h1 style="font-size:30px;margin:0 0 14px">${renderInline(DATA.title || "")}</h1>
       <div class="intro">${renderMath(DATA.intro || "")}</div>
     </div>`;
     secs.forEach((s) => {
       html += `<section id="${s.id}" style="margin-bottom:48px;scroll-margin-top:20px">
-        <h2 class="sec-h"><span class="sec-num">${s.number}</span>${s.title}</h2>
+        <h2 class="sec-h"><span class="sec-num">${s.number}</span>${renderInline(s.title)}</h2>
         <div class="content-section">${renderMath(s.content)}</div>
       </section>`;
     });
     $("#main").innerHTML = html;
+    leftoverTex($("#main"));
   }
 
   function renderQuestions() {
@@ -185,9 +340,9 @@
     const head = `
       <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:22px">
         <div>
-          <h2 style="margin:0;font-size:26px">${sectionTitle()}</h2>
+          <h2 style="margin:0;font-size:26px">${renderInline(sectionTitle())}</h2>
           <p style="margin:4px 0 0;color:var(--color-text-muted);font-size:14px">共 ${qs.length} 题${state.hide ? " · 仅未掌握" : ""}</p>
-          ${DATA.info ? `<p style="margin:6px 0 0;color:var(--color-text-muted);font-size:13px">${DATA.info}</p>` : ""}
+          ${DATA.info ? `<p style="margin:6px 0 0;color:var(--color-text-muted);font-size:13px">${renderInline(DATA.info)}</p>` : ""}
         </div>
         <div class="toolbar">
           <button class="toolbtn" id="btnHide">${state.hide ? "显示全部" : "只看未掌握"}</button>
@@ -206,6 +361,7 @@
         <div class="float-idx">${state.index + 1}</div>
         <button id="nextQ">↓</button>
       </div>`;
+    leftoverTex($("#main"));
   }
 
   function sectionTitle() {
@@ -255,12 +411,9 @@
     </div>`;
   }
 
-  function esc(s) {
-    return String(s).replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
-  }
-
   function paint() {
     renderSidebar();
+    leftoverTex($("#sidebar"));
     if (state.mode === "content" && DATA.kind !== "exam") renderContent();
     else renderQuestions();
     bind();

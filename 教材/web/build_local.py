@@ -325,15 +325,28 @@ def attach_answers(qs: list[dict], obj: dict[str, str], essays: dict[str, list[t
             q["explanation"] = ""
 
 
+def humanize_title(s: str) -> str:
+    """Titles shown without a math engine (hub cards, <title>) must never leak \\( \\)."""
+    if not s:
+        return s
+    s = s.replace("\\(R^2\\)", "R²").replace("\\(R^2", "R²")
+    s = s.replace("\\(\\pi\\)", "π").replace("\\(\\eta\\)", "η")
+    s = s.replace("\\(\\dot m\\)", "ṁ")
+    s = re.sub(r"\\\(([^)]{1,40})\\\)", lambda m: m.group(1).replace("\\", ""), s)
+    return s
+
+
 def page_html(data: dict) -> str:
     payload = json.dumps(data, ensure_ascii=False)
+    payload_js = json.dumps(payload)
+    title = humanize_title(data.get("title") or "学习")
     return f"""<!doctype html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>{escape(data.get("title") or "学习")}</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
+  <title>{escape(title)}</title>
+  <link rel="stylesheet" href="vendor/katex/katex.min.css" />
   <link rel="stylesheet" href="style.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet" />
@@ -356,8 +369,9 @@ def page_html(data: dict) -> str:
       <p><kbd>?</kbd> 本帮助　<kbd>Esc</kbd> 关闭</p>
     </div>
   </div>
-  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
-  <script>window.PAGE_DATA = {payload};</script>
+  <script src="vendor/katex/katex.min.js"></script>
+  <script src="vendor/katex/auto-render.min.js"></script>
+  <script>window.PAGE_DATA = JSON.parse({payload_js});</script>
   <script src="player.js"></script>
 </body>
 </html>
@@ -403,7 +417,7 @@ def main() -> None:
             "id": uid.lower(),
             "kind": "unit",
             "title": title,
-            "subtitle": short + " · 本地学习",
+            "subtitle": short.replace("R^2", "R²") + " · 本地学习",
             "intro": intro,
             "contentSections": sections,
             "sections": sec_ids,
@@ -442,7 +456,7 @@ def main() -> None:
         index_cards.append((exam_id + ".html", title, f"{len(qs)} 题 · 只练习"))
 
     cards = "\n".join(
-        f'<a class="hub-card" href="{href}"><h3>{escape(title)}</h3><p>{escape(desc)}</p></a>'
+        f'<a class="hub-card" href="{href}"><h3>{escape(humanize_title(title))}</h3><p>{escape(desc)}</p></a>'
         for href, title, desc in index_cards
     )
     (WEB / "index.html").write_text(
@@ -459,7 +473,7 @@ def main() -> None:
     <h1 style="margin:0 0 8px">气动代理筛选 · 本地学习站</h1>
     <p style="color:var(--color-text-muted);margin:0 0 24px">
       对着教材正文做题。空格看答案。答案已按 <code>evidence/</code> 与《教材配套答案详解》对齐。
-      双击本页即可；公式需联网加载 KaTeX。掌握进度存在浏览器本地。
+      双击本页即可；公式用内置 KaTeX，离线也能显示。掌握进度存在浏览器本地。
     </p>
     <div class="hub-grid">{cards}</div>
     <p style="margin-top:28px;font-size:13px;color:var(--color-text-faint)">

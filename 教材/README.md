@@ -6,7 +6,7 @@
 - 方案：`docs/教材方案-两周突击.md`
 - 数字：只认 `evidence/metrics.json`
 - 答案：`教材/教材配套答案详解.md`（先自己做，再对）
-- **本地网页**：打开 `教材/web/index.html`，或双击 `教材/打开学习站.bat`
+- **本地网页**：打开 `教材/web/index.html`，或双击 `教材/打开学习站.bat`（公式已内置 KaTeX，离线也不露出 `\( \)` 源码）
 - 站：https://turbine-blade-ai-scz.pages.dev/
 
 ## 怎么读
