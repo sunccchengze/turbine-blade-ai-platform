@@ -133,3 +133,6 @@
 | 郭老师侧 | 40 min 录屏改为约 2000 字暑期简报第 2 稿：`docs/暑期总结-致郭振东-2000字.md`（兴趣小尝试、按页写、不点宋老师） |
 | 数字口径 | 对外用可复现 Pareto：η_max=0.9173，ṁ_max=21.74 kg/s 时 η≈0.873；讲稿旧值 0.9211 不得写入给老师的信 |
 | 阶段 0 动手 | Task 0.1 SU2 / 0.2 Laval / 0.3 柱坐标 NS 仍未勾选 |
+| 发文研判 | 2026-08-13：当前资产不够一区/二区 TOP；对照见 `docs/frontier-AI-MDO-20260813.md` |
+| 郭老师线 | 多保真选数据集 → EI/CLBO 加点 → TNO 场算子；承泽切口见 `docs/guo-line-and-next-path.md` |
+| 科研技能 | 已从 `-SKILL-@019ff854` 装载 ARS-Codex / AI-Research-Skills / ARIS / PaperSpine / Paper Craft / hamelnb；入口 `技能库&准则/research-expert-system/` |
