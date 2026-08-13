@@ -13,6 +13,10 @@
 - [x] **阶段 0 交付形态改口（2026-08-13）**：郭老师日程紧，40min 录屏改为约 2000 字暑期简报 `docs/暑期总结-致郭振东-2000字.md`（数字改用可复现口径 η=0.9173，不用讲稿旧值 0.9211）。
 - [ ] **阶段 0（2026.08 ~ 2026.10）**：简报发出后的跟进 + 流体力学/CFD 二阶收敛实训。
 - [ ] **接郭老师线（α）**：精读 2018 SMO 多保真选数据集 + 2025 CJA TNO；CST/FFD；保形校准 η 覆盖率；30–50 次收敛 RANS 加点。详见 `docs/guo-line-and-next-path.md`。
+- [x] **学长抬高目标入宪（2026-08-13）**：`docs/AGENT_CHARTER.md` + `evidence/` 单一事实源。决策指标与 CFD 预算在有 RANS 前保持 null。
+- [ ] **Level 1**：多种子、强基线、消融、校准 UQ。
+- [ ] **Level 2（现实目标）**：可实现几何 + Top-k RANS + 一次主动学习 + 失败地图/abstain。
+- [ ] **Teach-back**：`docs/DEFENSE_QA.md` 五问由承泽先答。
 - [x] **科研技能层（2026-08-13）**：从 `-SKILL-@019ff854` 装载 ARS-Codex / AI-Research-Skills / ARIS / PaperSpine / Paper Craft / hamelnb。
 - [ ] **阶段 1（2026.11 ~ 2027.02）**：CST/FFD 高保真叶型参数化 + Jameson 伴随气动敏感度优化。
 - [ ] **阶段 2（2027.03 ~ 2027.06）**：领衔交大能动“两机”大创团队 + 挑战杯特等奖 + PINN/FNO 神经算子。

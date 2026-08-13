@@ -1,0 +1,3 @@
+case_id,role,geometry_source,mesh,scheme,relrms,converged,pi_cfd,eta_cfd,mdot_cfd,pi_surr,eta_surr,mdot_surr,rank_cfd,rank_surr,notes
+# 填表规则：角色只能是 baseline | neighbor | pareto_candidate | high_uq_counterexample
+# 未跑通的行也要留，converged=false，数字留空

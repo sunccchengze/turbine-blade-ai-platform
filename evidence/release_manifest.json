@@ -1,0 +1,17 @@
+{
+  "name": "气动代理筛选站",
+  "name_en": "AI-assisted aerodynamic surrogate screening and multi-objective candidate exploration platform",
+  "branch": "arena/019ff6c7-turbine-blade-ai-platform",
+  "site": "https://turbine-blade-ai-scz.pages.dev/",
+  "metrics": "evidence/metrics.json",
+  "claims": "evidence/claims.yaml",
+  "public_surfaces": [
+    "README.md",
+    "frontend/src/pages/AboutPage.jsx",
+    "frontend/src/pages/HomePage.jsx",
+    "frontend/index.html",
+    "docs/暑期总结-致郭振东-2000字.md"
+  ],
+  "graduation_level": 0,
+  "target_level": 2
+}

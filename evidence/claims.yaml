@@ -1,0 +1,59 @@
+# 对外可写的结论。改数字先改本文件和 metrics.json，再改页面。
+schema: rotor37-screening-claims/v1
+frozen_at: 2026-08-13
+owner: 孙承泽
+
+forbidden_phrases:
+  - 多学科设计优化
+  - 可制造的 Pareto 最优叶片
+  - 校准的 95% 置信区间
+  - PINN
+  - Navier-Stokes 残差约束
+  - 全工况智能优化
+  - 本科二年级
+
+claims:
+  - id: C01
+    text: 留出集 n=100 seed=42 上，残差 ONNX 的 R² 为 0.9844 / 0.9561 / 0.9827
+    grade: E2
+    metrics: surrogate_holdout.r2
+    status: verified
+  - id: C02
+    text: 代理 NSGA-II 最高效率约 0.9173，相对训练均值约 +5.4%
+    grade: E2
+    metrics: nsga2_surrogate.max_eta
+    status: verified
+    must_not_say: CFD 验证的最优叶片
+  - id: C03
+    text: 最大流量代理点约 21.74 kg/s，该点效率约 0.873
+    grade: E2
+    status: verified
+  - id: C04
+    text: MC Dropout 名义 95% 带在 η 上约盖住 65%
+    grade: E2
+    metrics: mc_dropout_heuristic.empirical_coverage.Efficiency
+    status: verified
+    label: heuristic band
+  - id: C05
+    text: SU2 粗网格一阶残差停在约 -3.39
+    grade: E3
+    status: verified
+    converged: false
+  - id: C06
+    text: 74 维是表面统计量，不是可设计几何
+    grade: E1
+    status: verified
+  - id: C07
+    text: 三个输出均为气动标量，故不称 MDO
+    grade: E1
+    status: verified
+  - id: C08
+    text: 代理能正确排序设计 / Top-k 与 CFD 一致
+    grade: E4
+    status: empty
+    metrics: decision_metrics
+  - id: C09
+    text: 系统在可信域外拒绝预测
+    grade: E2
+    status: partial
+    note: 后端 FEATURE_STATS 越界 422 已有；前端筛选站尚未统一 abstain 协议

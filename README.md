@@ -483,9 +483,9 @@ python backend/scripts/generate_pareto_evolution.py
 
 <div align="center">
 
-**孙承泽 · 本科二年级 · 独立完成**
+**孙承泽 · 能动强基 2501**
 
-Sun Chengze · Undergraduate (Year 2) · Independent Project
+Sun Chengze · Energy and Power, Class 2501
 
 <sub>灵感源自 KIT 无压气机燃气轮机突破 · Inspired by KIT's compressorless gas turbine breakthrough (Feb 2026)</sub>
 

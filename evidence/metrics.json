@@ -1,0 +1,70 @@
+{
+  "schema": "rotor37-screening-metrics/v1",
+  "frozen_at": "2026-08-13",
+  "owner": "孙承泽",
+  "split": {
+    "kind": "random_holdout",
+    "n_train": 800,
+    "n_val": 100,
+    "n_test": 100,
+    "random_state": 42,
+    "note": "工程开发划分。不是 PLAID 官方 test（官方 test 200 组标签隐藏，无法算 R²）。不是跨几何族划分。"
+  },
+  "surrogate_holdout": {
+    "model": "residual_physics_onnx",
+    "path": "backend/models/surrogate_model.onnx",
+    "reproduce": "README § 快速复现 3",
+    "r2": { "Compression_ratio": 0.9844, "Efficiency": 0.9561, "Massflow": 0.9827 },
+    "evidence_grade": "E2"
+  },
+  "baseline_mlp_holdout": {
+    "r2": { "Compression_ratio": 0.9664, "Efficiency": 0.9132, "Massflow": 0.9492 },
+    "evidence_grade": "E2",
+    "note": "单一种子，未做多种子区间。"
+  },
+  "mc_dropout_heuristic": {
+    "nominal": "±1.96σ 曾被写成 95% CI，现禁止",
+    "mean_sigma": { "Compression_ratio": 0.0064, "Efficiency": 0.0010, "Massflow": 0.0611 },
+    "empirical_coverage": { "Compression_ratio": 0.89, "Efficiency": 0.65, "Massflow": 0.88 },
+    "label": "MC Dropout heuristic uncertainty band",
+    "evidence_grade": "E2"
+  },
+  "nsga2_surrogate": {
+    "seed": 42,
+    "pop": 100,
+    "ngen": 200,
+    "constraints": { "pi_min": 1.8, "eta_min": 0.84 },
+    "n_nondominated": 100,
+    "max_eta": 0.9173097,
+    "max_massflow": 21.7379,
+    "max_pi": 2.1073413,
+    "train_mean_eta": 0.8703,
+    "train_mean_massflow": 19.51,
+    "delta_eta_vs_train_mean": 0.054,
+    "csv": "data/processed/pareto_front_solutions.csv",
+    "reproduce": "python backend/scripts/generate_pareto_evolution.py",
+    "evidence_grade": "E2",
+    "manifold_note": "Pareto 到训练集最近邻中位距离约为训练集内部距离的 3×，前沿在流形边缘。"
+  },
+  "su2_coarse": {
+    "cells": 140000,
+    "scheme": "first-order upwind",
+    "relrms_platform": -3.39,
+    "evidence_grade": "E3",
+    "converged": false
+  },
+  "decision_metrics": {
+    "spearman_rank": null,
+    "top_k_recall": null,
+    "feasibility_precision": null,
+    "pareto_hv_error": null,
+    "optimization_regret": null,
+    "cfd_budget_saved": null,
+    "note": "无收敛 RANS 对照前一律为 null。禁止用代理自比填数。"
+  },
+  "do_not_freeze_until_reproduced": [
+    "fused PointNet R² 区间 0.9718–0.9902 / η +0.005~0.007 写成稳定增量",
+    "conformal 覆盖率 93.5–96.5% 作为对外口径",
+    "加速比 100000× 或 1e6（不含离线 1000 组 CFD）"
+  ]
+}

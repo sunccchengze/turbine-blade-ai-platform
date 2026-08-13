@@ -153,7 +153,7 @@ export default function HomePage() {
                 marginBottom: 20
               }}>
                 <Activity size={12} />
-                TURBOMACHINERY MDO · RESEARCH WORKSPACE
+                AERO SCREENING · RESEARCH WORKSPACE
               </div>
 
               <h1 style={{
@@ -972,7 +972,7 @@ export default function HomePage() {
             }}>
               <span>西安交通大学 · 孙承泽</span>
               <span>•</span>
-              <span>本科二年级独立研发</span>
+              <span>能动强基 2501</span>
               <span>•</span>
               <Link to="/about" style={{ color: 'var(--teal-bright)', textDecoration: 'none' }}>
                 查看研发日志 →
