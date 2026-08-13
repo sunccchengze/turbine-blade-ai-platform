@@ -66,6 +66,13 @@ Corrections, insights, and knowledge gaps captured during development.
 
 ---
 
+## [LRN-20260813-02] 教材练习必须 选择:填空:问答 = 2:2:6
+- **Logged**: 2026-08-13
+- **Priority**: high
+- **Status**: verified
+- **Category**: user_rule
+- **Correct Approach**: 节 2+2+6；单元卷 6+6+18；期末 8+8+24。禁止整卷主观简答。见 changelog A2。
+
 ## [LRN-20260813-01] 对承泽讲知识必须走深入浅出六层，禁止童话腔
 - **Logged**: 2026-08-13
 - **Priority**: critical
