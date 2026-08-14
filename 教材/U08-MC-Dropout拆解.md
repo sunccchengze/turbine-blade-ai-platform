@@ -1,68 +1,72 @@
 # 第 8 单元 · MC Dropout 拆解
 
-对照图：`docs/lecture-figs/q4-mc-dropout-mechanism.svg`，讲义：`docs/teachback-Q4-MC-Dropout.md`。  
-本单元只拆到「\(\mu,\sigma\) 怎么来」。覆盖率与加宽在 U10。
+离开本单元，你必须能：拆开 M / C / Dropout；写出 \(\mu,\sigma\) 和名义带 \(\mu\pm1.96\sigma\)；说出生产端是预计算常数 σ，ONNX 没有 Dropout；区分 MC 估计量收敛（\(T=100\) 够）和覆盖率没校准（U09）。
+
+对照图：`docs/lecture-figs/q4-mc-dropout-mechanism.svg`。覆盖率与加宽在 **U09**（不是 U10）。
 
 ---
 
-先认词（本章新出现的）：
+## 8.1 拆词：M、C、Dropout 各干什么
 
-| 中文 | 英文 | 一句操作定义 |
+先认词：
+
+| 词 | 拆开 | 一句操作定义 |
 |---|---|---|
-| Monte Carlo（MC） | Monte Carlo | 用随机抽样逼近很难直接积分的量 |
-| Dropout | dropout | 以概率 \(p\) 把激活乘 0。本章 \(p=0.1\) |
-| MC Dropout | MC Dropout | 推理时也不关 Dropout，同一 \(x\) 前向 \(T\) 次，均值当预测，标准差当不确定度 |
-| 启发式不确定带 | heuristic uncertainty band | 法定名称。不是校准的 95% 置信区间 |
-| 有效权重 | effective weights | 被面具乘过之后，这一次前向真正用到的权重 |
-| 生产端常数 \(\sigma\) | constant sigma table | ONNX 没有 Dropout；网页上的带子来自预计算的平均 σ |
+| Monte | 蒙特 | 赌场地名，算法只借「随机抽样」这个意思 |
+| Carlo | 卡洛 | 同一词的后半。合起来：用随机抽样逼近很难直接积分的量 |
+| Dropout | 丢弃 | 以概率 \(p\) 把**激活**乘 0。权重 \(W\) 还在磁盘上 |
+| 面具 | mask \(z\) | 每一层独立抽的 0/1。keep 概率 \(1-p=0.9\) |
+| 有效权重 | effective weights | 被面具改写之后，这一次前向真正用到的通路 |
+| 启发式不确定带 | heuristic band | 法定名称。不是校准的 95% CI |
 
-仓库指认：`docs/lecture-figs/q4-mc-dropout-mechanism.svg`；`evidence/metrics.json` → `mc_dropout_heuristic`。
+**Monte Carlo。** \(T\to\infty\) 时样本均值收敛到期望。这是 **MC 估计量收敛**。判据：标准误差 \(\mathrm{SE}(\mu)=\sigma/\sqrt{T}\)。
 
+**Dropout**（Srivastava 2014）：训练期正则。乘 0 的是激活，不是把 \(W\) 从磁盘删掉。
 
-## 8.1 拆词
-
-**Monte Carlo**：用随机抽样逼近很难直接积的量。\(T\to\infty\) 时样本均值收敛到期望。这是 **MC 估计量收敛**。
-
-**Dropout**（Srivastava 2014）：训练时以概率 \(p\) 把激活乘 0。权重还在磁盘上。
-
-**MC Dropout**（Gal & Ghahramani, ICML 2016）：推理时也不关 Dropout，同一 \(x\) 前向 \(T\) 次，每次换面具。\(T\) 个输出的均值当预测，标准差当不确定度。论文包装：Bernoulli 变分分布上的蒙特卡洛积分。包装可以后懂。
-
-法定名称：heuristic uncertainty band。不是校准的 95% CI。
+**MC Dropout**（Gal & Ghahramani, ICML 2016）：推理时也不关 Dropout，同一 \(x\) 前向 \(T\) 次，每次换面具。均值当预测，标准差当不确定度。论文包装：Bernoulli 变分分布上的蒙特卡洛积分。包装可以后懂；答辩先会操作。
 
 ---
 
-## 8.2 操作（对着残差网）
+## 8.2 操作：对着残差网走 100 次
 
-\(p=0.1\)，\(T=100\)。
+\(p=0.1\)，\(T=100\)。残差块里 Dropout 在两 Linear 之间、ReLU 之后。输出层通常没有。
 
 ```
 for t = 1 … 100:
-    z^(t) ~ Bernoulli(0.9)   # 该 Dropout 的位置独立抽
+    z^(t) ~ Bernoulli(0.9)    # 各层位置独立抽
     y^(t) = f(x ; θ ⊙ z^(t))
-μ = mean(y^(t));  σ = std(y^(t))
+μ = mean(y^(t));  σ = sample std(y^(t), ddof=1)
 ```
 
-常规推理 `eval()` 关 Dropout，一点定死。  
-生产 ONNX **没有** Dropout：`predict_with_uncertainty` 用训练期平均 \(\sigma\) 常数表（π 0.006393，η 0.001007，ṁ 0.061055）。`n_mc_samples` 不生效。
+常规推理 `eval()` 关 Dropout，一点定死，σ 变成 0。  
+生产 ONNX **没有** Dropout 算子。`predict_with_uncertainty` 用训练期平均 σ 常数表：π 0.0064，η 0.0010，ṁ 0.0611。`n_mc_samples` 被接受但不生效。网页上每个点并没有抽 100 次。
+
+所有 \(y^{(t)}\) 几乎一样：有效权重附近输出平坦，σ 小——不等于一定准。
+
+仓库指认：`evidence/metrics.json` → `mc_dropout_heuristic`。
 
 ---
 
-## 8.3 公式
+## 8.3 公式：1.96 从哪来；T 够不够
 
 \[
 \mu(x)=\frac1T\sum_t y^{(t)}(x),\quad
 \sigma(x)=\sqrt{\frac1{T-1}\sum_t(y^{(t)}-\mu)^2}
 \]
 
-名义带：\(\mu\pm 1.96\sigma\)。1.96 是标准正态 0.975 分位数，**假定** \((y-\mu)/\sigma\sim\mathcal N(0,1)\) 且 \(\sigma\) 没有系统性偏小。
+名义带：\(\mu\pm 1.96\sigma\)。1.96 是标准正态 0.975 分位，**假定** \((y-\mu)/\sigma\sim\mathcal N(0,1)\) 且 σ 没有系统性偏小。这两个前提本项目都不干净。
 
-\(\mathrm{SE}(\mu)=\sigma/\sqrt{T}\)。\(T=100\) 时约 \(0.1\sigma\)。采样次数已经够。覆盖率失败不是 \(T\) 太小。
+\(\mathrm{SE}(\mu)=\sigma/\sqrt{T}\)。\(T=100\) 时约 \(0.1\sigma\)。再加到 T=10000，SE 更小，**覆盖率不会因此到 95%**。失败不是抽样次数。
 
-Dropout 只扰动有效权重 = **认知不确定**（epistemic）。不建模数据本身的跳（偶然 / aleatoric），除非另做异方差头。Gal 的变分族窄，常低估宽度。
+Dropout 只扰动有效权重 = **认知不确定**（epistemic：换一套还说得通的参数）。不建模数据本身的跳（偶然 / aleatoric），除非另做异方差头。Gal 的变分族窄，常低估宽度。变分近似不能画等号成真后验。
 
-fig14：\(\eta\) 上 \(\sigma\) 与 \(|\mathrm{err}|\) 相关约 **0.027**。带宽几乎不跟踪谁更难。
+fig14：η 上 σ 与 \(|\mathrm{err}|\) 相关约 **0.027**。带宽几乎不跟踪谁更难。\(\bar\sigma_\eta=0.0010\) 相对窄带 0.045 约 2%。η 的 σ 特别小，仍可能更不可信。
 
-### 练习与单元卷
+主动学习不能只看 σ：会漏掉 σ 小但误差大的点。常数带不能点排序。
+
+三句复述必须出现：面具、有效权重、T=100。
+
+### 练习 8.1
 
 **U08-S1-Q01 [易]【选】** Dropout 乘 0 的是  
 A. 磁盘上的 \(W\) B. 激活 C. 标签 D. 网格  
