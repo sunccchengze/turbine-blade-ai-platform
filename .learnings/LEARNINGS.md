@@ -121,3 +121,17 @@ Corrections, insights, and knowledge gaps captured during development.
 - **Trigger**: user_rule
 - **Context**: 所有需要用户裁定的分岔点
 - **Correct Approach**: 涉及方案选择、授权放行、口径取舍时，一律用结构化选择题（2~4 个候选 + 可自定义）收口，不写长篇开放式提问；每个选项附一句话代价/后果说明。
+
+## [LRN-20260814-01] 教材零搜索自学的 A5 铁律：定义闭环 + 术语依赖链
+- **Logged**: 2026-08-14
+- **Priority**: critical
+- **Status**: verified
+- **Category**: correction
+- **Trigger**: user_rule（「现在的教材还是完全无法用于自学……你必须进行一轮超级细化的重塑」）
+- **Correct Approach**:
+  1. 读者画像 = 高考 650 分、零大学先验；验收 = 逐句读完不需要搜索；
+  2. 定义闭环：定义用词 ⊆ 桥词 ∪ 本章已定义词 ∪ 显式「U0X 才讲」；
+  3. 每节先列术语依赖链，再逐词展开（中文/英文/符号/单位/数字例）；
+  4. 电脑名词（CSV/JSON/字段/路径）在 U01 给 mini 词表；
+  5. 公式必配代入数字的完整算例；
+  6. 重塑顺序 U01→U12，题号与答案详解不动；每章重塑后重建 web 并推送。

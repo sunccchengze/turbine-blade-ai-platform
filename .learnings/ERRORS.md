@@ -58,3 +58,10 @@ Command failures, integration errors, and critical precedent rollbacks.
 - **Error Description**: 出现大面积紫色渐变、带厚阴影的悬浮卡片、Emoji 符号（如火、齿轮、火箭等）等。
 - **Root Cause**: 未调用 Stop-slop.md、taste-skill 与 ui-ux-pro-max 规则库。
 - **Resolution / Prevention**: 严格执行 1px 发丝边框、等宽字体数据展示、标准三线表与 Swiss Grid 网格系统。
+
+## [ERR-20260814-01] 教材「加厚」仍不能自学：定义不闭环、先认词表自引用 (Critical)
+- **Severity**: critical
+- **Context**: 教材 U01–U12（A4 加厚版）
+- **Error Description**: ①U01 总压定义里用「等熵」，等熵排在后面；声速定义用「静温」，静温从未定义；γ、R 无值。②U02 表里出现「焓、激波、附面层、动量矩」不标注来源章。③「先认词表」被当正文甩出，正文不再逐词讲。④公式符号无单位无数例（如 Δh₀ 公式）。⑤CSV/JSON/字段等电脑名词默认读者会。结论：650 分零先验读者逐句读不通，必须边读边搜。
+- **Root Cause**: 把「加厚」理解成「每章都有六层段落」，没做定义闭环审计；讲课者默认读者认识大学物理与仓库术语。
+- **Resolution / Prevention**: changelog A5；SKILL.md §10 零搜索铁律；U01 起逐章重塑；每章重塑后以「零搜索」验收。
