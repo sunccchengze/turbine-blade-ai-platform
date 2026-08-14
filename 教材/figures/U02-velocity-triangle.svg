@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 300" width="720" height="300" role="img" aria-label="进口速度三角形：C、W、U">
+  <rect width="720" height="300" fill="#F4F3EE"/>
+  <g fill="none" stroke="#141413" stroke-width="1.2">
+    <path d="M80 220 H360"/>
+    <path d="M80 220 V80"/>
+    <path d="M80 220 L280 90"/>
+    <path d="M280 90 H360"/>
+    <path d="M360 220 V90"/>
+  </g>
+  <g font-family="Source Han Serif SC, Songti SC, serif" font-size="14" fill="#141413">
+    <text x="200" y="250">U = Ωr　牵连（叶片自己在转）</text>
+    <text x="390" y="160">C　绝对（站在机匣上看）</text>
+    <text x="120" y="70">W　相对（站在叶片上看）</text>
+    <text x="80" y="280">C = W + U。进口画一次，出口再画一次。</text>
+    <text x="480" y="50">轴向 →</text>
+    <text x="40" y="50">↑ 周向</text>
+  </g>
+</svg>

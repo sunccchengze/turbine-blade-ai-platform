@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 240" width="640" height="240" role="img" aria-label="relrms 梯子：−3.39 未到 −6">
+  <rect width="640" height="240" fill="#F4F3EE"/>
+  <g fill="none" stroke="#141413" stroke-width="1">
+    <path d="M80 40 V200"/>
+    <path d="M80 40 H120"/>
+    <path d="M80 80 H160"/>
+    <path d="M80 120 H200"/>
+    <path d="M80 160 H280"/>
+    <path d="M80 200 H120"/>
+  </g>
+  <g font-family="Source Han Serif SC, Songti SC, serif" font-size="13" fill="#141413">
+    <text x="130" y="44">0　起步（初始残差）</text>
+    <text x="210" y="124">−3.39　本项目粗网格停在这里（平台）</text>
+    <text x="290" y="164">−6　工程上常希望到的量级</text>
+    <text x="80" y="228">relrms = log10(‖R(k)‖/‖R(0)‖)。−3.39 不是误差 3.39%。</text>
+  </g>
+</svg>
