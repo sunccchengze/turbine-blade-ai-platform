@@ -66,6 +66,17 @@ Corrections, insights, and knowledge gaps captured during development.
 
 ---
 
+## [LRN-20260813-04] 收工必须写 SESSION_HANDOFF，旧 HANDOFF 不得覆盖现状
+- **Logged**: 2026-08-13
+- **Priority**: critical
+- **Status**: verified
+- **Category**: best_practice
+- **Correct Approach**:
+  1. 结束会话写/更新 `docs/SESSION_HANDOFF-YYYYMMDD.md`；根目录 `HANDOFF.md` 只加指针，不把 7 月 MDO 正文改回「当前」；
+  2. 问题与禁令写入 ERRORS，可执行规则写入 LEARNINGS 与 changelog；
+  3. 声明：U02–U10 先认词重装 ≠ 已按 U01 篇幅写透；
+  4. 显式技能表；扫过 ≠ 用过。
+
 ## [LRN-20260813-03] 教材必须先认机器，证据档后置；练习不超纲
 - **Logged**: 2026-08-13
 - **Priority**: critical

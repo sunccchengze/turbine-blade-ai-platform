@@ -10,6 +10,7 @@
 > **Agent 宪章**：`docs/AGENT_CHARTER.md` · 目标 Level 2 · 公开数字只出 `evidence/`
 > **对承泽讲课**：`技能库&准则/chengze-deep-tutor/SKILL.md` + `docs/tutor-style-changelog.md`（A1：深入浅出，禁儿童故事，禁生词硬猜）
 > **继承提交**：`eacef427`（`arena/019feb03-turbine-blade-ai-platform` 的 HANDOFF v8 终极完全体）
+> **2026-08-13 收工指针**：当前会话以 **`docs/SESSION_HANDOFF-20260813.md`** 为准（教材重排、A3、公式修复、未做完清单）。讲课术以 changelog **A3** 为准。本文件 §2 里 η 从 0.9211 暴跌等旧叙事不得写入给郭老师的信。
 
 ---
 
@@ -115,7 +116,7 @@
 
 0. **强制讲课 skill（2026-08-13 A1，高于旧「小白类比」）**  
    - 读 `技能库&准则/chengze-deep-tutor/SKILL.md`  
-   - 读 `docs/tutor-style-changelog.md` **最后一条**  
+   - 读 `docs/tutor-style-changelog.md` **最后一条（现为 A3：先认机器，证据档后置）**  
    - 对承泽 1:1 讲知识：画面 → 拆词 → 操作 → 公式 → `evidence/` 数据 → 边界与回收。  
    - **禁止**儿童故事 / 成绩单 / 收得住 / 只讲大概 / 丢生词让他猜。  
    - 他说「重讲」时必须按六层讲完，不许用苏格拉底当借口只问不讲。  

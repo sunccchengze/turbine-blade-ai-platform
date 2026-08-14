@@ -22,6 +22,20 @@ Command failures, integration errors, and critical precedent rollbacks.
 
 ---
 
+## [ERR-20260813-04] 清 OVERRIDE 时误删 UNITS 列表 (High)
+- **Severity**: high
+- **Context**: `教材/web/build_local.py`
+- **Error Description**: 用「行里含 `"U0`/`U1`」过滤旧题号覆盖时，把 `UNITS = [("U01", ...)]` 一并删空，重建脚本只出期末卷。
+- **Root Cause**: 过滤条件按前缀而不是按字典键。
+- **Resolution / Prevention**: 改构建脚本用结构删除，禁止按 `"U0` 扫整文件；改完立刻跑 `python 教材/web/build_local.py` 看 12 行 unit 输出。
+
+## [ERR-20260813-03] 用了技能却不显式点名 (High)
+- **Severity**: high
+- **Context**: 教材全本重塑后的回复
+- **Error Description**: 承泽问「你到底用了哪些技能和专家」。回复没有调用表。扫了 3005 个 SKILL.md 路径，精读只有内阁、Deep Tutor、Humanizer、Stop-slop、科学批判、不确定度。
+- **Root Cause**: 把「遍历技能库」做成扫描充数；漏 LRN-20260810-01。
+- **Resolution / Prevention**: 凡改教材/讲课，回复开头必须有席位+技能表。写「打开了但判定用不上」。禁止把路径扫描说成精读。
+
 ## [ERR-20260813-02] 教材第一章用未定义名词开讲，不能自学 (Critical)
 - **Severity**: critical
 - **Context**: 教材 U01 旧版「红线与证据等级」
