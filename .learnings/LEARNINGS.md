@@ -159,3 +159,15 @@ Corrections, insights, and knowledge gaps captured during development.
   2. 使用红线写进文件头：数字不得当本项目数字、不得进 evidence/信/README/网站；引用前必须找回原文；
   3. 涉及导师个人履历/团队归属 = 内部背景记忆，严禁写进给老师的信；
   4. 与既有研判文档互相指认（frontier / guo-line），冲突以原文为准。
+
+## [LRN-20260814-04] 面向承泽的一切文本禁 LaTeX；教材用 Unicode 平文本数学（A7）
+- **Logged**: 2026-08-14
+- **Priority**: critical
+- **Status**: verified
+- **Category**: correction
+- **Trigger**: user_rule（「这些文字显示还是有问题啊」「不是！你看：*mathbfC*=*mathbfW*+*mathbfU*」）
+- **Correct Approach**:
+  1. 承泽的阅读环境把 LaTeX 反斜杠命令渲染成星号斜体，聊天与教材一律禁 LaTeX；
+  2. 教材公式用 Unicode 平文本：C=W+U、π^0.2857、√(γ·R·T)、p_t2、C_θ2、10^(-3.39)、Ĉ_η；
+  3. 改完跑 build_local.py 重建网页，grep 验证 md 与 html 零反斜杠命令；
+  4. 18 个含 LaTeX 的教材文件（U01–U12、00、名词本、期末A/B、答案详解）已于当日全量转换。

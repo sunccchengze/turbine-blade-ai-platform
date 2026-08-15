@@ -32,6 +32,8 @@ HEAD: 本会话收工提交（教材整本 A5 重塑）
 
 - 新入库：`docs/deepsearch-20260814-前沿与郭宋线.md`（承泽 DeepSearch 结果，E0 线索，数字全部未核对；红线见文件头）。下一会话若要用其中任何数字，先找原文。
 
+- 教材全本已改 Unicode 平文本数学（changelog A7，覆盖 A6 后半）：`教材/*.md`、期末卷、答案详解零 LaTeX，网页已重建。任何新写教材内容禁止再出现反斜杠命令；改完跑 `python 教材/web/build_local.py` + grep 验证。
+
 ## 3. 下一会话建议顺序
 
 1. 装载：本文件 → `docs/AGENT_CHARTER.md` → SKILL.md（§10 零搜索）+ changelog **最后一条（A5）**。
