@@ -135,3 +135,15 @@ Corrections, insights, and knowledge gaps captured during development.
   4. 电脑名词（CSV/JSON/字段/路径）在 U01 给 mini 词表；
   5. 公式必配代入数字的完整算例；
   6. 重塑顺序 U01→U12，题号与答案详解不动；每章重塑后重建 web 并推送。
+
+## [LRN-20260814-02] 对话正文禁 LaTeX 源码，公式用中文+直白算式（A6）
+- **Logged**: 2026-08-14
+- **Priority**: critical
+- **Status**: verified
+- **Category**: correction
+- **Trigger**: user_rule（「你用了很多不是latex，katex的表述，我看不懂，你重讲」）
+- **Correct Approach**:
+  1. 聊天回复里禁止 \( \)、\\sqrt、\\frac 等 LaTeX 源码形态；
+  2. 公式写成中文叙述+直白算式：根号(1.4×287×250)、M = 速度 ÷ 声速；
+  3. 符号用平文本：π、η、ṁ、T、Tt、M、U、W、Ω、P、σ、q；
+  4. 教材 .md 与网页的 KaTeX 不受影响，照旧。
