@@ -147,3 +147,15 @@ Corrections, insights, and knowledge gaps captured during development.
   2. 公式写成中文叙述+直白算式：根号(1.4×287×250)、M = 速度 ÷ 声速；
   3. 符号用平文本：π、η、ṁ、T、Tt、M、U、W、Ω、P、σ、q；
   4. 教材 .md 与网页的 KaTeX 不受影响，照旧。
+
+## [LRN-20260814-03] 外部调研材料入库规则：进 docs/、标未核对、不进 evidence/
+- **Logged**: 2026-08-14
+- **Priority**: high
+- **Status**: verified
+- **Category**: best_practice
+- **Trigger**: user_rule（DeepSearch 结果入库）
+- **Correct Approach**:
+  1. 外部检索材料存 `docs/`（如 `docs/deepsearch-20260814-前沿与郭宋线.md`），文件头写：来源、日期、性质=E0 调研线索、未核对原文；
+  2. 使用红线写进文件头：数字不得当本项目数字、不得进 evidence/信/README/网站；引用前必须找回原文；
+  3. 涉及导师个人履历/团队归属 = 内部背景记忆，严禁写进给老师的信；
+  4. 与既有研判文档互相指认（frontier / guo-line），冲突以原文为准。
