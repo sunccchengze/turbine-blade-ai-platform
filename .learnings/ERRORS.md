@@ -66,6 +66,13 @@ Command failures, integration errors, and critical precedent rollbacks.
 - **Root Cause**: 把「加厚」理解成「每章都有六层段落」，没做定义闭环审计；讲课者默认读者认识大学物理与仓库术语。
 - **Resolution / Prevention**: changelog A5；SKILL.md §10 零搜索铁律；U01 起逐章重塑；每章重塑后以「零搜索」验收。
 
+## [ERR-20260902-02] 把已作废的后端部署规则当现行规则告诉用户（回补 v6 时未与架构对账）(Critical)
+- **Severity**: critical
+- **Context**: 2026-09-02 仓库收敛；我在汇报「删除分支前的副作用」时
+- **Error Description**: 引用 v6 HANDOFF §0.2「后端改动 → 合入 main 后必须 SnapDeploy 手动 Redeploy」，并断言本次 main 前进 202 笔含后端改动、需要承泽手动 Redeploy 线上后端。项目自 v8（2026-08）起已纯前端化，无任何部署中的后端，该规则早已作废；且我在回补 §9/§10 时把这条死规则一并写进了 `HANDOFF.md`。
+- **Root Cause**: 回补历史文档时只做了「v6 有、v8 没有 → 补回去」的差集，没做「这条现在还是真的吗」的校验；把文档存在性当成事实有效性。
+- **Resolution / Prevention**: ① 用代码复核：`frontend/src/utils/api.js` 载入 `onnxruntime-web/wasm` + `/models/surrogate_model.onnx` + `/data/*.json`，前端无 API 基址（`grep -rn "VITE_API_URL|localhost:8000" frontend/src` 为空）；② 删除 HANDOFF §10 的 Redeploy 条目并标注作废，新增 §9.5「架构现状」与 §9 #20「回补旧文档必须与现行架构对账」；③ 配套 LRN-20260902-03；④ 收工前自查：本轮所有「你必须手动去做 X」类断言，逐条回到代码或现行铁律里找出处。
+
 ## [ERR-20260902-01] HANDOFF v8 重写删掉了「绝不主动合并 PR」与整节沙盒坑 (Critical)
 - **Severity**: critical
 - **Context**: `019feb03` 把 HANDOFF 从 v6 五条铁律重写为 v8 七条铁律（2026-08-12）

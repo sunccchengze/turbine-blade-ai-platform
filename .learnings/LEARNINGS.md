@@ -200,3 +200,16 @@ Corrections, insights, and knowledge gaps captured during development.
   3. 收工时按 LRN-20260813-04 写 `docs/SESSION_HANDOFF-YYYYMMDD.md`，并显式声明本次改动了哪些纪律条目；
   4. 判据：`grep -c "绝不主动合并 PR" HANDOFF.md` 必须 ≥ 1；为 0 即视为纪律资产丢失，禁止收工。
 
+## [LRN-20260902-03] 平台是纯前端 WASM：`backend/` 只做离线训练，不存在「合 main 必须 Redeploy 后端」
+- **Logged**: 2026-09-02T11:55:00Z
+- **Priority**: critical
+- **Status**: verified
+- **Category**: knowledge_gap
+- **Trigger**: 承泽纠正——本会话曾把 v6 的 SnapDeploy Redeploy 当现行规则引用
+- **Correct Approach**:
+  1. 线上只有 Cloudflare Pages 静态站点；推理在浏览器：`frontend/src/utils/api.js` → `onnxruntime-web/wasm` + `/models/surrogate_model.onnx` + `/data/*.json`；
+  2. 推 main 后无后端部署动作，只需确认 Pages 构建绿；`backend/Dockerfile`、`Procfile`、`runtime.txt` 是退役残留，勿据其推断「有服务在跑」；
+  3. `backend/` 的现行角色 = 训练与产物生成（ONNX + 4 个 JSON 拷进 `frontend/public/`）；依赖分 `requirements.txt` / `requirements-training.txt` 亦为此；
+  4. 引用 v6 时代运维条目（SnapDeploy Redeploy、uvicorn 端口、`VITE_API_URL`）前必须先 grep 现行代码对账；
+  5. 判据：`grep -rn "VITE_API_URL\|localhost:8000" frontend/src` 为空 ⇒ 确无后端依赖。
+

@@ -60,7 +60,11 @@ cd /home/user/turbine-blade-ai-platform && git fetch origin && git status && git
   历史上它逐会话膨胀 220 → 15 272 → 39 088 → 44 189，要真减重只能重写历史，而重写会改所有 commit hash、
   与 Arena 会话分支绑定冲突 → **必须由承泽在本地做**，agent 不能做。
 - `技能库&准则/SKILL运用指南.md` 仍有未解决的 `<<<<<<<` 冲突标记（上一会话已知，本会话按「不要整文件乱改」的旧指示未动）。
-- 本会话**未验证**前端/后端能否构建运行（只动文档）；线上 Pages 与 SnapDeploy 状态未查（沙盒白名单访问不了 `*.pages.dev`）。
+- 本会话**未验证**前端能否构建（只动文档）；线上 Pages 状态未查（沙盒白名单访问不了 `*.pages.dev`）。
+- 🩸 **本会话犯过一次事实错误并已更正**：曾按 v6 的 §0.2 告诉承泽「main 前进 202 笔 → SnapDeploy 后端必须手动 Redeploy」，
+  这是死规则。实查代码后确认平台纯前端化（`frontend/src/utils/api.js` 用 `onnxruntime-web/wasm` 载入
+  `/models/surrogate_model.onnx` + `/data/*.json`，无任何 API 基址；`backend/Dockerfile`/`Procfile` 为退役残留）。
+  **推 main 后唯一需要看的是 Pages 构建是否绿**。该错误已写入 `HANDOFF.md` §9.5 与 ERRORS，防止再传染。
 
 ## 4. 下一会话建议顺序
 

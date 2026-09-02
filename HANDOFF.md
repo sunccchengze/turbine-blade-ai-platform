@@ -214,6 +214,20 @@ git ls-remote origin >/dev/null 2>&1 && echo "REMOTE OK" || echo "REMOTE BLOCKED
 17. 🩸 **沙盒 TLS 白名单连不上 huggingface.co**（Day 38 实测）：`curl -sI` 返回 exit 0 是**假阳性**，实际 GET 全部 000（TLS EOF）。测连通性用 GET 带 `-o /dev/null -w "%{http_code}"`，别信 HEAD。原始数据/重型训练走云 GPU。
 18. **本仓 clone 常为 shallow**（2026-09-02 实测：`.git/shallow` 卡住 main 的父提交）：本地 `git merge-base` 会**假报「无共同祖先」**，跨家族祖先判断必须走 GitHub API `compare` 或 `git fetch --unshallow origin`。
 19. `技能库&准则/` 已把仓库撑到 1.29 GB / 44 189 文件（2026-09-02 审计）；新技能库优先 submodule / 外部 Release，别再往仓里塞 vendored zip/gif/mp4。
+20. 🩸 **回补旧文档时必须与现行架构对账**：v6 的运维条目（SnapDeploy Redeploy、uvicorn 端口清理、`VITE_API_URL`）在纯前端化之后已作废，
+    照抄会把死规则当活的传染给下一个会话（2026-09-02 本轮就犯过一次）。凡引用历史坑，先 `grep` 现行代码确认它还成立。
+
+---
+
+## 9.5 架构现状（一段话，别背旧文档）
+
+**线上 = 纯前端静态站点**：Cloudflare Pages 部署 `frontend/`，推理在浏览器里跑
+（`frontend/src/utils/api.js` → `onnxruntime-web/wasm` + `/models/surrogate_model.onnx` 2.1 MB +
+`/data/{features,pareto,evolution,uq}.json`）。**没有部署中的后端**，也没有冷启动等待。
+`backend/` 仍在仓库里，但角色是**离线训练与产物生成**：训出融合模型 → 导出 ONNX 与 4 个 JSON → 拷进
+`frontend/public/` → 提交；`backend/Dockerfile`、`Procfile`、`runtime.txt` 是 SnapDeploy 时代的退役残留，
+`requirements.txt` vs `requirements-training.txt` 的区分也说明线上依赖已不存在。
+所以：**推 main 之后你要做的事 = 只在 Pages 面板看一眼构建是否绿**；谁再跟你说「合 main 必须 Redeploy 后端」，那是拿 v6 的话在讲 v8 的项目。
 
 ---
 
@@ -222,7 +236,9 @@ git ls-remote origin >/dev/null 2>&1 && echo "REMOTE OK" || echo "REMOTE BLOCKED
 - 本地路径存在两处历史记录，**未确认哪个是现状**：v6 记 `C:\Users\45120\turbine_blade_ai_project`，v8 铁律记 `D:\turbine-blade-ai-platform`。开新会话涉及本地命令时先问一句，别猜。
 - conda：base / pytorch_env / **turbine-ai**（跑后端）；`frontend/.env.local` 已配 `VITE_API_URL=http://localhost:8000`。
 - notebook 被 Jupyter 改动 → `git checkout -- notebooks/` 丢弃。
-- **只能承泽本人操作**：SnapDeploy Redeploy（合 main 后必做）、Cloudflare Pages 面板、线上 URL 验收、预热 workflow 安装、Windows 本地验收。
+- **只能承泽本人操作**：Cloudflare Pages 面板（推 main 会自动重建，只需看构建是否绿）、线上 URL 验收、预热 workflow 安装、Windows 本地验收。
+- ~~SnapDeploy Redeploy（合 main 后必做）~~ —— **已作废**（2026-09-02 更正）。这句来自 v6，当时后端还在 SnapDeploy 上；
+  v8 铁律 6 起平台已纯前端化，**推 main 之后没有任何后端部署动作**。此句曾在本轮被误当现行规则引用并写入本文件，特此标注。
 
 ---
 
