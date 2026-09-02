@@ -1,5 +1,20 @@
 # 🎯 D40 答辩作战包（项目侧）—— 填坑清单 + 8/4 本机任务 + 自我审查
 
+> ⛔ **时效标记（2026-09-02 追加 · 由分支收敛会话自动判定）** —— 本文件是 **2026-08-08** 的历史快照，**不是现状**。
+> 以下写法在今天已经不成立：
+> - 第 16 行「| 5 | UQ 生产模式名不副实 | ✅ 已填 | 后端 `mode: "statistical"` + `uq_method` + `note` 字段；`n_mc_samples` 参数说明改为「兼容参数」；mode」→ **引用后端 HTTP 接口——现在数据与模型都是随前端部署的静态 JSON / ONNX**
+> - 第 57 行「- 后端必须 SnapDeploy 手动 Redeploy（UQ mode 改动在 `backend/app/`）——不 Redeploy 线上还是旧行为，答辩演示 /predict UQ 时会被看到 `mode:"un」→ **后端 Redeploy：平台已纯前端 WASM，线上无部署中的后端，推 main 之后没有这一步**
+> - 第 59 行「- 验证线上：`/health` 200；`/api/predict/model-info` 正常；首页新文案已生效。」→ **引用后端 HTTP 接口——现在数据与模型都是随前端部署的静态 JSON / ONNX**
+> - 第 116 行「| 线上后端若未 Redeploy，UQ mode 还是旧的 | 答辩前一晚必须验证线上（任务 3）——这是自己的失误，不是项目缺陷，但被看到很尴尬 |」→ **后端 Redeploy：平台已纯前端 WASM，线上无部署中的后端，推 main 之后没有这一步**
+>
+> 现行口径唯一来源：`HANDOFF.md`（§0.-1 十一条铁律、§9.5 架构现状）、`docs/BRANCH-SAFETY.md`（会话与 git 纪律）、`evidence/metrics.json`（对外数字）。
+> ——以及第二轮：
+> - 第 6 行「> - 第 57 行「- 后端必须 SnapDeploy 手动 Redeploy（UQ mode 改动在 `backend/app/`）——不 Redeploy 线上还是旧行为，答辩演示 /predict U」→ **部署拓扑已变：线上只有 Cloudflare Pages 静态站点**
+> - 第 8 行「> - 第 116 行「| 线上后端若未 Redeploy，UQ mode 还是旧的 | 答辩前一晚必须验证线上（任务 3）——这是自己的失误，不是项目缺陷，但被看到很尴尬 |」→ 后端 Redeploy：平」→ **部署拓扑已变：线上只有 Cloudflare Pages 静态站点**
+> - 第 67 行「- 后端必须 SnapDeploy 手动 Redeploy（UQ mode 改动在 `backend/app/`）——不 Redeploy 线上还是旧行为，答辩演示 /predict UQ 时会被看到 `mo」→ **部署拓扑已变：线上只有 Cloudflare Pages 静态站点**
+> - 第 149 行「- 09:30 检查：链接、网络、备份链接（本地 `localhost:8000` 兜底）、手机热点」→ **前端不再有 API 基址：无后端可调，`frontend/.env.local` 那条已无意义**
+> **正文一字未改**——当时的判断与过程仍按原样保留，供回顾历程用。
+
 > 目标：8/5 上午 10:00 一小时答辩（宋立明教授）。宋老师 GHG-01 观后感（仓库根 `GHG-01.md`）的 7 条批评全部有下文；
 > 已填的坑都有证据，未填的坑都有精确执行步骤。**原则：宁可承认没做完，不可假装做完了。**
 

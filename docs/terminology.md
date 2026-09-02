@@ -64,4 +64,4 @@
 | R² 口径 | 留出测试集 n=100, random_state=42；README/网站/API 统一（API 含 `r2_evaluated_on` 字段） |
 | NSGA-II 结果 | max η 0.9173 / max ṁ 21.74 kg/s / max π 2.1073（backend/scripts 一键复现，同源） |
 | 加速比表述 | 网站保守「~100,000×」；README 注明端到端量级 ~10⁶ |
-| 部署域名 | 前端 turbine-blade-ai-scz.pages.dev；后端 turbine-blade-api-c4f40.containers.snapdeploy.app |
+| 部署域名 | 前端（且唯一线上件）turbine-blade-ai-scz.pages.dev。~~后端 turbine-blade-api-c4f40.containers.snapdeploy.app~~ **已退役**：平台纯前端 WASM，浏览器内跑 ONNX（2026-09-02 更正；旧条目见于 8 月初的部署口径） |

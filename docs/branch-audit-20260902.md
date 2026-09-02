@@ -113,7 +113,8 @@
 | 3 回补铁律 | ✅ 已做 | HANDOFF 铁律 7→11 条 + §0/§9/§10/§11 回补；新建 `docs/BRANCH-SAFETY.md`；`AGENT_CHARTER` 第 11–14 条；`.learnings` LRN-20260902-01/02 + ERR-20260902-01 |
 | 3b 叙事保全 | ✅ 已做 | `git merge -s ours` 并入 `019fb8ff`(1 笔) 与 `019fc539`(12 笔)，两次均校验 `HEAD^{tree}` == `HEAD^1^{tree}`（零文件改动）；并生成 `docs/journey-历程总表.md`（391 笔分段汇编，段计数之和 == `rev-list --count HEAD`） |
 | 4 体积瘦身 | ⏸️ 承泽决定不做 | 1.29 GB / 44 189 文件原样进 main |
-| 5 删除 9 条分支 | ⏳ 待最终确认 | 内容、叙事、tag 三重保险已到位，删除已属安全操作；待承泽点头 |
+| 5 删除 9 条分支 | ✅ 已做（承泽指令） | 10 条 `arena/019f*` 全部删除，`archive/*` tag 10 个全部保留 |
+| 6 过期文档加时效标记 | ✅ 已做 | 20 份日期型文档顶部加 `⛔ 时效标记`，逐行标注作废指令；正文未改；6 个误伤已回滚 + `terminology.md` 直接更正该行 |
 
 **顺带产出**：`main` 首次包含 `教材/`、`evidence/`、`videos/`、`.learnings/`、`docs/BRANCH-SAFETY.md`
 与 v8 之后全部工作；`docs/verify-reproducibility-workflow.yml` 仍是模板（受 §9 #15 限制，需承泽在 Actions 页手动装）。

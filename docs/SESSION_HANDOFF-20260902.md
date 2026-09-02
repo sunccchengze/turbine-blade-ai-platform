@@ -69,7 +69,8 @@ cd /home/user/turbine-blade-ai-platform && git fetch origin && git status && git
 ## 4. 下一会话建议顺序
 
 1. 读 `docs/BRANCH-SAFETY.md` → 本文件 → `HANDOFF.md` §0.-1 十一条。回复开头给技能/席位显式表（LRN-20260810-01）。
-2. 仓库侧收口（承泽已拍板）：tag ✅ 已打；瘦身 ❌ 不做；D40 叙事 ✅ 已并入主线。
-   剩最后一步：**删除 10 条 `arena/*` 旧分支，只留 `main` + 会话分支**。tag 与 `merge -s ours` 已保证删后历史可查。
+2. 仓库侧收口：tag ✅；瘦身 ❌（承泽决定不做）；D40 叙事 ✅ 已并入主线；
+   20 份过期文档 ✅ 已加 `⛔ 时效标记`（正文未改，白名单见 HANDOFF §9 #19）；
+   10 条 `arena/019f*` 分支 ✅ 已删，`archive/*` tag 全留。仓库最终只剩 `main` + 本会话分支。
 3. 科研侧仍按宪章：`evidence/metrics.json` 单一事实源，Level 2 为现实目标；决策指标仍全 `null`，无 CST/FFD、无收敛 RANS 表。
 4. 收工前自检：`grep -c "绝不主动合并 PR" HANDOFF.md` ≥ 1，且本文件已更新。

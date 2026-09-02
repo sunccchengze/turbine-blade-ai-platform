@@ -1,5 +1,19 @@
 # 📋 8/4 优化日 · 操作手册 v2（瘦身版）
 
+> ⛔ **时效标记（2026-09-02 追加 · 由分支收敛会话自动判定）** —— 本文件是 **2026-08-08** 的历史快照，**不是现状**。
+> 以下写法在今天已经不成立：
+> - 第 131 行「2. 把 arena 分支合并进 main（GitHub 网页 Pull Request → Merge）→ SnapDeploy 手动 Redeploy 后端（必须，否则线上还是旧代码）」→ **后端 Redeploy：平台已纯前端 WASM，线上无部署中的后端，推 main 之后没有这一步**
+> - 第 132 行「3. 线上验证：浏览器打开 https://turbine-blade-api-c4f40.containers.snapdeploy.app/health 应返回 healthy」→ **引用已下线的 SnapDeploy 容器域名**
+> - 第 134 行「> 如果今天累了，这三件可以放明早 8 点前做（答辩 10 点）。但Redeploy 必须在你合 PR 之后做，别忘。」→ **后端 Redeploy：平台已纯前端 WASM，线上无部署中的后端，推 main 之后没有这一步**
+> - 第 155 行「17:00  傍晚3件（HANDOFF/合PR/Redeploy，可放明早）」→ **后端 Redeploy：平台已纯前端 WASM，线上无部署中的后端，推 main 之后没有这一步**
+>
+> 现行口径唯一来源：`HANDOFF.md`（§0.-1 十一条铁律、§9.5 架构现状）、`docs/BRANCH-SAFETY.md`（会话与 git 纪律）、`evidence/metrics.json`（对外数字）。
+> ——以及第二轮：
+> - 第 5 行「> - 第 131 行「2. 把 arena 分支合并进 main（GitHub 网页 Pull Request → Merge）→ SnapDeploy 手动 Redeploy 后端（必须，否则线上还是旧代」→ **部署拓扑已变：线上只有 Cloudflare Pages 静态站点**
+> - 第 7 行「> - 第 134 行「> 如果今天累了，这三件可以放明早 8 点前做（答辩 10 点）。但Redeploy 必须在你合 PR 之后做，别忘。」→ 后端 Redeploy：平台已纯前端 WASM，线上无部署中」→ **部署拓扑已变：线上只有 Cloudflare Pages 静态站点**
+> - 第 8 行「> - 第 155 行「17:00  傍晚3件（HANDOFF/合PR/Redeploy，可放明早）」→ 后端 Redeploy：平台已纯前端 WASM，线上无部署中的后端，推 main 之后没有这一步」→ **部署拓扑已变：线上只有 Cloudflare Pages 静态站点**
+> **正文一字未改**——当时的判断与过程仍按原样保留，供回顾历程用。
+
 > v2 修订：采纳前会话 agent 的合理建议——①先环境探针，不猜你电脑；②主 R² 不下载任何数据，30 秒出结果；
 > ③官方 test split 降级为「可选 + 时间盒 ≤1 小时」（口径与主数字分开，绝不混报）；④日程瘦身，今天只认两件主线。
 > 每步成功长什么样、失败怎么办、把哪几行发我，都写清楚了。遇到报错：**把终端最后 20–30 行发我，别自己猜。**

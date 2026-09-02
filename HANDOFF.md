@@ -213,7 +213,11 @@ git ls-remote origin >/dev/null 2>&1 && echo "REMOTE OK" || echo "REMOTE BLOCKED
 16. **作用域坑**：在子组件里用主组件 state 会 lint 报「declared but never used」+ 运行时 ReferenceError（Day 28 UQPage 实测）。状态留主组件、prop 传子组件。
 17. 🩸 **沙盒 TLS 白名单连不上 huggingface.co**（Day 38 实测）：`curl -sI` 返回 exit 0 是**假阳性**，实际 GET 全部 000（TLS EOF）。测连通性用 GET 带 `-o /dev/null -w "%{http_code}"`，别信 HEAD。原始数据/重型训练走云 GPU。
 18. **本仓 clone 常为 shallow**（2026-09-02 实测：`.git/shallow` 卡住 main 的父提交）：本地 `git merge-base` 会**假报「无共同祖先」**，跨家族祖先判断必须走 GitHub API `compare` 或 `git fetch --unshallow origin`。
-19. `技能库&准则/` 已把仓库撑到 1.29 GB / 44 189 文件（2026-09-02 审计）；新技能库优先 submodule / 外部 Release，别再往仓里塞 vendored zip/gif/mp4。
+19. **过期文档已统一打「⛔ 时效标记」**（2026-09-02，20 个文件，正文一律未改）：标记只列「第 N 行那句话已作废 + 为什么 + 现行口径去哪看」。
+    自查：`grep -rl "时效标记（2026-09-02" docs/`。**禁止再给下列文件加标记**（复核后确认它们描述的就是现行架构或属当时正确叙述）：
+    `docs/GHG-*.md`、`docs/D23-walkthrough-v1.md`、`docs/about-redesign-D44.md`、`docs/final-acceptance-D42.md`、
+    `docs/p4-input-audit-D41.md`、`docs/terminology.md`（词典类不标记，已直接更正其「部署域名」行）。
+20. `技能库&准则/` 已把仓库撑到 1.29 GB / 44 189 文件（2026-09-02 审计）；新技能库优先 submodule / 外部 Release，别再往仓里塞 vendored zip/gif/mp4。
 20. 🩸 **回补旧文档时必须与现行架构对账**：v6 的运维条目（SnapDeploy Redeploy、uvicorn 端口清理、`VITE_API_URL`）在纯前端化之后已作废，
     照抄会把死规则当活的传染给下一个会话（2026-09-02 本轮就犯过一次）。凡引用历史坑，先 `grep` 现行代码确认它还成立。
 
@@ -249,6 +253,7 @@ git ls-remote origin >/dev/null 2>&1 && echo "REMOTE OK" || echo "REMOTE BLOCKED
 `019fb618 / 019fb74d / 019fb778 / 019fbdff` 已全含于 main，`019fb8ff / 019fc539` 的未合并内容已被 ffee7 以相同或更新版本覆盖，
 `019fe072 / 019feb03 / 019ff6c7` 是 ffee7 的祖先。体积问题本轮不处理（承泽决定：不瘦身）。
 
+**旧分支处置（2026-09-02）**：10 条 `arena/019f*` 已删除，只留 `main` + 本会话分支；tag 全部保留。
 **叙事保全（2026-09-02 已执行）**：`019fb8ff`（1 笔）与 `019fc539`（12 笔 D40）用
 `git merge -s ours` **零文件改动**并入主线 → 删分支也不丢那段历程；其余 8 条本已是 main 祖先。
 10 条分支均已打 `archive/<会话id>` tag 作二次保险。全量「一步一步」清单见 **`docs/journey-历程总表.md`**

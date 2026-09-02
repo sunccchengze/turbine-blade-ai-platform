@@ -1,5 +1,17 @@
 # D41+ 进度存档 · 2026-08-09 夜间
 
+> ⛔ **时效标记（2026-09-02 追加 · 由分支收敛会话自动判定）** —— 本文件是 **2026-08-09** 的历史快照，**不是现状**。
+> 以下写法在今天已经不成立：
+> - 第 100 行「- 前端和后端随 GitHub `main` 自动部署；因此任何线上口径收口都必须先合入/同步 main 后，再分别检查 Cloudflare Pages 和 SnapDeploy 的实际版本。后端仍可能因 SnapDe」→ **后端不随 main 部署：main 只触发 Cloudflare Pages 静态构建**
+>
+> 现行口径唯一来源：`HANDOFF.md`（§0.-1 十一条铁律、§9.5 架构现状）、`docs/BRANCH-SAFETY.md`（会话与 git 纪律）、`evidence/metrics.json`（对外数字）。
+> ——以及第二轮：
+> - 第 5 行「> - 第 100 行「- 前端和后端随 GitHub `main` 自动部署；因此任何线上口径收口都必须先合入/同步 main 后，再分别检查 Cloudflare Pages 和 SnapDeploy 的」→ **部署拓扑已变：线上只有 Cloudflare Pages 静态站点**
+> - 第 107 行「- 前端和后端随 GitHub `main` 自动部署；因此任何线上口径收口都必须先合入/同步 main 后，再分别检查 Cloudflare Pages 和 SnapDeploy 的实际版本。后端仍可能因 」→ **部署拓扑已变：线上只有 Cloudflare Pages 静态站点**
+> - 第 182 行「- 由于 SnapDeploy 冷启动影响公开演示，前端数据层已切换为静态资源 + 浏览器 ONNX Runtime Web。」→ **「等冷启动」这个前提已不存在：模型与数据随前端静态部署，浏览器内推理**
+> - 第 184 行「- FastAPI 保留为研究复现/未来 HPC 服务，不再是公开演示的必需依赖。」→ **FastAPI 后端不上线：仅本地/离线训练与产物生成时用**
+> **正文一字未改**——当时的判断与过程仍按原样保留，供回顾历程用。
+
 > 写给下一次会话的交接记录。明早继续前先阅读本文件、`docs/stage-guardrails-D41.md`、`tasks/plan.md` 和 `tasks/todo.md`。
 
 ## 1. 当前分支与仓库状态
