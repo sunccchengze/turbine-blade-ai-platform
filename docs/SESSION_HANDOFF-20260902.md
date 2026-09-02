@@ -72,5 +72,7 @@ cd /home/user/turbine-blade-ai-platform && git fetch origin && git status && git
 2. 仓库侧收口：tag ✅；瘦身 ❌（承泽决定不做）；D40 叙事 ✅ 已并入主线；
    20 份过期文档 ✅ 已加 `⛔ 时效标记`（正文未改，白名单见 HANDOFF §9 #19）；
    10 条 `arena/019f*` 分支 ✅ 已删，`archive/*` tag 全留。仓库最终只剩 `main` + 本会话分支。
+   复原任一条：`git push origin archive/<会话id>:refs/heads/arena/<会话id>-turbine-blade-ai-platform`。
+   删除后复查：`eb7c1dc6`（Day 01 建仓）与 `9cdeb370`（D40 末笔）仍是 main 的祖先，历程一笔未丢。
 3. 科研侧仍按宪章：`evidence/metrics.json` 单一事实源，Level 2 为现实目标；决策指标仍全 `null`，无 CST/FFD、无收敛 RANS 表。
 4. 收工前自检：`grep -c "绝不主动合并 PR" HANDOFF.md` ≥ 1，且本文件已更新。

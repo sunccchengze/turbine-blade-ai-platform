@@ -114,6 +114,7 @@
 | 3b 叙事保全 | ✅ 已做 | `git merge -s ours` 并入 `019fb8ff`(1 笔) 与 `019fc539`(12 笔)，两次均校验 `HEAD^{tree}` == `HEAD^1^{tree}`（零文件改动）；并生成 `docs/journey-历程总表.md`（391 笔分段汇编，段计数之和 == `rev-list --count HEAD`） |
 | 4 体积瘦身 | ⏸️ 承泽决定不做 | 1.29 GB / 44 189 文件原样进 main |
 | 5 删除 9 条分支 | ✅ 已做（承泽指令） | 10 条 `arena/019f*` 全部删除，`archive/*` tag 10 个全部保留 |
+| 6b 最终核验 | ✅ | 删除后远端仅剩 `main` 与 `arena/01a061af`（同指一点）；10 个 `archive/*` tag 在位；`eb7c1dc6`(Day 01) 与 `9cdeb370`(D40 末笔) 仍是 main 的祖先 → **历程一笔未丢** |
 | 6 过期文档加时效标记 | ✅ 已做 | 20 份日期型文档顶部加 `⛔ 时效标记`，逐行标注作废指令；正文未改；6 个误伤已回滚 + `terminology.md` 直接更正该行 |
 
 **顺带产出**：`main` 首次包含 `教材/`、`evidence/`、`videos/`、`.learnings/`、`docs/BRANCH-SAFETY.md`
