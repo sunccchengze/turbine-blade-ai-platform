@@ -1,6 +1,6 @@
 # 分支审计 · 2026-09-02（为「只留一个分支」准备的数据底稿）
 
-> 状态：**纯调研，未做任何 commit / push / merge / delete**。
+> 状态：**已执行第 1–2 步**（见文末 §6 执行记录）：main 已快进到内容终点；旧分支按承泽决定全部保留；体积未动；tag 未打。
 > 数据来源：本地 `git`（已 `git fetch origin '+refs/heads/*'`）+ GitHub REST API `compare` / `pulls`。
 > ⚠️ 本仓 clone 是 **shallow**（`.git/shallow` = `17e78a57`），main 的真实父提交 `50d336c5` 不在本地。
 > 因此本地 `git merge-base` 会假报「无共同祖先」——凡涉及跨家族祖先判断，一律以 API compare 为准。
@@ -101,3 +101,19 @@
 - 旧分支是「打 tag 后删除」还是「直接删除」还是「保留不动」？
 - 要不要在本轮做瘦身（4.1）？若做，是仅 `--cached` 移除（安全）还是接受历史重写（彻底但断会话）？
 - 铁律补写范围：只 `HANDOFF.md`，还是 `HANDOFF.md` + `.learnings/LEARNINGS.md` + 新建 `docs/BRANCH-SAFETY.md`（把 ai 仓那份手册搬进来，来源标注）？
+
+---
+
+## 6. 执行记录（2026-09-02）
+
+| 计划步 | 状态 | 说明 |
+|---|---|---|
+| 1 打 `archive/*` tag | ⏸️ 未做 | 承泽决定「旧分支先全留着」，故暂无必要；要删时先补这步 |
+| 2 主线收敛 | ✅ 已做 | 会话分支 ff-merge 到 `a8d0fe1a` → 提交 `3eb11165` → `git push origin arena/01a061af-...:main`，main `17e78a57..3eb11165`（+201 笔），**全程 0 PR** |
+| 3 回补铁律 | ✅ 已做 | HANDOFF 铁律 7→11 条 + §0/§9/§10/§11 回补；新建 `docs/BRANCH-SAFETY.md`；`AGENT_CHARTER` 第 11–14 条；`.learnings` LRN-20260902-01/02 + ERR-20260902-01 |
+| 4 体积瘦身 | ⏸️ 本轮不做 | 承泽决定不动；1.29 GB / 44 189 文件原样进 main |
+| 5 删除 9 条分支 | ⏸️ 未做 | 承泽决定保留；`019fc539` 的 D40 提交叙事仍可从该分支查到 |
+
+**顺带产出**：`main` 首次包含 `教材/`、`evidence/`、`videos/`、`.learnings/`、`docs/BRANCH-SAFETY.md`
+与 v8 之后全部工作；`docs/verify-reproducibility-workflow.yml` 仍是模板（受 §9 #15 限制，需承泽在 Actions 页手动装）。
+

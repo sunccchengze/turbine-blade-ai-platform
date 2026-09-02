@@ -172,10 +172,20 @@ git push origin <你的分支>:main     # 再快进
 唯一未合并的 `019fc539` 12 笔提交，其 23 个文件**全部**已被终点分支 `019ffee7` 以相同或更新版本收录
 （21 个逐字节相同 + 5 个 ffee7 更新）。逐文件核验表见 `docs/branch-audit-20260902.md` §3。
 
-### 5.2 快进推送实测
+### 5.2 快进推送实测 ✅ 本仓已验证（2026-09-02，Session `01a061af`）
 
-见 `docs/SESSION_HANDOFF-20260902.md` §「FF 推送实测结果」——由执行本次收敛的会话当场回填：
-推送后立刻 `git ls-remote` + 再推一次空提交验证通道仍可用，才算「实测通过」。
+本会话用它把 `arena/019ffee7`（+200 笔）与自己的一笔文档提交送上 `main`，全程 0 个 PR：
+
+| 探针 | 结果 |
+|---|---|
+| `git merge-base --is-ancestor origin/main HEAD` | ✅ 通过 |
+| `git push --dry-run origin HEAD:main` | ✅ 通过 |
+| `git push origin <分支>:main` | ✅ `17e78a57..3eb11165`（2.3 s） |
+| **推送之后**再 `git push origin <分支>` | ✅ 成功 —— **通道未被切断** |
+| **推送之后** `gh api .../git/refs/heads/main` | ✅ 返回 `3eb11165` |
+
+结论：与 `ai` 仓实测一致，快进推送不触发 Arena 关闭远程通道，push 与 gh 在推送后继续可用。
+完整数据见 `docs/SESSION_HANDOFF-20260902.md` §2。注意：通道健康仍只能在会话内验证，GitHub 侧查不出来。
 
 ---
 
