@@ -25,6 +25,8 @@ cd /home/user/turbine-blade-ai-platform && git fetch origin && git status && git
 2. **确诊「血泪教训已丢失」**：`019feb03` 把 HANDOFF 重写成 v8 时删掉了「绝不主动合并 PR」
    与整节 §9 沙盒坑 17 条；只剩 `SESSION_HANDOFF` 一句无来由的「不推 main。不主动开/合 PR。」
 3. **学进妙招并实测通过** → 新建 `docs/BRANCH-SAFETY.md`（快进推送手册 + 十一条铁律 + 沙盒坑 19 条 + 断线自救）。
+3b. **叙事保全**：`git merge -s ours` 把 `019fb8ff`(1 笔) 与 `019fc539`(12 笔 D40) 零改动并入主线；
+   10 条旧分支全部打 `archive/*` tag；生成 `docs/journey-历程总表.md`（391 笔，按会话分段不重不漏）。
 4. **回补纪律到四处**：`HANDOFF.md`（铁律 7→11 条、§0 开场清单、§9 坑、§10 本地环境、§11 收敛状态）、
    `docs/BRANCH-SAFETY.md`（专用载体）、`docs/AGENT_CHARTER.md`（第 11–14 条）、
    `.learnings/`（LRN-20260902-01/02 + ERR-20260902-01，均 critical）。
@@ -63,7 +65,7 @@ cd /home/user/turbine-blade-ai-platform && git fetch origin && git status && git
 ## 4. 下一会话建议顺序
 
 1. 读 `docs/BRANCH-SAFETY.md` → 本文件 → `HANDOFF.md` §0.-1 十一条。回复开头给技能/席位显式表（LRN-20260810-01）。
-2. 悬着的仓库侧决定（都还没做）：① 旧 9 条分支删不删（建议先打 `archive/*` tag 再删）；② 体积瘦身；
-   ③ 是否把 `019fc539` 的 D40 提交叙事 cherry-pick 进主线补记录。
+2. 仓库侧收口（承泽已拍板）：tag ✅ 已打；瘦身 ❌ 不做；D40 叙事 ✅ 已并入主线。
+   剩最后一步：**删除 10 条 `arena/*` 旧分支，只留 `main` + 会话分支**。tag 与 `merge -s ours` 已保证删后历史可查。
 3. 科研侧仍按宪章：`evidence/metrics.json` 单一事实源，Level 2 为现实目标；决策指标仍全 `null`，无 CST/FFD、无收敛 RANS 表。
 4. 收工前自检：`grep -c "绝不主动合并 PR" HANDOFF.md` ≥ 1，且本文件已更新。
