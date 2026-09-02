@@ -171,3 +171,32 @@ Corrections, insights, and knowledge gaps captured during development.
   2. 教材公式用 Unicode 平文本：C=W+U、π^0.2857、√(γ·R·T)、p_t2、C_θ2、10^(-3.39)、Ĉ_η；
   3. 改完跑 build_local.py 重建网页，grep 验证 md 与 html 零反斜杠命令；
   4. 18 个含 LaTeX 的教材文件（U01–U12、00、名词本、期末A/B、答案详解）已于当日全量转换。
+
+---
+
+## [LRN-20260902-01] 会话通道纪律：绝不主动合/关 PR；送上 main 用快进推送 (Zero Exception)
+- **Logged**: 2026-09-02T11:20:00Z
+- **Priority**: critical
+- **Status**: verified
+- **Category**: best_practice
+- **Trigger**: 用户要求把 `sunccchengze/ai/BRANCH-SAFETY.md` 的妙招学进本仓，并「把老铁律补回来」
+- **Correct Approach**:
+  1. `gh pr merge` / `gh pr close` 都会让 Arena 立刻关闭本会话远程通道，此后 push/gh 全失败、未推送提交永久丢失；开 PR 本身安全；
+  2. 判断通道是否健康**不能**看分支是否存活（本仓 7 个 PR 中 5 个合并后分支仍在，链接照样断），也不能查 GitHub 侧；只能在会话内 `git ls-remote` 探；
+  3. 内容要进 `main` 而不碰 PR：`git push origin <你的分支>:main` 纯 ref 快进，无 PR 事件 → 不触发关闭；前提 `git merge-base --is-ancestor origin/main HEAD` 成立，且**必须先取得承泽同意**；
+  4. main 领先时只能 `git rebase origin/main`，**禁止 `-f` 强推 main**（自己的会话分支可 -f）；
+  5. 推送前 gnutls TLS 报错是会话将关闭的前兆，重试上限 2–3 次；断线自救 = `git format-patch` / `git bundle` + 如实上报；
+  6. 细则唯一载体 `docs/BRANCH-SAFETY.md`（不寄生于会被例行重写的 HANDOFF）；HANDOFF §0.-1 铁律 2 与 §9 #12–#13 只留指针。
+
+## [LRN-20260902-02] 重写交接文档时必须做「纪律条目 diff」，否则血泪教训会静默消失
+- **Logged**: 2026-09-02T11:20:00Z
+- **Priority**: critical
+- **Status**: verified
+- **Category**: insight
+- **Trigger**: 2026-09-02 分支审计发现 v8 重写丢了铁律与整节坑清单
+- **Correct Approach**:
+  1. 重写 `HANDOFF.md` 之类总文档前，先 `diff <(git show <旧>:HANDOFF.md) HANDOFF.md` 逐节核对，**被删的每一节都要写明「去哪了」**；
+  2. 纪律/安全类内容不进「会被重写」的正文，改放专用文件（本仓 = `docs/BRANCH-SAFETY.md`）并在 HANDOFF 顶部挂指针；
+  3. 收工时按 LRN-20260813-04 写 `docs/SESSION_HANDOFF-YYYYMMDD.md`，并显式声明本次改动了哪些纪律条目；
+  4. 判据：`grep -c "绝不主动合并 PR" HANDOFF.md` 必须 ≥ 1；为 0 即视为纪律资产丢失，禁止收工。
+
