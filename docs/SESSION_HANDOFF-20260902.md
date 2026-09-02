@@ -66,6 +66,16 @@ cd /home/user/turbine-blade-ai-platform && git fetch origin && git status && git
   `/models/surrogate_model.onnx` + `/data/*.json`，无任何 API 基址；`backend/Dockerfile`/`Procfile` 为退役残留）。
   **推 main 后唯一需要看的是 Pages 构建是否绿**。该错误已写入 `HANDOFF.md` §9.5 与 ERRORS，防止再传染。
 
+## 3.5 收尾确认（承泽 2026-09-02 亲验）
+
+| 项 | 结论 |
+|---|---|
+| Cloudflare Pages 重建 | ✅ **绿**（main 前进 202 笔含前端重设计后的首次自动构建，已人工验收） |
+| 体积（1.29 GB / 44 189 文件的 `技能库&准则/`） | ❌ **不处理**（承泽决定；要减重只能本地 `git filter-repo`，会改 hash） |
+| 10 条旧 `arena/*` 分支 | 已删；`archive/*` tag 10 个全留作复原入口 |
+| 本会话分支 `arena/01a061af-*` | **保留**（Arena 按它绑定本会话；与 main 同指一点，无内容冗余风险） |
+| 后端部署 | 无任何动作。推 main 只需看 Pages 构建是否绿 |
+
 ## 4. 下一会话建议顺序
 
 1. 读 `docs/BRANCH-SAFETY.md` → 本文件 → `HANDOFF.md` §0.-1 十一条。回复开头给技能/席位显式表（LRN-20260810-01）。
