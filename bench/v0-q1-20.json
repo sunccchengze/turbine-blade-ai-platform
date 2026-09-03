@@ -1,0 +1,207 @@
+{
+  "schema": "turbine-bench/v0",
+  "created": "2026-09-03",
+  "owner": "孙承泽",
+  "session": "arena/01a0662f-turbine-blade-ai-platform",
+  "rule": "答案必须能在 source.path 原文复现；禁止把 E2 写成 E4；禁止把代理数字说成 CFD 验证。每题只允许一个正确答案。",
+  "grade_legend": {
+    "E1": "定义/口径层事实，出自 evidence/claims.yaml，无需数值复现",
+    "E2": "工程 holdout 或代理优化上可复现的数值，出自 evidence/metrics.json",
+    "E3": "未收敛 CFD 的中间量，出自 evidence/metrics.json su2_coarse",
+    "E4": "尚无证据的断言，evidence/claims.yaml 中 status=empty",
+    "doc-secondary": "出自 docs/ 的二次转述，S1 后须补论文页码才能升级"
+  },
+  "verify": "python3 bench/verify_v0.py",
+  "items": [
+    {
+      "id": "Q01",
+      "question": "工程 holdout 测试集样本数 n_test 与随机划分种子 random_state 各是多少？",
+      "answer": "n_test = 100，random_state = 42",
+      "expected": { "split.n_test": 100, "split.random_state": 42 },
+      "source": { "path": "evidence/metrics.json", "pointer": "split.n_test; split.random_state" },
+      "grade": "E2",
+      "note": "字段名是 random_state，不是 seed。split.note 明确：这是工程开发划分，不是 PLAID 官方 test，也不是跨几何族划分。"
+    },
+    {
+      "id": "Q02",
+      "question": "残差 ONNX 代理（residual_physics_onnx）在 holdout 上三通道 R² 分别是多少？按 压比 / 效率 / 流量 顺序作答。",
+      "answer": "0.9844 / 0.9561 / 0.9827",
+      "expected": {
+        "surrogate_holdout.r2.Compression_ratio": 0.9844,
+        "surrogate_holdout.r2.Efficiency": 0.9561,
+        "surrogate_holdout.r2.Massflow": 0.9827
+      },
+      "source": { "path": "evidence/metrics.json", "pointer": "surrogate_holdout.r2" },
+      "grade": "E2"
+    },
+    {
+      "id": "Q03",
+      "question": "基线 MLP 在 holdout 上的效率（Efficiency）R² 是多少？",
+      "answer": "0.9132",
+      "expected": { "baseline_mlp_holdout.r2.Efficiency": 0.9132 },
+      "source": { "path": "evidence/metrics.json", "pointer": "baseline_mlp_holdout.r2.Efficiency" },
+      "grade": "E2",
+      "note": "单一种子，未做多种子区间（baseline_mlp_holdout.note）。"
+    },
+    {
+      "id": "Q04",
+      "question": "训练 / 验证 / 测试三集样本数各是多少？",
+      "answer": "800 / 100 / 100",
+      "expected": { "split.n_train": 800, "split.n_val": 100, "split.n_test": 100 },
+      "source": { "path": "evidence/metrics.json", "pointer": "split.n_train; split.n_val; split.n_test" },
+      "grade": "E2"
+    },
+    {
+      "id": "Q05",
+      "question": "MC Dropout 名义 95% 带在效率 η 上的经验覆盖率是多少？",
+      "answer": "0.65",
+      "expected": { "mc_dropout_heuristic.empirical_coverage.Efficiency": 0.65 },
+      "source": { "path": "evidence/metrics.json", "pointer": "mc_dropout_heuristic.empirical_coverage.Efficiency" },
+      "grade": "E2",
+      "cross_ref": "evidence/claims.yaml C04"
+    },
+    {
+      "id": "Q06",
+      "question": "MC Dropout 名义 95% 带在压比 / 流量上的经验覆盖率各是多少？",
+      "answer": "压比 0.89 / 流量 0.88",
+      "expected": {
+        "mc_dropout_heuristic.empirical_coverage.Compression_ratio": 0.89,
+        "mc_dropout_heuristic.empirical_coverage.Massflow": 0.88
+      },
+      "source": { "path": "evidence/metrics.json", "pointer": "mc_dropout_heuristic.empirical_coverage" },
+      "grade": "E2"
+    },
+    {
+      "id": "Q07",
+      "question": "MC Dropout 在效率 η 上的 mean_sigma 是多少？",
+      "answer": "0.0010",
+      "expected": { "mc_dropout_heuristic.mean_sigma.Efficiency": 0.0010 },
+      "source": { "path": "evidence/metrics.json", "pointer": "mc_dropout_heuristic.mean_sigma.Efficiency" },
+      "grade": "E2"
+    },
+    {
+      "id": "Q08",
+      "question": "代理 NSGA-II Pareto 前沿上的最高效率 max_eta 是多少（写到 metrics.json 冻结精度）？",
+      "answer": "0.9173097（对外口径约 0.9173）",
+      "expected": { "nsga2_surrogate.max_eta": 0.9173097 },
+      "source": { "path": "evidence/metrics.json", "pointer": "nsga2_surrogate.max_eta" },
+      "grade": "E2",
+      "cross_ref": "evidence/claims.yaml C02（must_not_say: CFD 验证的最优叶片）"
+    },
+    {
+      "id": "Q09",
+      "question": "代理 Pareto 最高效率相对训练集均值的增量 delta_eta_vs_train_mean 是多少？",
+      "answer": "0.054（约 +5.4%）",
+      "expected": { "nsga2_surrogate.delta_eta_vs_train_mean": 0.054, "nsga2_surrogate.train_mean_eta": 0.8703 },
+      "source": { "path": "evidence/metrics.json", "pointer": "nsga2_surrogate.delta_eta_vs_train_mean" },
+      "grade": "E2",
+      "note": "口径分两层：evidence/claims.yaml C02 允许说「相对训练均值约 +5.4%」但禁说「CFD 验证的最优叶片」；docs/guo-line-and-next-path.md §3「明确不做」进一步规定进组汇报时不报代理 5.4%。两条都是原文，不要混成一句。"
+    },
+    {
+      "id": "Q10",
+      "question": "代理 Pareto 前沿上的最大流量 max_massflow 是多少 kg/s？",
+      "answer": "21.7379 kg/s（对外口径约 21.74）",
+      "expected": { "nsga2_surrogate.max_massflow": 21.7379 },
+      "source": { "path": "evidence/metrics.json", "pointer": "nsga2_surrogate.max_massflow" },
+      "grade": "E2",
+      "cross_ref": "evidence/claims.yaml C03（该点效率约 0.873）"
+    },
+    {
+      "id": "Q11",
+      "question": "代理 NSGA-II 的两条约束 pi_min 与 eta_min 各取多少？",
+      "answer": "pi_min = 1.8，eta_min = 0.84",
+      "expected": { "nsga2_surrogate.constraints.pi_min": 1.8, "nsga2_surrogate.constraints.eta_min": 0.84 },
+      "source": { "path": "evidence/metrics.json", "pointer": "nsga2_surrogate.constraints" },
+      "grade": "E2"
+    },
+    {
+      "id": "Q12",
+      "question": "代理 NSGA-II 的种群规模 pop、代数 ngen、种子 seed 各是多少？",
+      "answer": "pop = 100，ngen = 200，seed = 42",
+      "expected": { "nsga2_surrogate.pop": 100, "nsga2_surrogate.ngen": 200, "nsga2_surrogate.seed": 42 },
+      "source": { "path": "evidence/metrics.json", "pointer": "nsga2_surrogate.pop; nsga2_surrogate.ngen; nsga2_surrogate.seed" },
+      "grade": "E2"
+    },
+    {
+      "id": "Q13",
+      "question": "SU2 粗网格算例的网格数、平台残差 relrms_platform、以及是否收敛？",
+      "answer": "140000 格（14 万）、relrms_platform = −3.39、converged = false（未收敛）",
+      "expected": { "su2_coarse.cells": 140000, "su2_coarse.relrms_platform": -3.39, "su2_coarse.converged": false },
+      "source": { "path": "evidence/metrics.json", "pointer": "su2_coarse" },
+      "grade": "E3",
+      "cross_ref": "evidence/claims.yaml C05"
+    },
+    {
+      "id": "Q14",
+      "question": "模型输入的 74 维是什么性质的量？能否当作可设计几何？",
+      "answer": "74 维是表面统计量，不是可设计几何",
+      "source": { "path": "evidence/claims.yaml", "pointer": "claims[id=C06].text" },
+      "grade": "E1"
+    },
+    {
+      "id": "Q15",
+      "question": "本项目三个输出能否对外称为 MDO（多学科设计优化）？理由是什么？",
+      "answer": "不能；三个输出均为气动标量，故不称 MDO",
+      "source": { "path": "evidence/claims.yaml", "pointer": "claims[id=C07].text; forbidden_phrases[0]" },
+      "grade": "E1"
+    },
+    {
+      "id": "Q16",
+      "question": "C08「代理能正确排序设计 / Top-k 与 CFD 一致」目前的 status 是什么？对应 decision_metrics 各字段值为何？",
+      "answer": "status = empty；decision_metrics 六个字段（spearman_rank, top_k_recall, feasibility_precision, pareto_hv_error, optimization_regret, cfd_budget_saved）全部为 null",
+      "expected": {
+        "decision_metrics.spearman_rank": null,
+        "decision_metrics.top_k_recall": null,
+        "decision_metrics.feasibility_precision": null,
+        "decision_metrics.pareto_hv_error": null,
+        "decision_metrics.optimization_regret": null,
+        "decision_metrics.cfd_budget_saved": null
+      },
+      "source": { "path": "evidence/claims.yaml", "pointer": "claims[id=C08].status; evidence/metrics.json decision_metrics" },
+      "grade": "E4",
+      "note": "decision_metrics.note：无收敛 RANS 对照前一律为 null，禁止用代理自比填数。"
+    },
+    {
+      "id": "Q17",
+      "question": "evidence/claims.yaml 的 forbidden_phrases 共有几条？按原文顺序列出全部。",
+      "answer": "7 条：多学科设计优化；可制造的 Pareto 最优叶片；校准的 95% 置信区间；PINN；Navier-Stokes 残差约束；全工况智能优化；本科二年级",
+      "source": { "path": "evidence/claims.yaml", "pointer": "forbidden_phrases" },
+      "grade": "E1",
+      "note": "交接草稿原题「举两例」答案不唯一，S1 落地时改为全量列举。"
+    },
+    {
+      "id": "Q18",
+      "question": "MC Dropout 的 ±1.96σ 名义 95% 带能否对外称为「校准的 95% 置信区间」？",
+      "answer": "不能；metrics.json 记为「±1.96σ 曾被写成 95% CI，现禁止」，claims.yaml 把「校准的 95% 置信区间」列为禁用短语，正确标签是 MC Dropout heuristic uncertainty band",
+      "expected": {
+        "mc_dropout_heuristic.nominal": "±1.96σ 曾被写成 95% CI，现禁止",
+        "mc_dropout_heuristic.label": "MC Dropout heuristic uncertainty band"
+      },
+      "source": { "path": "evidence/metrics.json", "pointer": "mc_dropout_heuristic.nominal; mc_dropout_heuristic.label; evidence/claims.yaml forbidden_phrases[2]" },
+      "grade": "E2"
+    },
+    {
+      "id": "Q19",
+      "question": "按 docs/guo-line-and-next-path.md 的转述，郭振东 2025 CJA 的 TNO 在 Rotor 37 上先报什么、再报什么？",
+      "answer": "先报 T, p, ρ 场，再报性能",
+      "source": { "path": "docs/guo-line-and-next-path.md", "pointer": "§1 路线图代码块「全景神经算子 TNO」一行" },
+      "grade": "doc-secondary",
+      "note": "二次来源。论文原文页码留 Q21+ 槽位，PDF 不在工作区前不得填。"
+    },
+    {
+      "id": "Q20",
+      "question": "按 docs/guo-line-and-next-path.md，当前工作与郭老师路线唯一能接上的接口是什么？用哪个已冻结数字当「传感器」？",
+      "answer": "加点（infill）；用 η 经验覆盖率 65% 当下一次高保真采样的传感器",
+      "source": { "path": "docs/guo-line-and-next-path.md", "pointer": "§2 末段「能接上的接口只有一个：加点（infill）」；§3 题目行" },
+      "grade": "doc-secondary",
+      "cross_ref": "65% 的一手出处 = evidence/metrics.json mc_dropout_heuristic.empirical_coverage.Efficiency（Q05）"
+    }
+  ],
+  "reserved_slots": {
+    "rule": "以下槽位需要论文 PDF 在工作区并能翻到页码后才能填题；S1 内 PDF 缺席，一律不编页码（铁律 4）。",
+    "Q21": "Guo & Haftka 2018 SMO 多保真选数据集：何时不该掺 LF（待页码）",
+    "Q22": "2021 SMO 并行多保真 EI 加点准则（待页码）",
+    "Q23": "KT-EGO 高维（d>20）贵黑箱（待页码）",
+    "Q24": "郭 2025 CJA TNO：Rotor 37 场输出顺序与性能积分（待页码，替换 Q19 的二次来源）"
+  }
+}
