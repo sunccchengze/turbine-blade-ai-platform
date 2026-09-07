@@ -76,7 +76,7 @@ Dropout 推理时随机掐掉一部分，看预测晃多少，晃的是权重。
 
 纠错（2026-08-13 A1 作废「小白重讲」）：
 
-上一档把深入浅出做成了儿童故事（成绩单 / 收得住），深度被抽空。正讲以 `docs/teachback-Q4-MC-Dropout.md` 为准，讲课术以 `技能库&准则/chengze-deep-tutor/SKILL.md` 为准。
+上一档把深入浅出做成了儿童故事（成绩单 / 收得住），深度被抽空。正讲以 `docs/teachback-Q4-MC-Dropout.md` 为准，讲课术以 `docs/agent-charter/chengze-deep-tutor.md` 为准。
 
 他已抓住的骨架可以留：Dropout 在推理时仍采样、晃的是有效权重、η 因激波–附面层跳得猛、65% 是覆盖率、保形是事后加宽、不补物理。缺的是拆词、流程、三种收敛、以及生产端其实是常数 σ。
 

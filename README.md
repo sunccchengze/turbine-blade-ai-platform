@@ -479,6 +479,19 @@ python backend/scripts/generate_pareto_evolution.py
 - KIT Press Release (Feb 2026) — Compressorless hydrogen gas turbine, 303 s runtime
   ([h2-international](https://www.h2-international.com/technology/compressorless-gas-turbine-kit-surpasses-previous-nasa-runtime-record))
 
+## 📄 许可证与第三方声明 License & Third-Party Notices
+
+本项目代码依 `LICENSE` 授权。
+
+- **第三方资产清单**：[`NOTICES.md`](NOTICES.md) —— 登记曾随仓携带的 72 个第三方 Agent Skills
+  目录的来源、许可证与用途。这些副本已于 2026-09-07 迁出版本控制以保持公开仓轻量，
+  仅保留本地存档；仓内保留的第三方内容见 `docs/agent-charter/third-party/`（MIT，附 LICENSE 原文）。
+- **Agent 准则与专家团**：[`docs/agent-charter/`](docs/agent-charter/) —— 本人自有的技能路由总纲、
+  AI 内阁决策法、多 Agent 协作架构与女娲蒸馏人格卡。
+- **数据集**：NASA Rotor 37 / PLAID，遵循其各自的公开使用条款，详见 `evidence/data_card.md`。
+
+---
+
 ---
 
 <div align="center">

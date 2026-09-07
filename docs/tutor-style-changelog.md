@@ -1,7 +1,7 @@
 # 承泽教学风格调整日志（只追加，不改写旧条）
 
 > 用法：以后每一次「以后别这样讲 / 要改成那样讲」，在文件末尾加一条。  
-> 对应 skill：`技能库&准则/chengze-deep-tutor/SKILL.md`。  
+> 对应 skill：`docs/agent-charter/chengze-deep-tutor.md`。  
 > 冲突时以**最后一条** + 该 skill 为准。
 
 ---

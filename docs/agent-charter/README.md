@@ -16,6 +16,7 @@
 | `MULTI_AGENT_ORCHESTRATION.md` | 四类 Agent 分工矩阵与双盲红蓝对抗架构 | 自有 |
 | `科研技能装载-019ff854.md` | 从 `-SKILL-` 仓装载科研层的台账（哪些上游、为什么装） | 自有 |
 | `AGENT宪法级准则.md` | 降低 LLM 编码常见错误的行为准则（原名「最高优先级AGENT必须遵守的宪法级文件 - 副本.md」） | 自有 |
+| `chengze-deep-tutor.md` | 本人专属 1:1 讲课术（拆名词 / teach-back / 禁儿童故事）。原在 `技能库&准则/chengze-deep-tutor/SKILL.md`，被 `AGENT_CHARTER`、`HANDOFF`、`教材/` 等 8 处现行规则引用，一并捞回并已修正全部引用路径 | 自有 |
 
 ### `SKILL运用指南.md` 的冲突消解（2026-09-07）
 
@@ -42,15 +43,22 @@
 > 区别：`docs/GHG-*.md` 是这些人格产出的**观后感/审查报告**，本目录 `personas/` 是**人格卡定义**本身。
 > 两者格式与用途不同，故不合并编号。
 
+**2026-09-07 修复**：`antony-jameson` / `da-vinci` / `david-goldberg` 三张卡同样带着
+`aa6c0e44` 的未解决冲突标记（初次捞回时逐字节复制，未察觉）。已按与《SKILL运用指南》
+一致的方式消解：正式版为主体，另一侧的项目语境版（含【老詹】【老达】【老高】别名与
+面向本课题的心智模型）移入各卡「附录 · 项目语境版」，并修复了 `\approx`、`\to`
+等被转义损坏的公式符号。
+
 `self-harness-perspective` 的三条核心（归因下沉 / 最小变动状态机 / 回归验证铁律）
 在 `docs/GHG` 系列中没有对应篇目，是这次抢救中风险最高的一份。
 
 ## 三、仍只存在于本地副本与 git 历史的内容
 
-`技能库&准则/` 根下另有两份**第三方**散装文件，未捞回本仓，已在 `NOTICES.md` 登记：
+`技能库&准则/` 根下另有两份**第三方**写作规则，应本人要求已随仓保留于
+`third-party/`（均为 MIT，已附 LICENSE 原文，见该目录 README）：
 
-- `Stop-slop.md`（Hardik Pandya · 去 AI 味写作）
-- `Humanizer - 中文版.md`（译自 blader/humanizer）
+- `third-party/Stop-slop.md`（Hardik Pandya · 英文稿去 AI 味）
+- `third-party/Humanizer-中文版.md`（译自 blader/humanizer · 中文稿去 AI 味）
 
 其余 72 个第三方目录见 `NOTICES.md`。所有已迁出内容仍可用
 `git show 1bae982d^:"技能库&准则/<路径>"` 从历史取回。

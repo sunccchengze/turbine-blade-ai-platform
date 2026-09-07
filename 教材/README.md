@@ -4,7 +4,7 @@
 
 - 先读：`教材/00-怎么读这本书.md`
 - 卡住名词：`教材/名词本.md`（回该章先认词，不要只背索引）
-- 讲课术：`技能库&准则/chengze-deep-tutor/SKILL.md`（以 changelog **A3** 为准）
+- 讲课术：`docs/agent-charter/chengze-deep-tutor.md`（以 changelog **A3** 为准）
 - 数字：只认 `evidence/metrics.json`
 - 答案：`教材/教材配套答案详解.md`
 - 本地网页：`教材/web/index.html` 或 `教材/打开学习站.bat`

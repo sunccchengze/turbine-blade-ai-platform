@@ -107,11 +107,11 @@
 | `最高优先级AGENT必须遵守的宪法级文件 - 副本.md` | `docs/agent-charter/AGENT宪法级准则.md`（本人确认自有，2026-09-07） |
 | `nuwa-distilled/*-perspective/SKILL.md`（5 张人格卡） | `docs/agent-charter/personas/` |
 
-**第三方** —— 未捞回，随存档保留：
+**第三方** —— 应本人要求随仓保留，见 `docs/agent-charter/third-party/`（MIT，已附 LICENSE 原文）：
 
 | 文件 | 上游 / 作者 | 许可证 | 用途（人工填） |
 |---|---|---|---|
-| `Stop-slop.md` | Hardik Pandya (hardikpandya/stop-slop) | 未随文件附带 | 消除 AI 写作痕迹的散文规则集 <sub>[上游自述]</sub> |
-| `Humanizer - 中文版.md` | 译自 blader/humanizer | 未随文件附带 | 中文版去 AI 味编辑指南，基于维基百科「AI 写作特征」 <sub>[上游自述]</sub> |
+| `Stop-slop.md` | [hardikpandya/stop-slop](https://github.com/hardikpandya/stop-slop)，(c) 2025 Hardik Pandya | **MIT**（已随附 `LICENSE-stop-slop.txt`） | 英文稿去 AI 味润色；与 Humanizer / human-writing 不叠用 |
+| `Humanizer - 中文版.md` | 译自 [blader/humanizer](https://github.com/blader/humanizer)，(c) 2025 Siqi Chen | **MIT**（已随附 `LICENSE-humanizer.txt`） | 中文稿去 AI 味润色，基于维基百科「AI 写作特征」 |
 
 > 已迁出内容均可用 `git show 1bae982d^:"技能库&准则/<路径>"` 从 git 历史取回。

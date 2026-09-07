@@ -1,6 +1,6 @@
 # Q4 深入浅出：MC Dropout、覆盖率、保形加宽
 
-> 讲课术：`技能库&准则/chengze-deep-tutor/SKILL.md`（A1）。  
+> 讲课术：`docs/agent-charter/chengze-deep-tutor.md`（A1）。  
 > 数字：`evidence/metrics.json` → `mc_dropout_heuristic`。  
 > 图：`docs/lecture-figs/q4-mc-dropout-mechanism.svg`，对照 `docs/fig12_uncertainty_bands.png`。  
 > 本篇是导师讲义。承泽的三句复述仍写在 `docs/DEFENSE_QA.md`，导师不代写。
