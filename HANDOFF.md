@@ -29,7 +29,11 @@
 2. **🩸 绝不主动合并 PR。** Arena 会在 PR **合并或关闭**后立刻关闭本会话的远程通道，之后所有 push / gh 全失败，未推送的提交随之丢失。
    → 合并 PR 只能是会话的**最后一个动作**，或留给承泽在 GitHub 网页点。要继续干活就让 PR 开着。
    → **别用「分支还在不在」判断通道是否健康**：本仓 7 个 PR 里 5 个合并后分支照旧存活，链接照样断。
-   → 要把内容送上 `main` 又不碰 PR：`git push origin <你的分支>:main` 快进推送（须承泽同意，见 `docs/BRANCH-SAFETY.md` §2）。
+   → 要把内容送上 `main` 又不碰 PR：`git push origin <你的分支>:main` 快进推送（见 `docs/BRANCH-SAFETY.md` §2）。
+   → ✅ **2026-09-07 承泽已常设授权**：本仓后续每一轮交付均用快进推送送上 `main`，不再逐次征询、不开 PR。
+     推之前先自检可快进：`git merge-base --is-ancestor origin/main HEAD`；失败则 `git rebase origin/main`，
+     **绝不对 `main` 用 `-f`**。推完用 `git ls-remote --heads origin` 核对两个 ref 同点。
+     完整手册见 `sunccchengze/SCZ_Archived` 的 `BRANCH-SAFETY.md`（实测 5 次 0 PR，通道始终完好）。
 3. **推不上去时，立刻导 patch 存档，然后如实上报。** 不要静默跳过、不要假装成功：
    `git format-patch origin/main..HEAD -o /tmp/patches/` 或 `git bundle create /tmp/backup.bundle HEAD`。
    推送前的 gnutls TLS 报错是**会话将关闭的前兆**，别机械重试超 2–3 次。
