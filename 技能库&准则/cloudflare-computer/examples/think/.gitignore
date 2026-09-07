@@ -1,5 +1,0 @@
-.wrangler/
-build/
-node_modules/
-node_modules.host-backup.*/
-worker-configuration.d.ts

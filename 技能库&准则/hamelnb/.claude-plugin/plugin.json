@@ -1,8 +1,0 @@
-{
-  "name": "hamelnb",
-  "description": "Live Jupyter notebook kernel workflows for Claude Code",
-  "author": {
-    "name": "hamelsmu"
-  },
-  "version": "1.0.0"
-}
