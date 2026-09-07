@@ -342,6 +342,98 @@ export default function MethodologyPage() {
           </div>
         </div>
 
+        {/* 03b. T1 Δ_min 收益显著性框架 · E4 卡位 (S23′ 骨架，数据待 S17′ 产出后填入) */}
+        <section style={{
+          background: 'var(--panel)',
+          border: '1px dashed var(--line-strong)',
+          borderRadius: 6,
+          padding: '22px 20px',
+          marginBottom: 32
+        }}>
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'baseline',
+            flexWrap: 'wrap',
+            gap: 10,
+            marginBottom: 14
+          }}>
+            <div style={{ color: 'var(--yellow)', font: '10px var(--mono)', letterSpacing: '0.12em' }}>
+              收益显著性检验 · MINIMUM RESOLVABLE INCREMENT (Δ_min)
+            </div>
+            <div style={{
+              font: '10px var(--mono)',
+              letterSpacing: '0.08em',
+              color: 'var(--faint)',
+              border: '1px solid var(--line)',
+              borderRadius: 3,
+              padding: '2px 8px'
+            }}>
+              证据等级 E4 · 待独立复算填充
+            </div>
+          </div>
+
+          <p style={{ color: 'var(--muted)', fontSize: 12, lineHeight: 1.8, maxWidth: 760, marginBottom: 16 }}>
+            任何效率增益的宣称，都必须先跨过“最小可分辨增量”这道门槛：
+            Δ_min = max(网格收敛不确定度 GCI 绝对量, 迭代平台期 bootstrap 95% CI 半宽)。
+            低于 Δ_min 的差值属数值噪声，不得称为成果。该框架在
+            <code style={{ font: '11px var(--mono)', color: 'var(--teal-bright)', margin: '0 4px' }}>delta-eta-min</code>
+            仓独立实现（NACA0012 跨声速 Euler，M=0.8 / α=1.25°，三档等比网格 r=2）。
+          </p>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
+            {[
+              {
+                slot: 'FIG. 1',
+                title: '网格收敛与 GCI 带',
+                note: 'CD(h) 三档 + Richardson 外推 φ_ex + Δ_min 判据带',
+                asset: 'docs/fig1_gci.png'
+              },
+              {
+                slot: 'FIG. 2',
+                title: '宣称增益 vs Δ_min 判据线',
+                note: '红线左侧 = 不可分辨；用于回判外部文献报告的增益',
+                asset: 'docs/fig2_deltamin.png'
+              }
+            ].map(({ slot, title, note, asset }) => (
+              <div key={slot} style={{
+                border: '1px dashed var(--line)',
+                borderRadius: 4,
+                padding: '18px 16px',
+                minHeight: 132,
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between'
+              }}>
+                <div>
+                  <div style={{ font: '10px var(--mono)', color: 'var(--faint)', letterSpacing: '0.1em' }}>{slot}</div>
+                  <div style={{ color: 'var(--paper)', fontSize: 13, fontWeight: 700, marginTop: 6 }}>{title}</div>
+                  <div style={{ color: 'var(--muted)', fontSize: 11, lineHeight: 1.7, marginTop: 6 }}>{note}</div>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 12 }}>
+                  <CircleAlert size={13} style={{ color: 'var(--yellow)', flexShrink: 0 }} />
+                  <span style={{ font: '10px var(--mono)', color: 'var(--faint)' }}>
+                    图未就位 · 待 {asset}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div style={{
+            marginTop: 16,
+            paddingTop: 12,
+            borderTop: '1px solid var(--line)',
+            fontFamily: 'var(--mono)',
+            fontSize: '11px',
+            color: 'var(--faint)',
+            lineHeight: 1.7
+          }}>
+            占位卡片：SU2 三档算例与 GCI/bootstrap 复算完成前，本站不展示任何 Δ_min 数值，
+            也不据此声称任何增益显著性结论。
+          </div>
+        </section>
+
         {/* 04. 底部快捷操作 (宽敞 36px 呼吸边距，绝不挤压文字) */}
         <div style={{ display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap', marginTop: 16 }}>
           <Link to="/explore" className="btn-primary">
