@@ -63,6 +63,16 @@ def main():
         lic, spdx = detect(d)
         use = keep.get(d.name, "（填：在项目里用它做了什么）")
         rows.append(f"| `{d.name}` | {lic} | {spdx} | {use} |")
+
+    # 根目录下的散装文件也必须登记：早期版本只遍历子目录，
+    # 导致自有的《SKILL运用指南》《内阁决策》等被静默漏掉（2026-09-07 修复）。
+    loose = sorted((f for f in SRC.iterdir() if f.is_file()), key=lambda p: p.name.lower())
+    if loose:
+        rows += ["", "## 根目录散装文件", "",
+                 "| 文件 | 归属 | 用途（人工填） |", "|---|---|---|"]
+        for f in loose:
+            use = keep.get(f.name, "（填：本人自有 / 第三方来源 + 用途）")
+            rows.append(f"| `{f.name}` | 待人工判定 | {use} |")
     header = (
         "# 第三方资产清单（迁移存档索引）\n\n"
         "本仓曾在根目录携带 `技能库&准则/`，内含第三方 Agent Skills / 工具仓库的整仓副本。\n"

@@ -82,3 +82,32 @@
 | `understand-anything` | LICENSE | MIT | （填：在项目里用它做了什么） |
 | `video-use` | LICENSE | MIT | （填：在项目里用它做了什么） |
 | `WRITING.md-main` | LICENSE | MIT | （填：在项目里用它做了什么） |
+
+## 根目录散装文件（2026-09-07 补登记）
+
+初版清单脚本只遍历子目录，漏掉了 `技能库&准则/` 根下的散装文件。补录如下。
+
+**本人自有** —— 已捞回 `docs/agent-charter/`，不属于第三方资产：
+
+| 文件 | 去向 |
+|---|---|
+| `SKILL运用指南.md` | `docs/agent-charter/SKILL运用指南.md`（已消解遗留 git 冲突标记） |
+| `内阁决策.md` | `docs/agent-charter/内阁决策.md` |
+| `MULTI_AGENT_ORCHESTRATION.md` | `docs/agent-charter/MULTI_AGENT_ORCHESTRATION.md` |
+| `科研技能装载-019ff854.md` | `docs/agent-charter/科研技能装载-019ff854.md` |
+| `nuwa-distilled/*-perspective/SKILL.md`（5 张人格卡） | `docs/agent-charter/personas/` |
+
+**第三方** —— 未捞回，随存档保留：
+
+| 文件 | 上游 / 作者 | 许可证 | 用途（人工填） |
+|---|---|---|---|
+| `Stop-slop.md` | Hardik Pandya (hardikpandya/stop-slop) | 未随文件附带 | （填） |
+| `Humanizer - 中文版.md` | 译自 blader/humanizer | 未随文件附带 | （填） |
+
+**存疑待定** ——
+
+| 文件 | 说明 |
+|---|---|
+| `最高优先级AGENT必须遵守的宪法级文件 - 副本.md` | 通用 LLM 编码准则，原名带「- 副本」，疑似抄自上游。暂存 `docs/agent-charter/AGENT宪法级准则.md`，待确认来源；若属第三方应移回本表并补出处 |
+
+> 已迁出内容均可用 `git show 1bae982d^:"技能库&准则/<路径>"` 从 git 历史取回。
