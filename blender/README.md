@@ -4,6 +4,14 @@
 
 > 重要边界：这是按真实燃机架构、部件关系、维护/热端细节构建的**通用高保真可视化模型**，并非任何 OEM 发动机的受控 CAD、蓝图或制造数据。若要成为某一具体型号的“完全真实”数字孪生，必须由该型号的受控装配图、叶型坐标、冷却回路、材料牌号、间隙与检验规范替换相应参数。
 
+## 本工作区已直接交付的文件
+
+- **模型文件**：`blender/output/axial_gas_turbine_cutaway.blend`
+- **已验证生成版本**：Blender 4.5.3 LTS
+- **内容量**：1,994 个对象、982 个网格、15 个 PBR 材质、13 个集合（Collections）
+- **验证**：已在生成后重新打开该 `.blend`，并检查相机、燃烧室、压气机、涡轮、轴系和集合层级均存在。
+- **预览图**：`blender/output/axial_gas_turbine_hero_preview.png`（960×540、Cycles CPU 32 samples）
+
 ## 已生成的内部结构
 
 - 进气唇口、声学内衬、整流支板、旋转锥体与前轴承鼻锥；
@@ -21,7 +29,7 @@
 
 ### Blender 图形界面
 
-1. 建议使用 **Blender 3.6 LTS 或更高版本**。
+1. 交付的二进制文件已用 **Blender 4.5.3 LTS** 实测生成与重载；请使用 **Blender 4.5 LTS 或更高版本**直接打开该 `.blend`。脚本本身兼容 Blender 3.6 LTS+。
 2. 打开 **Scripting** 工作区，点击 **Open**，选择 `blender/generate_gas_turbine.py`。
 3. 点击 **Run Script**。
 4. 生成完毕后，从 Outliner 选择 `Hero Cutaway Camera`，在 Render 视图中检查；脚本默认会保存到：

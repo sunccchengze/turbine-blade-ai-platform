@@ -1365,8 +1365,10 @@ def build_environment(
         tag(pedestal, "engine mounting pedestal")
         add_cube(f"Pedestal isolation pad {index + 1}", (0.94, 1.28, 0.10), (x, 0.0, -2.33), collection, mats["rubber"], bevel=0.025)
 
-    # A vertical curved-looking background plane is unnecessary; a dim panel catches rim light instead.
-    backdrop = add_cube("Studio backdrop", (0.18, 18.0, 10.0), (8.9, 0.0, 2.4), collection, mats["floor"], bevel=0.08)
+    # Place the background *behind* the -Y hero camera.  It is a broad vertical
+    # panel normal to Y, so it catches rim light without crossing the camera's
+    # line of sight to the exhaust end of the engine.
+    backdrop = add_cube("Studio backdrop", (24.0, 0.18, 10.0), (0.5, 5.80, 2.4), collection, mats["floor"], bevel=0.08)
     tag(backdrop, "studio backdrop")
 
 
