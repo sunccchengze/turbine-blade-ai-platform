@@ -224,3 +224,16 @@ Corrections, insights, and knowledge gaps captured during development.
   1. 同一文件的多次 edit 必须串行（一次一调、调完即 `git diff` 验），或改用单次 python 原子脚本做完全部替换后一次性写回；
   2. 凡涉及删除/替换含子串关系的文本（如垃圾行是合法行的子串），先断言出现次数（`count==1`），禁止裸 `replace` 全量替换；
   3. 收工判据：`git diff` 逐 hunk 目检，确认只有预期修改、无尾部截断、无 `\ No newline at end of file` 异常新增。
+
+## [LRN-20260909-02] 沙盒无 Blender 时用 pip bpy + stub 共享库跑真重生成/渲染
+- **Logged**: 2026-09-09T11:00:00Z
+- **Priority**: high
+- **Status**: verified
+- **Category**: best_practice
+- **Trigger**: 2026-09-09 blender 深度打磨需真跑 bpy；apt 被白名单拦、缺 7 个 X/GL 系统库
+- **Correct Approach**:
+  1. `pip install --target=/home/user/bpypkgs bpy==4.5.3`（PyPI 白名单放行，版本与交付 .blend 文件头 v405 对齐）；
+  2. 缺失的 7 个库（libGL/libICE/libSM/libXfixes/libXi/libXrender/libxkbcommon）用 gcc 编空 SONAME stub 供链接器通过；后台 Cycles 不调 X/GL；
+  3. `import bpy` 前必须 `sys.setdlopenflags(os.RTLD_LAZY | os.RTLD_LOCAL)`（CPython 默认 RTLD_NOW 会在 load 时报 `glXGetProcAddress` 未定义）；
+  4. 跑手：`/home/user/run_bpy.py`（生成器）、`/home/user/open_bpy.py`（核验器）、`/home/user/render_bpy.py <blend> <png> <相机|-> [采样] [分辨率%]`（渲染）；
+  5. 本机 2 核跑 1920×1080/192采样约 15–24 分钟/张；先跑 25%/32采样小图验灾难再跑全质量。

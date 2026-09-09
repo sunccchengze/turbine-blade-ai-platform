@@ -113,6 +113,13 @@ def parse_args() -> argparse.Namespace:
         metavar="25..200",
         help="Render resolution percentage; default is 100.",
     )
+    parser.add_argument(
+        "--samples",
+        type=int,
+        default=0,
+        metavar="N",
+        help="Cycles sample override; 0 (default) uses the quick/full preset (64/192).",
+    )
 
     argv = sys.argv
     return parser.parse_args(argv[argv.index("--") + 1 :] if "--" in argv else [])
@@ -551,10 +558,9 @@ def add_tube(
     """Make a lightweight pipe/wire using a bevelled poly spline."""
     curve = bpy.data.curves.new(name + " Curve", "CURVE")
     curve.dimensions = "3D"
-    curve.resolution_u = resolution
+    curve.resolution_u = max(1, resolution)
     curve.bevel_depth = radius
     curve.bevel_resolution = max(1, resolution)
-    curve.resolution_u = max(1, resolution)
     spline = curve.splines.new("NURBS")
     spline.points.add(len(points) - 1)
     for point, co in zip(spline.points, points):
@@ -616,6 +622,38 @@ def radial_point(x: float, radius: float, angle: float) -> Point:
 
 def angle_in_cutaway_shell(index: int, count: int) -> float:
     return CUTAWAY_START + CUTAWAY_SWEEP * index / count
+
+
+def in_retained_sector(theta: float) -> bool:
+    """True when ``theta`` lies on the retained shell, not in the cut void."""
+    return (theta - CUTAWAY_START) % TAU <= CUTAWAY_SWEEP
+
+
+def arc_tube(
+    name: str,
+    x: float,
+    radius: float,
+    tube_radius: float,
+    collection: bpy.types.Collection,
+    material: Optional[bpy.types.Material],
+    *,
+    segments: int = 96,
+    resolution: int = 4,
+) -> bpy.types.Object:
+    """A ring that follows only the retained 240 degrees of shell.
+
+    A full-circle torus mounted on (or just inside) a cut casing would visibly
+    float across the removed 120-degree sector.  Discrete interior hardware
+    (blades, disks, seals, bearings, nozzles) intentionally stays full-circle:
+    a cutaway exposes the interior, it does not remove it.
+    """
+    points = [
+        radial_point(x, radius, CUTAWAY_START + CUTAWAY_SWEEP * index / segments)
+        for index in range(segments + 1)
+    ]
+    tube = add_tube(name, points, tube_radius, collection, material, resolution=resolution)
+    tube.data.use_fill_caps = True
+    return tube
 
 
 def instance_linked(
@@ -1067,10 +1105,10 @@ def cooling_holes(
     for ring_index, x in enumerate(x_positions):
         for hole_index in range(count):
             theta = TAU * hole_index / count + start_offset + ring_index * 0.17
-            # Avoid wasting geometry inside the missing section but retain a few interior-facing holes.
-            if CUTAWAY_START - 0.10 < (theta % TAU) < (CUTAWAY_START + CUTAWAY_SWEEP + 0.10) % TAU:
-                # The modulo test above is ambiguous when the arc wraps; holes are cheap, so keep all.
-                pass
+            # The liner/shroud shell is removed in the cut sector; holes there
+            # would float in the void with no shell around them.
+            if not in_retained_sector(theta):
+                continue
             inner = radial_point(x, radius - 0.018, theta)
             outer = radial_point(x, radius + 0.018, theta)
             sleeve = cylinder_between(
@@ -1094,7 +1132,7 @@ def build_inlet(
 ) -> None:
     collection = cols["01 • Inlet & Front Frame"]
     # Rounded intake lip and annular front frame.
-    add_torus("Inlet lip — rolled casing", 1.91, 0.105, -5.72, collection, mats["machined"], major_segments=96, minor_segments=16)
+    arc_tube("Inlet lip — rolled casing", -5.72, 1.91, 0.105, collection, mats["machined"], resolution=6)
     add_annular_shell(
         "Inlet cowl — cutaway shell", -5.69, -4.78, 1.74, 2.08, collection, mats["casing"],
         inner1=1.60, outer1=1.85, start=CUTAWAY_START, sweep=CUTAWAY_SWEEP, segments=96, bevel=0.008,
@@ -1241,12 +1279,12 @@ def build_compressor(
             # An outside actuation collar, three levers, and one small torque
             # shaft make the six publicly reported VSV rows inspectable.
             actuation_radius = tip + 0.145
-            add_torus(
-                f"VSV stage {index + 1:02d} actuation ring", actuation_radius, 0.018,
-                stator_x, external, mats["brass"], major_segments=64, minor_segments=6,
+            arc_tube(
+                f"VSV stage {index + 1:02d} actuation ring", stator_x, actuation_radius, 0.018,
+                external, mats["brass"],
             )
             for arm_index in range(3):
-                theta = math.radians(230.0 + arm_index * 34.0)
+                theta = math.radians(256.0 + arm_index * 34.0)
                 base = radial_point(stator_x, tip + 0.045, theta)
                 upper = radial_point(stator_x + 0.028, actuation_radius + 0.030, theta + math.radians(3.0))
                 cylinder_between(
@@ -1322,8 +1360,8 @@ def build_compressor(
     # A sixth-stage bleed manifold is a visible functional departure from the
     # flowpath.  Its routed pipes are illustrative cooling-air plumbing only.
     bleed_x = first_x + pitch * 5 + 0.14
-    add_torus("Sixth-stage compressor bleed manifold", 1.34, 0.030, bleed_x, external, mats["machined"], major_segments=80, minor_segments=8)
-    for line_index, theta_deg in enumerate((248.0, 278.0, 308.0)):
+    arc_tube("Sixth-stage compressor bleed manifold", bleed_x, 1.34, 0.030, external, mats["machined"])
+    for line_index, theta_deg in enumerate((254.0, 278.0, 308.0)):
         theta = math.radians(theta_deg)
         start = radial_point(bleed_x, 1.34, theta)
         mid = radial_point(0.52, 1.57, theta - math.radians(4.0))
@@ -1392,6 +1430,9 @@ def build_diffuser_and_combustor(
     # The straight-through annular combustor receives 30 nozzle bodies from a
     # continuous manifold.  This follows published topology, not proprietary
     # cup geometry or calibrated fuel-flow data.
+    # The fuel manifold intentionally stays a full ring: all 30 nozzles (interior
+    # parts, kept full by cutaway convention) tap into it, so arcing it would
+    # orphan ten feed pipes.  Fuel-distribution readability wins here.
     add_torus("30-nozzle annular fuel manifold", 1.22, 0.042, 1.20, external, mats["brass"], major_segments=96, minor_segments=10)
     add_torus("Fuel-manifold retaining strap", 1.27, 0.011, 1.12, external, mats["machined"], major_segments=80, minor_segments=6)
     # GE public LM2500 material describes thirty fuel nozzles.
@@ -1436,10 +1477,10 @@ def build_diffuser_and_combustor(
     cooling_holes("Outer liner dilution-zone", (2.33, 2.55, 2.77), 1.115, 0.031, collection, mats["dark"], holes_per_ring=22, quick=quick, start_offset=0.21)
     cooling_holes("Inner liner film-zone", (1.77, 2.02, 2.42, 2.85), 0.505, 0.017, collection, mats["dark"], holes_per_ring=26, quick=quick, start_offset=0.12)
     for x in (1.72, 2.16, 2.60, 3.02):
-        add_torus(f"Combustor liner cooling rail at {x:+.2f}", 1.115, 0.012, x, collection, mats["nickel"], major_segments=72, minor_segments=6)
+        arc_tube(f"Combustor liner cooling rail at {x:+.2f}", x, 1.115, 0.012, collection, mats["nickel"])
 
     # Two igniters are deliberately distinct from fuel injectors: ceramic body, metal shell, and harness.
-    for index, theta in enumerate((math.radians(138), math.radians(222))):
+    for index, theta in enumerate((math.radians(62), math.radians(118))):
         outer = radial_point(1.94, 1.59, theta)
         inner = radial_point(1.94, 1.02, theta)
         metal_end = radial_point(1.94, 1.22, theta)
@@ -1521,9 +1562,9 @@ def build_turbine(
     # Cooling-air distribution collars make the public high-level statement
     # “air-cooled HPT” legible without asserting proprietary passage layouts.
     for collar_index, (collar_x, vane_x, radius) in enumerate(((3.55, 3.67, 1.35), (4.19, 4.33, 1.31))):
-        add_torus(
-            f"HPT cooling-air distribution collar {collar_index + 1}", radius, 0.023,
-            collar_x, hpt, mats["machined"], major_segments=72, minor_segments=7,
+        arc_tube(
+            f"HPT cooling-air distribution collar {collar_index + 1}", collar_x, radius, 0.023,
+            hpt, mats["machined"],
         )
         for feed_index, theta_deg in enumerate((252.0, 276.0, 300.0, 324.0)):
             theta = math.radians(theta_deg)
@@ -1602,13 +1643,13 @@ def build_turbine(
             f"{stage} disk rim seal", rotor_x - 0.17, root + 0.06, seals,
             mats["nickel"], count=6, spacing=0.021, tooth_radius=0.012,
         )
-        add_torus(
-            f"{stage} thermal shield forward", tip + 0.045, 0.017, stator_x - 0.19,
-            hpt, mats["coated"], major_segments=72, minor_segments=8,
+        arc_tube(
+            f"{stage} thermal shield forward", stator_x - 0.19, tip + 0.045, 0.017,
+            hpt, mats["coated"],
         )
-        add_torus(
-            f"{stage} thermal shield aft", tip + 0.045, 0.017, rotor_x + 0.18,
-            hpt, mats["coated"], major_segments=72, minor_segments=8,
+        arc_tube(
+            f"{stage} thermal shield aft", rotor_x + 0.18, tip + 0.045, 0.017,
+            hpt, mats["coated"],
         )
         cooling_holes(
             f"{stage} shroud impingement", (stator_x - 0.10, stator_x + 0.095), tip + 0.055,
@@ -1809,7 +1850,7 @@ def build_shaft_bearings_and_exhaust(
         exhaust, mats["machined"], inner1=0.76, outer1=0.96,
         start=CUTAWAY_START, sweep=CUTAWAY_SWEEP, segments=96, bevel=0.006,
     )
-    add_torus("Exhaust nozzle rolled lip", 0.86, 0.048, 9.92, exhaust, mats["machined"], major_segments=96, minor_segments=12)
+    arc_tube("Exhaust nozzle rolled lip", 9.92, 0.86, 0.048, exhaust, mats["machined"], resolution=6)
     strut_count = 6 if quick else 10
     for index in range(strut_count):
         theta = TAU * index / strut_count + math.radians(9)
@@ -2184,10 +2225,13 @@ def add_display_rotation_animation(cols: Dict[str, bpy.types.Collection]) -> Non
         controller["visual_equivalent_rpm"] = visual_rpm
         controller["note"] = "Display only — deliberately reduced to make rotation readable; not an LM2500 operating RPM."
 
-    # Six seconds at 30 fps.  Keep per-frame travel below half the smallest
-    # visible blade pitch: high rates make repeated blade patterns strobe and
-    # can falsely look stationary or reverse.  These are display-only speeds.
-    animate(gas_generator, turns=3.0, visual_rpm=30)
+    # Six seconds at 30 fps (frames 1-181 = 180 steps).  Per-frame travel stays
+    # below half the smallest *rotating*-row pitch: the gas generator advances
+    # 5.0 deg/frame against a minimum half-pitch of 5.45 deg (HPC stage 16, 33
+    # blades); the free-power rotor advances 4.0 deg/frame against 11.25 deg
+    # (16 blades).  Higher rates make repeated blade patterns strobe and can
+    # falsely look stationary or reverse.  These are display-only speeds.
+    animate(gas_generator, turns=2.5, visual_rpm=25)
     animate(free_power, turns=2.0, visual_rpm=20)
     scene.frame_set(scene.frame_start)
     scene["animation_scope"] = "Frame 1–181 looping display animation: independent reduced-speed gas-generator and free-power rotor motion only; not a physical simulation."
@@ -2207,7 +2251,7 @@ def configure_scene(args: argparse.Namespace) -> None:
     scene.render.film_transparent = False
 
     if hasattr(scene, "cycles"):
-        scene.cycles.samples = 64 if args.quick else 192
+        scene.cycles.samples = args.samples if args.samples > 0 else (64 if args.quick else 192)
         scene.cycles.use_denoising = True
         scene.cycles.preview_samples = 16 if args.quick else 48
     if hasattr(scene, "eevee"):
