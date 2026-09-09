@@ -313,9 +313,9 @@ def make_materials() -> Dict[str, bpy.types.Material]:
         "machined": principled_material("Machined steel", (0.16, 0.20, 0.22, 1), 0.92, 0.19, noise=0.025),
         "nickel": principled_material("Inconel hot section", (0.34, 0.21, 0.105, 1), 0.83, 0.27, noise=0.06),
         "coated": principled_material("Thermal-barrier coated blade", (0.50, 0.31, 0.105, 1), 0.72, 0.39, noise=0.09),
-        "casing": principled_material("Cast nickel casing", (0.105, 0.125, 0.14, 1), 0.72, 0.38, noise=0.12),
-        "liner": principled_material("Oxidised combustor liner", (0.22, 0.09, 0.035, 1), 0.72, 0.46, noise=0.15),
-        "hot_liner": principled_material("Warm combustor liner", (0.38, 0.07, 0.012, 1), 0.60, 0.38, noise=0.13, emission=(1.0, 0.08, 0.005, 1), emission_strength=0.45),
+        "casing": principled_material("Cast nickel casing", (0.105, 0.125, 0.14, 1), 0.72, 0.38, noise=0.075),
+        "liner": principled_material("Oxidised combustor liner", (0.22, 0.09, 0.035, 1), 0.72, 0.46, noise=0.10),
+        "hot_liner": principled_material("Warm combustor liner", (0.30, 0.045, 0.008, 1), 0.60, 0.42, noise=0.085, emission=(1.0, 0.055, 0.004, 1), emission_strength=0.20),
         "ceramic": principled_material("Ceramic insulator", (0.76, 0.69, 0.56, 1), 0.04, 0.32, noise=0.03),
         "dark": principled_material("Carbon black / apertures", (0.006, 0.008, 0.010, 1), 0.12, 0.34, noise=0.02),
         "brass": principled_material("Fuel-system brass", (0.54, 0.25, 0.055, 1), 0.83, 0.25, noise=0.035),
@@ -324,7 +324,7 @@ def make_materials() -> Dict[str, bpy.types.Material]:
         "warning": principled_material("Inspection orange", (0.8, 0.07, 0.01, 1), 0.28, 0.27, noise=0.02),
         "glass": principled_material("Section window glass", (0.08, 0.26, 0.30, 1), 0.12, 0.12, alpha=0.24),
         "label": principled_material("Engraved labels", (0.72, 0.78, 0.76, 1), 0.45, 0.28),
-        "floor": principled_material("Studio charcoal floor", (0.014, 0.018, 0.021, 1), 0.05, 0.27, noise=0.08),
+        "floor": principled_material("Studio charcoal floor", (0.014, 0.018, 0.021, 1), 0.08, 0.30, noise=0.045),
     }
 
 
@@ -890,6 +890,63 @@ def add_turbine_tip_shrouds(
         tag(item, "turbine blade tip shroud")
 
 
+
+def add_radial_hardware_instances(
+    name: str,
+    x: float,
+    radius: float,
+    count: int,
+    size: Point,
+    collection: bpy.types.Collection,
+    material: bpy.types.Material,
+    *,
+    phase: float,
+    component: str,
+    stage: str,
+    quick: bool,
+    omit_angles: Sequence[float] = (),
+    omit_tolerance: float = 0.0,
+) -> List[bpy.types.Object]:
+    """Populate linked mechanical pads around a rotor or vane row.
+
+    These intentionally generic retention/platform blocks make the blade-to-disk
+    and vane-to-case interfaces readable in a cutaway.  Their shape is not an
+    assertion of a proprietary LM2500 fir-tree or hook geometry.
+    """
+    final_count = max(8, count if not quick else int(count * 0.58))
+    master = add_cube(
+        f"{name} — master", size, (x, radius, 0.0), collection, material,
+        bevel=0.0,
+    )
+    # Bake the initial radial placement into the linked mesh.  Subsequent
+    # object rotations then distribute it around the engine's X axis.
+    centre = master.location.copy()
+    for vertex in master.data.vertices:
+        vertex.co += centre
+    master.location = (0.0, 0.0, 0.0)
+    master.rotation_mode = "XYZ"
+    master.rotation_euler = (phase, 0.0, 0.0)
+    tag(master, component, stage)
+
+    def omitted(angle: float) -> bool:
+        return any(abs((angle - target + math.pi) % TAU - math.pi) <= omit_tolerance for target in omit_angles)
+
+    items = [master]
+    if omitted(phase):
+        master.hide_render = True
+        master.hide_viewport = True
+        master["reserved_detail_slot"] = True
+    for item_index in range(1, final_count):
+        angle = phase + TAU * item_index / final_count
+        if omitted(angle):
+            continue
+        item = instance_linked(master, f"{name} — {component} {item_index + 1:03d}", collection, rotation_x=angle)
+        item.hide_render = False
+        item.hide_viewport = False
+        tag(item, component, stage)
+        items.append(item)
+    return items
+
 def casing_flange(
     name: str,
     x: float,
@@ -1058,6 +1115,18 @@ def build_compressor(
             collection, material, row_kind="rotating compressor blade", stage=stage,
             phase=phase, quick=quick, sweep=0.015 + index * 0.0018, lean=0.010,
         )
+        # Separate linked root platforms and retention lugs make the disk/airfoil
+        # interface more legible than a blade emerging from a plain annulus.
+        add_radial_hardware_instances(
+            f"{stage} rotor blade-root platform", x + chord * 0.018, root + 0.044, count,
+            (max(0.058, chord * 0.30), 0.050, 0.120), collection, mats["machined"],
+            phase=phase, component="compressor blade root platform", stage=stage, quick=quick,
+        )
+        add_radial_hardware_instances(
+            f"{stage} rotor retention lug", x - chord * 0.032, root - 0.020, count,
+            (max(0.050, chord * 0.19), 0.064, 0.082), collection, mats["nickel"],
+            phase=phase, component="illustrative compressor blade retention lug", stage=stage, quick=quick,
+        )
         # Each rotor is followed by an annular stator row.  The first six are
         # tagged and mechanically linked as variable stators.
         stator_x = x + 0.137
@@ -1067,6 +1136,11 @@ def build_compressor(
             -stagger * 0.90, -twist * 0.55, thickness * 0.88,
             collection, material, row_kind=stator_kind, stage=stage,
             phase=phase + math.radians(4.5), quick=quick, sweep=-0.010,
+        )
+        add_radial_hardware_instances(
+            f"{stage} stator casing hook", stator_x - chord * 0.012, tip + 0.032, count + 4,
+            (max(0.048, chord * 0.17), 0.042, 0.074), collection, mats["machined"],
+            phase=phase + math.radians(4.5), component="compressor stator casing attachment", stage=stage, quick=quick,
         )
         add_annular_shell(
             f"{stage} stator outer shroud", stator_x - 0.056, stator_x + 0.056,
@@ -1106,6 +1180,48 @@ def build_compressor(
                 f"VSV stage {index + 1:02d} torque shaft", shaft_a, shaft_b,
                 0.015, external, mats["machined"], vertices=10,
             )
+
+    # The first six VSV rows share visible external unison-linkage rails.  The
+    # public sources establish variable geometry; these rail/bellcrank shapes
+    # are intentionally generic visual hardware rather than OEM kinematics.
+    for rail_index, theta_deg in enumerate((56.0, 87.0, 118.0)):
+        theta = math.radians(theta_deg)
+        rail_points = []
+        for stage_index in range(vsv_count):
+            _, x, _, tip, _, _, _, _, _, _, _ = stage_records[stage_index]
+            stator_x = x + 0.137
+            pivot_radius = tip + 0.225
+            pivot = radial_point(stator_x, pivot_radius, theta)
+            rail_points.append(pivot)
+            add_uv_sphere(
+                f"VSV unison rail {rail_index + 1} pivot {stage_index + 1}", 0.034,
+                pivot, external, mats["machined"], segments=16,
+            )
+            inward = radial_point(stator_x, tip + 0.145, theta)
+            bellcrank = cylinder_between(
+                f"VSV bellcrank {rail_index + 1}-{stage_index + 1}", pivot, inward,
+                0.013, external, mats["machined"], vertices=10,
+            )
+            tag(bellcrank, "illustrative VSV unison bellcrank", f"HPC Stage {stage_index + 1:02d}")
+        rail = add_tube(
+            f"VSV unison rail {rail_index + 1}", rail_points, 0.018,
+            external, mats["machined"], resolution=2,
+        )
+        tag(rail, "illustrative VSV unison linkage")
+
+    # Two visible servo cylinders and their spherical rod ends terminate the
+    # unison linkage.  They expose service logic without asserting controls.
+    for actuator_index, (start_x, end_x, theta_deg, radius) in enumerate(((-4.30, -3.63, 87.0, 1.86), (-3.10, -2.38, 56.0, 1.69))):
+        theta = math.radians(theta_deg)
+        start = radial_point(start_x, radius, theta)
+        end = radial_point(end_x, radius - 0.05, theta)
+        actuator = cylinder_between(
+            f"VSV linear actuator {actuator_index + 1}", start, end, 0.042,
+            external, mats["machined"], vertices=24, bevel=0.003,
+        )
+        tag(actuator, "illustrative VSV servo actuator")
+        add_uv_sphere(f"VSV actuator {actuator_index + 1} rod-end forward", 0.050, start, external, mats["nickel"], segments=16)
+        add_uv_sphere(f"VSV actuator {actuator_index + 1} rod-end aft", 0.045, end, external, mats["nickel"], segments=16)
 
     # A stiffened, split compressor case remains around 240 degrees of the
     # circumference, deliberately exposing all 16 rows through the section.
@@ -1211,6 +1327,15 @@ def build_diffuser_and_combustor(
         add_cone(
             f"Fuel nozzle {index + 1:02d} — atomiser", 0.073, 0.027, 0.18, 1.51, collection, mats["brass"], y=y, z=z, vertices=20,
         )
+        cup = add_cone(
+            f"Fuel nozzle {index + 1:02d} — airblast swirler cup", 0.128, 0.084, 0.14, 1.70,
+            collection, mats["nickel"], y=y, z=z, vertices=24, bevel=0.002,
+        )
+        tag(cup, "illustrative airblast fuel-nozzle swirler cup", "combustor")
+        add_torus(
+            f"Fuel nozzle {index + 1:02d} — mounting flange", 0.087, 0.010, 1.17,
+            collection, mats["machined"], major_segments=24, minor_segments=6, y=y, z=z,
+        )
         manifold = radial_point(1.20, 1.22, theta)
         pipe_points = [manifold, (1.24, 1.06 * math.cos(theta), 1.06 * math.sin(theta)), (1.29, y, z)]
         add_tube(f"Fuel feed pipe {index + 1:02d}", pipe_points, 0.014, external, mats["brass"], resolution=2)
@@ -1314,6 +1439,22 @@ def build_turbine(
     casing = cols["09 • Cutaway Casing"]
     external = cols["08 • External Systems & Fasteners"]
 
+    # Cooling-air distribution collars make the public high-level statement
+    # “air-cooled HPT” legible without asserting proprietary passage layouts.
+    for collar_index, (collar_x, vane_x, radius) in enumerate(((3.55, 3.67, 1.35), (4.19, 4.33, 1.31))):
+        add_torus(
+            f"HPT cooling-air distribution collar {collar_index + 1}", radius, 0.023,
+            collar_x, hpt, mats["machined"], major_segments=72, minor_segments=7,
+        )
+        for feed_index, theta_deg in enumerate((252.0, 276.0, 300.0, 324.0)):
+            theta = math.radians(theta_deg)
+            feed = cylinder_between(
+                f"HPT cooling-air feed {collar_index + 1}-{feed_index + 1}",
+                radial_point(collar_x, radius, theta), radial_point(vane_x, radius - 0.16, theta),
+                0.017, hpt, mats["machined"], vertices=12,
+            )
+            tag(feed, "illustrative HPT cooling-air feed", f"HPT Stage {collar_index + 1}")
+
     # The GE LM2500 public configuration identifies two air-cooled HPT stages.
     hpt_stages = (
         ("HPT Stage 1", 3.67, 0.43, 1.18, 34, 0.47),
@@ -1325,6 +1466,11 @@ def build_turbine(
             f"{stage} air-cooled nozzle guide vane", stator_x, root + 0.06, tip, count - 4, chord * 0.93,
             -56.0, 12.0, 0.066, hpt, mats["nickel"], row_kind="air-cooled nozzle guide vane", stage=stage,
             phase=phase, quick=quick, sweep=-0.018,
+        )
+        add_radial_hardware_instances(
+            f"{stage} vane outer hook", stator_x, tip + 0.035, count - 4,
+            (chord * 0.18, 0.046, 0.082), hpt, mats["machined"],
+            phase=phase, component="turbine nozzle-vane casing attachment", stage=stage, quick=quick,
         )
         add_annular_shell(
             f"{stage} nozzle outer band", stator_x - 0.145, stator_x + 0.145,
@@ -1344,6 +1490,20 @@ def build_turbine(
             f"{stage} air-cooled rotor", rotor_x, root, tip - 0.025, count, chord, 42.0, -30.0, 0.068,
             hpt, mats["coated"], row_kind="air-cooled rotating turbine blade", stage=stage,
             phase=phase + math.radians(4), quick=quick, sweep=0.025, lean=-0.010,
+            omit_angles=(math.radians(158.0),) if index == 0 else (),
+            omit_tolerance=math.radians(7.0) if index == 0 else 0.0,
+        )
+        add_radial_hardware_instances(
+            f"{stage} blade-root platform", rotor_x + chord * 0.016, root + 0.045, count,
+            (chord * 0.29, 0.052, 0.118), hpt, mats["machined"],
+            phase=phase + math.radians(4), component="turbine blade root platform", stage=stage, quick=quick,
+            omit_angles=(math.radians(158.0),) if index == 0 else (),
+            omit_tolerance=math.radians(7.0) if index == 0 else 0.0,
+        )
+        add_radial_hardware_instances(
+            f"{stage} retention lug", rotor_x - chord * 0.030, root - 0.020, count,
+            (chord * 0.18, 0.067, 0.084), hpt, mats["nickel"],
+            phase=phase + math.radians(4), component="illustrative turbine blade retention lug", stage=stage, quick=quick,
             omit_angles=(math.radians(158.0),) if index == 0 else (),
             omit_tolerance=math.radians(7.0) if index == 0 else 0.0,
         )
@@ -1413,6 +1573,11 @@ def build_turbine(
             -50.0, 10.0, 0.062, fpt, mats["nickel"], row_kind="free power turbine nozzle guide vane",
             stage=stage, phase=phase, quick=quick, sweep=-0.012,
         )
+        add_radial_hardware_instances(
+            f"{stage} vane outer hook", stator_x, tip + 0.032, count - 4,
+            (chord * 0.17, 0.042, 0.078), fpt, mats["machined"],
+            phase=phase, component="free-power nozzle-vane casing attachment", stage=stage, quick=quick,
+        )
         add_annular_shell(
             f"{stage} nozzle outer band", stator_x - 0.135, stator_x + 0.135,
             tip, tip + 0.068, fpt, mats["nickel"], start=CUTAWAY_START,
@@ -1431,6 +1596,16 @@ def build_turbine(
             f"{stage} rotor", rotor_x, root, tip - 0.025, count, chord, 38.0, -24.0, 0.064,
             fpt, mats["nickel"], row_kind="free power turbine rotating blade", stage=stage,
             phase=phase + math.radians(4), quick=quick, sweep=0.020, lean=-0.008,
+        )
+        add_radial_hardware_instances(
+            f"{stage} blade-root platform", rotor_x + chord * 0.018, root + 0.043, count,
+            (chord * 0.28, 0.050, 0.112), fpt, mats["machined"],
+            phase=phase + math.radians(4), component="free-power turbine blade root platform", stage=stage, quick=quick,
+        )
+        add_radial_hardware_instances(
+            f"{stage} retention lug", rotor_x - chord * 0.030, root - 0.020, count,
+            (chord * 0.17, 0.064, 0.082), fpt, mats["nickel"],
+            phase=phase + math.radians(4), component="illustrative free-power blade retention lug", stage=stage, quick=quick,
         )
         add_turbine_tip_shrouds(
             stage, rotor_x, tip, count, chord, fpt, mats["nickel"], phase=phase + math.radians(4), quick=quick,
@@ -1507,6 +1682,18 @@ def build_shaft_bearings_and_exhaust(
             f"{name} bearing housing", x - 0.11, x + 0.11, 0.34, 0.48,
             collection, mats["casing"], segments=48, bevel=0.003,
         )
+        add_annular_shell(
+            f"{name} bearing cage — cutaway", x - 0.074, x + 0.074, 0.266, 0.292,
+            collection, mats["nickel"], start=CUTAWAY_START, sweep=CUTAWAY_SWEEP, segments=48, bevel=0.002,
+        )
+        for strut_index in range(6):
+            theta = TAU * strut_index / 6 + math.radians(7)
+            strut = cylinder_between(
+                f"{name} bearing-support web {strut_index + 1}",
+                radial_point(x, 0.47, theta), radial_point(x, 0.69, theta), 0.015,
+                collection, mats["machined"], vertices=10,
+            )
+            tag(strut, "bearing support web", name)
     for seal_index, x in enumerate((-4.44, -0.22, 3.18, 4.69, 8.20)):
         add_seal_teeth(
             f"Shaft cavity seal {seal_index + 1}", x, 0.255,
@@ -1587,6 +1774,32 @@ def build_external_systems(
             resolution=2,
         )
 
+    # Removable service covers, recessed into the retained upper casing, add
+    # believable inspection and harness interfaces without claiming OEM layouts.
+    service_panels = (
+        ("Forward compressor access panel", -3.72, 1.78, 76.0, 0.46, 0.24),
+        ("Variable-geometry actuator cover", -2.52, 1.64, 88.0, 0.42, 0.21),
+        ("Combustor instrumentation cover", 2.54, 1.50, 82.0, 0.48, 0.23),
+        ("HPT instrumentation cover", 4.46, 1.46, 77.0, 0.43, 0.21),
+        ("Free-power turbine inspection cover", 6.93, 1.66, 91.0, 0.56, 0.24),
+    )
+    for panel_index, (name, x, radius, theta_deg, length, height) in enumerate(service_panels):
+        theta = math.radians(theta_deg)
+        panel = add_cube(
+            name, (length, 0.025, height), radial_point(x, radius + 0.025, theta),
+            collection, mats["machined"], rotation=(theta, 0.0, 0.0), bevel=0.012,
+        )
+        tag(panel, "generic removable casing service cover")
+        tangent = Vector((0.0, -math.sin(theta), math.cos(theta)))
+        normal = Vector((0.0, math.cos(theta), math.sin(theta)))
+        for bolt_index, (dx, dz) in enumerate(((-length * 0.39, -height * 0.34), (-length * 0.39, height * 0.34), (length * 0.39, -height * 0.34), (length * 0.39, height * 0.34))):
+            centre = Vector(radial_point(x + dx, radius + 0.040, theta)) + tangent * dz
+            bolt = cylinder_between(
+                f"{name} — captive fastener {bolt_index + 1}", tuple(centre), tuple(centre + normal * 0.052),
+                0.019, collection, mats["machined"], vertices=6, bevel=0.002,
+            )
+            tag(bolt, "captive service-panel fastener")
+
     # Lift lugs make the casing serviceable rather than a clean concept sculpture.
     for index, x in enumerate((-3.83, 0.44, 3.94, 7.36)):
         block = add_cube(f"Service lift lug {index + 1}", (0.18, 0.15, 0.36), (x, 0.0, 1.70 if x < 1.0 else 1.48), collection, mats["machined"], bevel=0.018)
@@ -1596,6 +1809,19 @@ def build_external_systems(
     # Two raised external fuel feed lines cross the casing toward the annular manifold.
     add_tube("Main fuel supply line", [(-0.58, -1.75, 0.06), (0.31, -1.82, 0.25), (0.98, -1.55, 0.77), (1.20, -1.22, 0.88)], 0.035, collection, mats["brass"], resolution=3)
     add_tube("Fuel return line", [(-0.43, -1.80, -0.18), (0.48, -1.83, -0.32), (1.06, -1.34, -0.82), (1.20, -1.17, -0.91)], 0.022, collection, mats["copper"], resolution=3)
+
+    # A few low-profile pressure, oil and electrical runs make the exterior
+    # serviceable.  Routing is intentionally illustrative, not a maintenance
+    # manual or a claim about the proprietary engine plumbing layout.
+    service_runs = (
+        ("Compressor pressure-sense line", ((-2.85, -1.43, 0.75), (-1.80, -1.66, 0.91), (-0.78, -1.60, 0.78), (0.36, -1.49, 0.52)), 0.014, "machined"),
+        ("Turbine cooling-air sense line", ((1.78, -1.41, 1.06), (2.72, -1.62, 1.18), (3.42, -1.48, 0.89), (3.67, -1.25, 0.62)), 0.017, "copper"),
+        ("Free-power speed-probe harness", ((5.08, -1.42, 0.74), (5.86, -1.72, 0.70), (6.64, -1.70, 0.46), (7.30, -1.43, 0.22)), 0.013, "rubber"),
+        ("Oil vent return line", ((0.12, -1.55, -0.44), (1.64, -1.70, -0.58), (2.88, -1.56, -0.43), (3.35, -1.39, -0.24)), 0.018, "copper"),
+    )
+    for name, points, radius, material_name in service_runs:
+        run = add_tube(name, points, radius, collection, mats[material_name], resolution=3)
+        tag(run, "illustrative external service run")
 
 
 def build_cutaway_edges(
@@ -1741,11 +1967,18 @@ def configure_cameras_and_lights(
     detail.location = (6.5, -9.2, 3.8)
     look_at(detail, (2.15, -0.15, 0.0))
 
+    hpt_detail_data = bpy.data.cameras.new("HPT Cooling Detail Camera")
+    hpt_detail_data.lens = 76
+    hpt_detail = bpy.data.objects.new("HPT Cooling Detail Camera", hpt_detail_data)
+    collection.objects.link(hpt_detail)
+    hpt_detail.location = (8.25, -10.4, 3.30)
+    look_at(hpt_detail, (4.03, -0.04, 0.02))
+
     # Large soft sources mimic a premium product/engineering studio; warm key, cool rim, low fill.
     add_area_light("Key — warm overhead", (1.4, -7.6, 11.5), target, 2050.0, 8.5, (1.0, 0.61, 0.35, 1), collection)
     add_area_light("Rim — cool back", (8.5, 8.5, 7.6), (3.4, 0.0, 0.4), 1800.0, 5.5, (0.22, 0.55, 1.0, 1), collection)
     add_area_light("Fill — neutral front", (-8.5, -6.2, 3.5), (-2.5, 0.0, -0.3), 1350.0, 5.0, (0.75, 0.84, 1.0, 1), collection)
-    add_area_light("Interior — combustion glow", (2.30, -0.9, 0.25), (2.30, 0.0, 0.0), 600.0, 2.2, (1.0, 0.14, 0.015, 1), collection)
+    add_area_light("Interior — combustion glow", (2.30, -0.9, 0.25), (2.30, 0.0, 0.0), 320.0, 2.2, (1.0, 0.14, 0.015, 1), collection)
     add_area_light("Long top strip", (1.0, 1.5, 8.0), (1.4, 0.0, 0.0), 1050.0, 11.5, (0.92, 0.95, 1.0, 1), collection)
 
     # A small emissive engineering placard placed far below the frame is useful in viewport orientation.
@@ -1799,6 +2032,7 @@ def configure_scene(args: argparse.Namespace) -> None:
     scene["asset_name"] = "LM2500-class public-topology axial gas turbine cutaway"
     scene["asset_scope"] = "Public-data-calibrated structural visualisation; not OEM CAD, CFD, FEA, thermal analysis, or manufacturing data."
     scene["reference_basis"] = "Public GE LM2500 architecture: 16-stage axial compressor, first six VSV rows, 30 fuel nozzles in an annular combustor, 2 air-cooled HPT stages, 6 free-power turbine stages."
+    scene["detail_pass"] = "Blade-root platforms and retention lugs, stator hooks, VSV unison rails, nozzle cups, bearing cages, service covers and illustrative external runs were added for inspectable cutaway detail."
     scene["public_reference_url"] = "https://www.geaerospace.com/sites/default/files/2023-11/LM2500-Datasheet.pdf"
     scene["cutaway_sector_degrees"] = 120
     scene["generator"] = "blender/generate_gas_turbine.py"
@@ -1825,11 +2059,14 @@ def attach_model_notes(args: argparse.Namespace) -> None:
         "of the LM2500 aeroderivative gas turbine.\n"
         "https://www.geaerospace.com/news/press-releases/marine-industrial-engines/technological-evolution-popular-aeroderivative-gas-turbine\n\n"
         "WHAT IS MODELLED\n"
-        "Sixteen compressor rotor/stator pairs, six external VSV actuation collars,\n"
-        "thirty numbered fuel injectors, annular fuel manifold, diffuser, liners,\n"
+        "Sixteen compressor rotor/stator pairs, individual visual root platforms and\n"
+        "retention lugs, stator casing hooks, six VSV actuation collars, generic\n"
+        "unison rails / bellcranks / servo cylinders, thirty numbered injectors with\n"
+        "airblast cups and mounting flanges, annular fuel manifold, diffuser, liners,\n"
         "qualitative liner perforations, two igniters, HPT cooling passage teaching\n"
-        "detail, six free-power rows, split casing, shaft cavities, bearing races,\n"
-        "labyrinth seals, exhaust frame, service pipes, sensors and fasteners.\n\n"
+        "detail and cooling collars, six free-power rows, split casing, removable\n"
+        "service covers, shaft cavities, bearing cages / webs / races, labyrinth\n"
+        "seals, exhaust frame, service pipes, sensors and fasteners.\n\n"
         "SCOPE AND SAFETY LIMIT\n"
         "This is a public-data-calibrated structural visualisation, NOT a complete\n"
         "physical simulation, OEM CAD model, certified configuration, CFD result,\n"

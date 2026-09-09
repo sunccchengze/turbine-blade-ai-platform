@@ -5,3 +5,4 @@ output/*
 !output/.gitkeep
 !output/axial_gas_turbine_cutaway.blend
 !output/axial_gas_turbine_hero_preview.png
+!output/axial_gas_turbine_hot_section_detail.png
