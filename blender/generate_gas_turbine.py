@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: MIT
-"""Procedurally build a high-detail, cutaway axial gas-turbine scene in Blender.
+"""Build a public-data-calibrated LM2500-class gas-turbine cutaway in Blender.
 
-This file is intentionally self-contained: it creates the materials, assembly
-hierarchy, geometry, lights, cameras, and render settings without depending on
-external add-ons or downloaded assets.  It targets Blender 3.6 LTS and newer.
+This self-contained script creates editable materials, assembly hierarchy,
+geometry, lights, cameras and render settings without external add-ons or
+assets.  It targets Blender 3.6 LTS and newer.  Its public-topology baseline is
+GE LM2500 information: 16 compressor stages, first-six VSV rows, a 30-nozzle
+annular combustor, two air-cooled HPT stages and six free-power stages.
 
 Examples
 --------
@@ -24,11 +26,11 @@ Headless build plus a hero render::
 Use ``--quick`` for a lighter scene while blocking a shot.  The default has
 full blade-row density and detail suitable for a close cutaway presentation.
 
-The assembly represents a physically informed, generic two-spool axial engine
-core.  It is a visualization model, not a dimensional or manufacturing twin of
-a named OEM engine.  Exact part geometry, cooling circuits, tolerances and
-material schedules require the relevant engine's controlled drawings and
-configuration data.
+The assembly is a public-data-calibrated structural visualization, not a
+complete physical simulation, dimensional/manufacturing twin, or OEM CAD file.
+Exact part geometry, cooling circuits, clearances, materials, controls and
+validated operating boundary conditions require controlled configuration data;
+see REFERENCE_BASIS.md for what is and is not claimed.
 """
 
 from __future__ import annotations
@@ -152,11 +154,11 @@ def collection_tree() -> Dict[str, bpy.types.Collection]:
     names = (
         ("00 • Environment", root),
         ("01 • Inlet & Front Frame", root),
-        ("02 • Low-Pressure Compressor", root),
-        ("03 • High-Pressure Compressor", root),
+        ("02 • Variable Geometry Compressor — Stages 01–06", root),
+        ("03 • High-Pressure Compressor — Stages 07–16", root),
         ("04 • Diffuser & Annular Combustor", root),
         ("05 • High-Pressure Turbine", root),
-        ("06 • Low-Pressure Turbine & Exhaust", root),
+        ("06 • Free Power Turbine & Exhaust", root),
         ("07 • Shafts, Bearings & Seals", root),
         ("08 • External Systems & Fasteners", root),
         ("09 • Cutaway Casing", root),
@@ -751,8 +753,14 @@ def blade_row(
     quick: bool = False,
     sweep: float = 0.0,
     lean: float = 0.0,
+    omit_angles: Sequence[float] = (),
+    omit_tolerance: float = 0.0,
 ) -> List[bpy.types.Object]:
-    """Populate a linked, twisted rotor or stator airfoil row."""
+    """Populate a linked, twisted rotor or stator airfoil row.
+
+    ``omit_angles`` reserves a narrow blade slot for an explicit cutaway/detail
+    object without changing the rest of a row's linked-mesh workflow.
+    """
     final_count = max(8, blade_count if not quick else int(blade_count * 0.58))
     base = airfoil_mesh(
         f"{name} — Blade master",
@@ -775,9 +783,22 @@ def blade_row(
     base.rotation_mode = "XYZ"
     base.rotation_euler = (phase, 0.0, 0.0)
     tag(base, row_kind, stage)
+
+    def omitted(angle: float) -> bool:
+        return any(abs((angle - target + math.pi) % TAU - math.pi) <= omit_tolerance for target in omit_angles)
+
+    # The hidden master still supplies linked mesh data to the retained blades.
+    if omitted(phase):
+        base.hide_render = True
+        base.hide_viewport = True
+        base["reserved_detail_slot"] = True
     for blade_index in range(1, final_count):
         angle = phase + TAU * blade_index / final_count
+        if omitted(angle):
+            continue
         obj = instance_linked(base, f"{name} — {row_kind} blade {blade_index + 1:03d}", collection, rotation_x=angle)
+        obj.hide_render = False
+        obj.hide_viewport = False
         tag(obj, row_kind, stage)
         blade_objects.append(obj)
     return blade_objects
@@ -988,76 +1009,138 @@ def build_inlet(
 def build_compressor(
     cols: Dict[str, bpy.types.Collection], mats: Dict[str, bpy.types.Material], quick: bool
 ) -> None:
-    lpc = cols["02 • Low-Pressure Compressor"]
-    hpc = cols["03 • High-Pressure Compressor"]
+    """Build the publicly documented 16-stage LM2500-class axial compressor.
+
+    The public record specifies an IGV, first six variable stator rows, and a
+    16-stage core compressor.  Airfoil coordinates, clearances, and the actual
+    control law are proprietary, so this is an editable structural rendition
+    with a smoothly contracting annulus rather than an OEM reproduction.
+    """
+    vsv_compressor = cols["02 • Variable Geometry Compressor — Stages 01–06"]
+    hpc = cols["03 • High-Pressure Compressor — Stages 07–16"]
     casing = cols["09 • Cutaway Casing"]
+    external = cols["08 • External Systems & Fasteners"]
+    seals = cols["07 • Shafts, Bearings & Seals"]
 
-    # The stage schedule follows the expected shrinking annulus from LPC to HPC.
-    stages = [
-        ("LPC 1", -4.28, 0.57, 1.52, 28, 0.54, 40.0, -15.0, 0.067, lpc, mats["titanium"]),
-        ("LPC 2", -3.64, 0.54, 1.43, 30, 0.50, 38.0, -17.0, 0.064, lpc, mats["titanium"]),
-        ("LPC 3", -3.00, 0.51, 1.34, 32, 0.46, 35.0, -18.0, 0.061, lpc, mats["titanium"]),
-        ("HPC 1", -2.35, 0.47, 1.25, 34, 0.42, 33.0, -20.0, 0.056, hpc, mats["titanium"]),
-        ("HPC 2", -1.76, 0.44, 1.17, 36, 0.39, 31.0, -21.0, 0.052, hpc, mats["titanium"]),
-        ("HPC 3", -1.19, 0.41, 1.09, 38, 0.36, 29.0, -23.0, 0.049, hpc, mats["nickel"]),
-        ("HPC 4", -0.65, 0.39, 1.02, 40, 0.33, 27.0, -24.0, 0.046, hpc, mats["nickel"]),
-        ("HPC 5", -0.14, 0.37, 0.95, 42, 0.30, 25.0, -25.0, 0.043, hpc, mats["nickel"]),
-    ]
+    stage_count = 16
+    first_x = -4.28
+    pitch = 0.267
+    vsv_count = 6
+    stage_records = []
 
-    for index, (stage, x, root, tip, count, chord, stagger, twist, thickness, collection, material) in enumerate(stages):
-        phase = math.radians(7.0 + index * 11.0)
-        blade_platform_ring(f"{stage} rotor disk", x, root, 0.18, collection, mats["machined"], inner_radius=0.245, outer_margin=0.08)
+    # Compressor annulus contracts continuously toward the diffuser.  Stage
+    # count and variable rows are calibrated to GE public LM2500 material;
+    # blade populations below are visual density choices, not OEM counts.
+    for index in range(stage_count):
+        t = index / (stage_count - 1)
+        stage_number = index + 1
+        x = first_x + pitch * index
+        root = 0.57 - 0.205 * t
+        tip = 1.52 - 0.565 * t
+        count = int(round(27 + 16 * t))
+        chord = 0.385 - 0.105 * t
+        stagger = 40.0 - 14.0 * t
+        twist = -14.0 - 12.0 * t
+        thickness = 0.062 - 0.019 * t
+        collection = vsv_compressor if stage_number <= vsv_count else hpc
+        material = mats["titanium"] if stage_number <= 11 else mats["nickel"]
+        stage = f"HPC Stage {stage_number:02d}"
+        stage_records.append((stage, x, root, tip, count, chord, stagger, twist, thickness, collection, material))
+
+    for index, (stage, x, root, tip, count, chord, stagger, twist, thickness, collection, material) in enumerate(stage_records):
+        phase = math.radians(7.0 + index * 9.0)
+        blade_platform_ring(
+            f"{stage} rotor disk", x, root, 0.142, collection, mats["machined"],
+            inner_radius=0.245, outer_margin=0.075,
+        )
         blade_row(
             f"{stage} rotor", x, root, tip, count, chord, stagger, twist, thickness,
-            collection, material, row_kind="rotating compressor blade", stage=stage, phase=phase,
-            quick=quick, sweep=0.018 + index * 0.003, lean=0.012,
+            collection, material, row_kind="rotating compressor blade", stage=stage,
+            phase=phase, quick=quick, sweep=0.015 + index * 0.0018, lean=0.010,
         )
-        # Stator follows the rotor and is mounted inside a continuous outer case.
-        stator_x = x + 0.315
+        # Each rotor is followed by an annular stator row.  The first six are
+        # tagged and mechanically linked as variable stators.
+        stator_x = x + 0.137
+        stator_kind = "variable compressor stator vane" if index < vsv_count else "fixed compressor stator vane"
         blade_row(
-            f"{stage} stator", stator_x, root + 0.025, tip, count + 4, chord * 0.92,
-            -stagger * 0.90, -twist * 0.55, thickness * 0.90,
-            collection, material, row_kind="fixed compressor stator vane", stage=stage,
-            phase=phase + math.radians(4.5), quick=quick, sweep=-0.012,
+            f"{stage} stator", stator_x, root + 0.020, tip, count + 4, chord * 0.90,
+            -stagger * 0.90, -twist * 0.55, thickness * 0.88,
+            collection, material, row_kind=stator_kind, stage=stage,
+            phase=phase + math.radians(4.5), quick=quick, sweep=-0.010,
         )
         add_annular_shell(
-            f"{stage} stator outer shroud", stator_x - 0.10, stator_x + 0.10,
-            tip, tip + 0.064, collection, mats["machined"],
-            start=CUTAWAY_START, sweep=CUTAWAY_SWEEP, segments=64, bevel=0.002,
+            f"{stage} stator outer shroud", stator_x - 0.056, stator_x + 0.056,
+            tip, tip + 0.060, collection, mats["machined"],
+            start=CUTAWAY_START, sweep=CUTAWAY_SWEEP, segments=48, bevel=0.002,
         )
         add_annular_shell(
-            f"{stage} stator inner platform", stator_x - 0.10, stator_x + 0.10,
-            max(0.245, root - 0.055), root + 0.025, collection, mats["machined"], segments=48, bevel=0.002,
+            f"{stage} stator inner platform", stator_x - 0.056, stator_x + 0.056,
+            max(0.245, root - 0.050), root + 0.020, collection, mats["machined"],
+            segments=40, bevel=0.002,
         )
-        if index in (1, 4, 7):
-            add_seal_teeth(f"{stage} interstage seal", x + 0.18, root + 0.012, cols["07 • Shafts, Bearings & Seals"], mats["nickel"], count=4)
-
-    # A stiffened, tapered compressor case remains around 240 degrees of the circumference.
-    add_annular_shell(
-        "Compressor outer case — primary cutaway", -4.78, 0.46, 1.53, 1.78, casing, mats["casing"],
-        inner1=0.98, outer1=1.20, start=CUTAWAY_START, sweep=CUTAWAY_SWEEP, segments=160, bevel=0.008,
-    )
-    for ring_index, (x, radius) in enumerate(((-4.08, 1.72), (-3.42, 1.64), (-2.72, 1.54), (-2.05, 1.44), (-1.41, 1.34), (-0.80, 1.26), (-0.28, 1.20))):
-        add_annular_shell(
-            f"Compressor case stiffener {ring_index + 1:02d}", x - 0.032, x + 0.032, radius - 0.08, radius + 0.025,
-            casing, mats["machined"], start=CUTAWAY_START, sweep=CUTAWAY_SWEEP, segments=64, bevel=0.003,
-        )
-
-    # Variable-stator actuation rings and three visible drive links.
-    for row_index, (x, radius) in enumerate(((-3.30, 1.70), (-1.88, 1.46), (-0.59, 1.26))):
-        add_torus(f"Variable stator actuation ring {row_index + 1}", radius + 0.05, 0.026, x, cols["08 • External Systems & Fasteners"], mats["brass"], major_segments=64, minor_segments=8)
-        for arm_index in range(3):
-            theta = math.radians(140 + arm_index * 36)
-            base = radial_point(x, radius + 0.03, theta)
-            top = radial_point(x + 0.09, radius + 0.23, theta + math.radians(4))
-            cylinder_between(
-                f"VSV actuator link {row_index + 1}-{arm_index + 1}", base, top, 0.018,
-                cols["08 • External Systems & Fasteners"], mats["machined"], vertices=12,
+        if index in (3, 7, 11, 15):
+            add_seal_teeth(
+                f"{stage} interstage seal", x + 0.074, root + 0.012, seals,
+                mats["nickel"], count=4,
             )
 
-    casing_flange("LPC split case flange", -3.31, 1.68, cols["08 • External Systems & Fasteners"], mats, bolt_count=30, quick=quick)
-    casing_flange("HPC split case flange", -0.88, 1.29, cols["08 • External Systems & Fasteners"], mats, bolt_count=28, quick=quick)
+        if index < vsv_count:
+            # An outside actuation collar, three levers, and one small torque
+            # shaft make the six publicly reported VSV rows inspectable.
+            actuation_radius = tip + 0.145
+            add_torus(
+                f"VSV stage {index + 1:02d} actuation ring", actuation_radius, 0.018,
+                stator_x, external, mats["brass"], major_segments=64, minor_segments=6,
+            )
+            for arm_index in range(3):
+                theta = math.radians(230.0 + arm_index * 34.0)
+                base = radial_point(stator_x, tip + 0.045, theta)
+                upper = radial_point(stator_x + 0.028, actuation_radius + 0.030, theta + math.radians(3.0))
+                cylinder_between(
+                    f"VSV stage {index + 1:02d} drive lever {arm_index + 1}",
+                    base, upper, 0.012, external, mats["machined"], vertices=10,
+                )
+            shaft_a = radial_point(stator_x - 0.065, actuation_radius + 0.018, math.radians(264.0))
+            shaft_b = radial_point(stator_x + 0.065, actuation_radius + 0.018, math.radians(264.0))
+            cylinder_between(
+                f"VSV stage {index + 1:02d} torque shaft", shaft_a, shaft_b,
+                0.015, external, mats["machined"], vertices=10,
+            )
 
+    # A stiffened, split compressor case remains around 240 degrees of the
+    # circumference, deliberately exposing all 16 rows through the section.
+    add_annular_shell(
+        "16-stage compressor outer case — primary cutaway", -4.78, 0.46, 1.53, 1.78,
+        casing, mats["casing"], inner1=0.98, outer1=1.20,
+        start=CUTAWAY_START, sweep=CUTAWAY_SWEEP, segments=176, bevel=0.008,
+    )
+    for ring_index in range(stage_count):
+        t = ring_index / (stage_count - 1)
+        x = first_x + pitch * ring_index + 0.137
+        radius = 1.72 - 0.535 * t
+        add_annular_shell(
+            f"Compressor case stiffener {ring_index + 1:02d}", x - 0.016, x + 0.016,
+            radius - 0.064, radius + 0.020, casing, mats["machined"],
+            start=CUTAWAY_START, sweep=CUTAWAY_SWEEP, segments=44, bevel=0.002,
+        )
+
+    # A sixth-stage bleed manifold is a visible functional departure from the
+    # flowpath.  Its routed pipes are illustrative cooling-air plumbing only.
+    bleed_x = first_x + pitch * 5 + 0.14
+    add_torus("Sixth-stage compressor bleed manifold", 1.34, 0.030, bleed_x, external, mats["machined"], major_segments=80, minor_segments=8)
+    for line_index, theta_deg in enumerate((248.0, 278.0, 308.0)):
+        theta = math.radians(theta_deg)
+        start = radial_point(bleed_x, 1.34, theta)
+        mid = radial_point(0.52, 1.57, theta - math.radians(4.0))
+        end = radial_point(3.45, 1.50, theta - math.radians(8.0))
+        add_tube(
+            f"Compressor bleed / HPT cooling line {line_index + 1}",
+            [start, mid, end], 0.018, external, mats["copper"], resolution=3,
+        )
+
+    casing_flange("Compressor forward split flange", -3.31, 1.68, external, mats, bolt_count=30, quick=quick)
+    casing_flange("Compressor intermediate split flange", -1.78, 1.43, external, mats, bolt_count=30, quick=quick)
+    casing_flange("Compressor rear split flange", 0.10, 1.22, external, mats, bolt_count=28, quick=quick)
 
 def build_diffuser_and_combustor(
     cols: Dict[str, bpy.types.Collection], mats: Dict[str, bpy.types.Material], quick: bool
@@ -1066,10 +1149,15 @@ def build_diffuser_and_combustor(
     casing = cols["09 • Cutaway Casing"]
     external = cols["08 • External Systems & Fasteners"]
 
-    # Compressor exit diffuser, showing both the expanding outer wall and fixed deswirl vanes.
+    # Compressor exit diffuser and annular discharge plenum.  The diffuser is
+    # deliberately exposed ahead of the straight-through annular combustor.
     add_annular_shell(
         "Compressor exit diffuser outer wall", 0.33, 1.23, 0.93, 1.20, collection, mats["machined"],
         inner1=1.15, outer1=1.39, start=CUTAWAY_START, sweep=CUTAWAY_SWEEP, segments=80, bevel=0.005,
+    )
+    add_annular_shell(
+        "Compressor discharge plenum — cutaway", 0.78, 1.39, 1.13, 1.31, collection, mats["casing"],
+        inner1=1.16, outer1=1.42, start=CUTAWAY_START, sweep=CUTAWAY_SWEEP, segments=80, bevel=0.004,
     )
     add_annular_shell(
         "Compressor exit diffuser hub fairing", 0.33, 1.23, 0.32, 0.46, collection, mats["machined"],
@@ -1106,9 +1194,13 @@ def build_diffuser_and_combustor(
         inner1=0.48, outer1=1.18, start=CUTAWAY_START, sweep=CUTAWAY_SWEEP, segments=96, bevel=0.003,
     )
 
-    # Fuel manifold, nozzle bodies, swirler vanes, and primary-zone hardware.
-    add_torus("Annular fuel manifold", 1.22, 0.042, 1.20, external, mats["brass"], major_segments=96, minor_segments=10)
-    nozzle_count = 16 if not quick else 10
+    # The straight-through annular combustor receives 30 nozzle bodies from a
+    # continuous manifold.  This follows published topology, not proprietary
+    # cup geometry or calibrated fuel-flow data.
+    add_torus("30-nozzle annular fuel manifold", 1.22, 0.042, 1.20, external, mats["brass"], major_segments=96, minor_segments=10)
+    add_torus("Fuel-manifold retaining strap", 1.27, 0.011, 1.12, external, mats["machined"], major_segments=80, minor_segments=6)
+    # GE public LM2500 material describes thirty fuel nozzles.
+    nozzle_count = 30 if not quick else 18
     for index in range(nozzle_count):
         theta = TAU * index / nozzle_count + math.radians(4)
         y, z = 0.80 * math.cos(theta), 0.80 * math.sin(theta)
@@ -1124,7 +1216,7 @@ def build_diffuser_and_combustor(
         add_tube(f"Fuel feed pipe {index + 1:02d}", pipe_points, 0.014, external, mats["brass"], resolution=2)
 
     blade_row(
-        "Primary-zone radial swirler", 1.57, 0.59, 1.00, 22, 0.27, 55.0, -8.0, 0.038,
+        "Thirty-cup primary-zone radial swirler", 1.57, 0.59, 1.00, 30, 0.27, 55.0, -8.0, 0.038,
         collection, mats["nickel"], row_kind="combustor swirler vane", stage="combustor", phase=math.radians(7), quick=quick,
     )
     add_annular_shell(
@@ -1134,7 +1226,8 @@ def build_diffuser_and_combustor(
         "Swirler outer support", 1.45, 1.66, 1.00, 1.06, collection, mats["machined"], segments=64, bevel=0.003,
     )
 
-    # Real combustor liners have several differently sized cooling zones.
+    # Real combustor liners have several differently sized cooling zones;
+    # the visible hole pattern is qualitative and intentionally not OEM data.
     cooling_holes("Outer liner primary-zone", (1.69, 1.84), 1.135, 0.020, collection, mats["dark"], holes_per_ring=30, quick=quick, start_offset=0.08)
     cooling_holes("Outer liner dilution-zone", (2.33, 2.55, 2.77), 1.115, 0.031, collection, mats["dark"], holes_per_ring=22, quick=quick, start_offset=0.21)
     cooling_holes("Inner liner film-zone", (1.77, 2.02, 2.42, 2.85), 0.505, 0.017, collection, mats["dark"], holes_per_ring=26, quick=quick, start_offset=0.12)
@@ -1165,112 +1258,290 @@ def build_diffuser_and_combustor(
         tag(cap, "borescope inspection port", "combustor")
 
 
+def add_hpt_cooling_blade_detail(
+    x: float,
+    root: float,
+    tip: float,
+    phase: float,
+    collection: bpy.types.Collection,
+    mats: Dict[str, bpy.types.Material],
+) -> None:
+    """Expose an illustrative cooling-passage section in one first-stage blade.
+
+    The passage arrangement is intentionally a qualitative teaching detail.
+    NASA heat-transfer literature supports serpentine internal passages and
+    film-cooling exits, but it does not disclose LM2500 blade geometry.
+    """
+    sectioned_blade = airfoil_mesh(
+        "HPT Stage 1 — transparent cooling-blade section", x, root, tip - 0.025,
+        0.47, 42.0, -30.0, 0.068, collection, mats["glass"],
+        span_segments=9, chord_segments=16, sweep=0.025, lean=-0.010,
+    )
+    sectioned_blade.rotation_euler = (phase, 0.0, 0.0)
+    tag(sectioned_blade, "illustrative sectioned air-cooled turbine blade", "HPT Stage 1")
+    sectioned_blade["note"] = "Qualitative serpentine passage visualization; not OEM cooling geometry."
+
+    for channel_index, angle_offset in enumerate((-0.035, 0.0, 0.035)):
+        theta = phase + angle_offset
+        r0, r1, r2, r3 = root + 0.11, root + 0.33, tip - 0.30, tip - 0.075
+        points = (
+            radial_point(x - 0.060, r0, theta),
+            radial_point(x + 0.068, r1, theta),
+            radial_point(x - 0.052, r2, theta),
+            radial_point(x + 0.034, r3, theta),
+        )
+        tube = add_tube(
+            f"HPT Stage 1 cooling passage {channel_index + 1}", points, 0.010,
+            collection, mats["brass"], resolution=2,
+        )
+        tag(tube, "illustrative internal serpentine cooling passage", "HPT Stage 1")
+        exit_start = radial_point(x + 0.034, r3, theta)
+        exit_end = radial_point(x + 0.034, tip - 0.010, theta)
+        film_exit = cylinder_between(
+            f"HPT Stage 1 film-cooling exit {channel_index + 1}", exit_start, exit_end,
+            0.012, collection, mats["dark"], vertices=10,
+        )
+        tag(film_exit, "illustrative film cooling exit", "HPT Stage 1")
+
+
 def build_turbine(
     cols: Dict[str, bpy.types.Collection], mats: Dict[str, bpy.types.Material], quick: bool
 ) -> None:
+    """Build two cooled HPT stages followed by six free-power stages."""
     hpt = cols["05 • High-Pressure Turbine"]
-    lpt = cols["06 • Low-Pressure Turbine & Exhaust"]
+    fpt = cols["06 • Free Power Turbine & Exhaust"]
     seals = cols["07 • Shafts, Bearings & Seals"]
     casing = cols["09 • Cutaway Casing"]
+    external = cols["08 • External Systems & Fasteners"]
 
-    stages = [
-        ("HPT Stage 1", 3.67, 0.43, 1.18, 34, 0.47, hpt, mats["coated"]),
-        ("HPT Stage 2", 4.43, 0.40, 1.14, 38, 0.45, hpt, mats["coated"]),
-        ("LPT Stage 1", 5.18, 0.38, 1.10, 42, 0.48, lpt, mats["nickel"]),
-    ]
-    for index, (stage, stator_x, root, tip, count, chord, collection, rotor_mat) in enumerate(stages):
-        phase = math.radians(13.0 + 8.0 * index)
-        # Cooled nozzle guide vane (stator), then disk-mounted rotor airfoils.
+    # The GE LM2500 public configuration identifies two air-cooled HPT stages.
+    hpt_stages = (
+        ("HPT Stage 1", 3.67, 0.43, 1.18, 34, 0.47),
+        ("HPT Stage 2", 4.33, 0.40, 1.14, 38, 0.45),
+    )
+    for index, (stage, stator_x, root, tip, count, chord) in enumerate(hpt_stages):
+        phase = math.radians(13.0 + 9.0 * index)
         blade_row(
-            f"{stage} nozzle guide vane", stator_x, root + 0.06, tip, count - 4, chord * 0.93,
-            -56.0, 12.0, 0.066, collection, mats["nickel"], row_kind="cooled nozzle guide vane", stage=stage,
+            f"{stage} air-cooled nozzle guide vane", stator_x, root + 0.06, tip, count - 4, chord * 0.93,
+            -56.0, 12.0, 0.066, hpt, mats["nickel"], row_kind="air-cooled nozzle guide vane", stage=stage,
             phase=phase, quick=quick, sweep=-0.018,
         )
         add_annular_shell(
-            f"{stage} nozzle outer band", stator_x - 0.16, stator_x + 0.16, tip, tip + 0.075,
-            collection, mats["coated"], start=CUTAWAY_START, sweep=CUTAWAY_SWEEP, segments=72, bevel=0.003,
+            f"{stage} nozzle outer band", stator_x - 0.145, stator_x + 0.145,
+            tip, tip + 0.075, hpt, mats["coated"], start=CUTAWAY_START,
+            sweep=CUTAWAY_SWEEP, segments=72, bevel=0.003,
         )
         add_annular_shell(
-            f"{stage} nozzle inner band", stator_x - 0.16, stator_x + 0.16, root - 0.06, root + 0.07,
-            collection, mats["nickel"], segments=56, bevel=0.003,
+            f"{stage} nozzle inner band", stator_x - 0.145, stator_x + 0.145,
+            root - 0.06, root + 0.07, hpt, mats["nickel"], segments=56, bevel=0.003,
         )
-        rotor_x = stator_x + 0.32
-        blade_platform_ring(f"{stage} turbine disk", rotor_x, root, 0.23, collection, mats["machined"], inner_radius=0.25, outer_margin=0.095)
+        rotor_x = stator_x + 0.305
+        blade_platform_ring(
+            f"{stage} turbine disk", rotor_x, root, 0.22, hpt, mats["machined"],
+            inner_radius=0.25, outer_margin=0.095,
+        )
         blade_row(
-            f"{stage} rotor", rotor_x, root, tip - 0.025, count, chord, 42.0, -30.0, 0.068,
-            collection, rotor_mat, row_kind="rotating turbine blade", stage=stage, phase=phase + math.radians(4),
-            quick=quick, sweep=0.025, lean=-0.010,
+            f"{stage} air-cooled rotor", rotor_x, root, tip - 0.025, count, chord, 42.0, -30.0, 0.068,
+            hpt, mats["coated"], row_kind="air-cooled rotating turbine blade", stage=stage,
+            phase=phase + math.radians(4), quick=quick, sweep=0.025, lean=-0.010,
+            omit_angles=(math.radians(158.0),) if index == 0 else (),
+            omit_tolerance=math.radians(7.0) if index == 0 else 0.0,
         )
         add_turbine_tip_shrouds(
-            stage, rotor_x, tip, count, chord, collection, mats["coated"], phase=phase + math.radians(4), quick=quick,
+            stage, rotor_x, tip, count, chord, hpt, mats["coated"], phase=phase + math.radians(4), quick=quick,
         )
-        add_seal_teeth(f"{stage} disk rim seal", rotor_x - 0.17, root + 0.06, seals, mats["nickel"], count=6, spacing=0.021, tooth_radius=0.012)
-        # Ablative-looking thin heat-shield bands at each stage transition.
-        add_torus(f"{stage} thermal shield forward", tip + 0.045, 0.017, stator_x - 0.20, collection, mats["coated"], major_segments=72, minor_segments=8)
-        add_torus(f"{stage} thermal shield aft", tip + 0.045, 0.017, rotor_x + 0.19, collection, mats["coated"], major_segments=72, minor_segments=8)
+        add_seal_teeth(
+            f"{stage} disk rim seal", rotor_x - 0.17, root + 0.06, seals,
+            mats["nickel"], count=6, spacing=0.021, tooth_radius=0.012,
+        )
+        add_torus(
+            f"{stage} thermal shield forward", tip + 0.045, 0.017, stator_x - 0.19,
+            hpt, mats["coated"], major_segments=72, minor_segments=8,
+        )
+        add_torus(
+            f"{stage} thermal shield aft", tip + 0.045, 0.017, rotor_x + 0.18,
+            hpt, mats["coated"], major_segments=72, minor_segments=8,
+        )
+        cooling_holes(
+            f"{stage} shroud impingement", (stator_x - 0.10, stator_x + 0.095), tip + 0.055,
+            0.013, hpt, mats["dark"], holes_per_ring=32, quick=quick, start_offset=0.15 + index * 0.12,
+        )
+        if index == 0:
+            # Camera-facing, sectioned blade makes cooling intent readable.
+            add_hpt_cooling_blade_detail(rotor_x, root, tip, math.radians(158.0), hpt, mats)
 
     add_annular_shell(
-        "Turbine case — cutaway hot section", 3.47, 5.72, 1.19, 1.43, casing, mats["casing"],
-        inner1=1.12, outer1=1.35, start=CUTAWAY_START, sweep=CUTAWAY_SWEEP, segments=144, bevel=0.009,
+        "Two-stage HPT case — cutaway", 3.47, 4.88, 1.19, 1.43, casing, mats["casing"],
+        inner1=1.12, outer1=1.37, start=CUTAWAY_START, sweep=CUTAWAY_SWEEP,
+        segments=112, bevel=0.009,
     )
-    # Shroud segments with a clearance seal just above blade tips.
-    for stage_index, (_, stator_x, _, tip, _, _, collection, _) in enumerate(stages):
-        for x_offset in (-0.10, 0.22):
-            add_annular_shell(
-                f"Turbine shroud segment band {stage_index + 1}-{x_offset:+.2f}", stator_x + x_offset - 0.024, stator_x + x_offset + 0.024,
-                tip + 0.005, tip + 0.070, collection, mats["coated"], start=CUTAWAY_START, sweep=CUTAWAY_SWEEP, segments=72, bevel=0.002,
-            )
-        cooling_holes(
-            f"{stages[stage_index][0]} shroud impingement", (stator_x - 0.11, stator_x + 0.10), tip + 0.055,
-            0.013, collection, mats["dark"], holes_per_ring=32, quick=quick, start_offset=0.15,
-        )
+    casing_flange("HPT case split flange", 4.13, 1.38, external, mats, bolt_count=30, quick=quick)
 
-    casing_flange("HPT case split flange", 4.13, 1.38, cols["08 • External Systems & Fasteners"], mats, bolt_count=30, quick=quick)
-    casing_flange("LPT case split flange", 5.71, 1.32, cols["08 • External Systems & Fasteners"], mats, bolt_count=28, quick=quick)
+    # An annular transition separates the gas-generator turbine from the
+    # mechanically independent free power turbine.
+    add_annular_shell(
+        "Interturbine transition duct — cutaway", 4.80, 5.14, 0.98, 1.22,
+        fpt, mats["hot_liner"], inner1=0.94, outer1=1.28,
+        start=CUTAWAY_START, sweep=CUTAWAY_SWEEP, segments=80, bevel=0.004,
+    )
+    add_annular_shell(
+        "Free-power turbine inlet case — cutaway", 4.82, 5.20, 1.20, 1.40,
+        casing, mats["casing"], inner1=1.18, outer1=1.43,
+        start=CUTAWAY_START, sweep=CUTAWAY_SWEEP, segments=80, bevel=0.008,
+    )
+
+    # The public LM2500 topology uses six free-power turbine stages.  Stage
+    # spacing, blade counts and profiles are intentionally visual proxies.
+    power_stage_count = 6
+    power_first_x = 5.20
+    power_pitch = 0.555
+    power_records = []
+    for index in range(power_stage_count):
+        t = index / (power_stage_count - 1)
+        stage = f"Free Power Turbine Stage {index + 1:02d}"
+        stator_x = power_first_x + power_pitch * index
+        root = 0.365 + 0.038 * t
+        tip = 1.135 + 0.205 * t
+        count = int(round(34 + 12 * t))
+        chord = 0.455 + 0.026 * t
+        power_records.append((stage, stator_x, root, tip, count, chord))
+
+    for index, (stage, stator_x, root, tip, count, chord) in enumerate(power_records):
+        phase = math.radians(22.0 + 7.0 * index)
+        blade_row(
+            f"{stage} nozzle guide vane", stator_x, root + 0.052, tip, count - 4, chord * 0.93,
+            -50.0, 10.0, 0.062, fpt, mats["nickel"], row_kind="free power turbine nozzle guide vane",
+            stage=stage, phase=phase, quick=quick, sweep=-0.012,
+        )
+        add_annular_shell(
+            f"{stage} nozzle outer band", stator_x - 0.135, stator_x + 0.135,
+            tip, tip + 0.068, fpt, mats["nickel"], start=CUTAWAY_START,
+            sweep=CUTAWAY_SWEEP, segments=64, bevel=0.002,
+        )
+        add_annular_shell(
+            f"{stage} nozzle inner band", stator_x - 0.135, stator_x + 0.135,
+            root - 0.055, root + 0.062, fpt, mats["machined"], segments=48, bevel=0.002,
+        )
+        rotor_x = stator_x + 0.292
+        blade_platform_ring(
+            f"{stage} rotor disk", rotor_x, root, 0.205, fpt, mats["machined"],
+            inner_radius=0.25, outer_margin=0.090,
+        )
+        blade_row(
+            f"{stage} rotor", rotor_x, root, tip - 0.025, count, chord, 38.0, -24.0, 0.064,
+            fpt, mats["nickel"], row_kind="free power turbine rotating blade", stage=stage,
+            phase=phase + math.radians(4), quick=quick, sweep=0.020, lean=-0.008,
+        )
+        add_turbine_tip_shrouds(
+            stage, rotor_x, tip, count, chord, fpt, mats["nickel"], phase=phase + math.radians(4), quick=quick,
+        )
+        add_seal_teeth(
+            f"{stage} disk rim seal", rotor_x - 0.15, root + 0.055, seals,
+            mats["nickel"], count=5, spacing=0.020, tooth_radius=0.011,
+        )
+        if index in (1, 3, 5):
+            add_torus(
+                f"{stage} shroud seal carrier", tip + 0.047, 0.014, rotor_x + 0.14,
+                fpt, mats["machined"], major_segments=64, minor_segments=7,
+            )
+
+    add_annular_shell(
+        "Six-stage free-power turbine case — cutaway", 4.96, 8.56, 1.20, 1.43,
+        casing, mats["casing"], inner1=1.18, outer1=1.63,
+        start=CUTAWAY_START, sweep=CUTAWAY_SWEEP, segments=176, bevel=0.009,
+    )
+    for ring_index in range(power_stage_count):
+        _, stator_x, _, tip, _, _ = power_records[ring_index]
+        add_annular_shell(
+            f"Free-power casing stiffener {ring_index + 1:02d}", stator_x - 0.022, stator_x + 0.022,
+            tip + 0.035, tip + 0.115, casing, mats["machined"],
+            start=CUTAWAY_START, sweep=CUTAWAY_SWEEP, segments=48, bevel=0.002,
+        )
+    casing_flange("Free-power turbine forward case flange", 5.03, 1.42, external, mats, bolt_count=30, quick=quick)
+    casing_flange("Free-power turbine aft case flange", 6.90, 1.55, external, mats, bolt_count=32, quick=quick)
+    casing_flange("Free-power turbine exhaust case flange", 8.47, 1.64, external, mats, bolt_count=32, quick=quick)
 
 
 def build_shaft_bearings_and_exhaust(
     cols: Dict[str, bpy.types.Collection], mats: Dict[str, bpy.types.Material], quick: bool
 ) -> None:
+    """Build concentric gas-generator and free-power shafts, bearings and tail."""
     collection = cols["07 • Shafts, Bearings & Seals"]
-    exhaust = cols["06 • Low-Pressure Turbine & Exhaust"]
+    exhaust = cols["06 • Free Power Turbine & Exhaust"]
     casing = cols["09 • Cutaway Casing"]
     external = cols["08 • External Systems & Fasteners"]
 
-    # Concentric shafts distinguish the compressor spool from the turbine spool at the cut section.
-    add_axial_cylinder("Inner high-pressure shaft", 0.155, 9.35, 0.35, collection, mats["machined"], vertices=64, bevel=0.003)
-    add_annular_shell("Outer low-pressure shaft", -4.73, 5.18, 0.16, 0.245, collection, mats["titanium"], segments=96, bevel=0.003)
-    for x, name in ((-4.66, "Front"), (-2.59, "Intershaft"), (0.82, "Compressor rear"), (3.42, "Turbine front"), (5.59, "Turbine rear")):
+    # The gas generator and free power turbine are visually separated at the
+    # interturbine station to make the LM2500-style two-spool architecture clear.
+    add_axial_cylinder("Gas-generator high-pressure shaft", 0.155, 9.58, 0.08, collection, mats["machined"], vertices=64, bevel=0.003)
+    add_annular_shell(
+        "Gas-generator shaft thermal sleeve", -0.66, 4.85, 0.158, 0.215,
+        collection, mats["titanium"], segments=96, bevel=0.003,
+    )
+    add_annular_shell(
+        "Free-power turbine hollow shaft", 4.84, 9.62, 0.080, 0.235,
+        collection, mats["titanium"], segments=96, bevel=0.003,
+    )
+    add_axial_cylinder("Free-power output shaft core", 0.078, 5.06, 7.09, collection, mats["machined"], vertices=48, bevel=0.002)
+    add_torus("Interturbine shaft separation seal", 0.245, 0.026, 4.85, collection, mats["nickel"], major_segments=56, minor_segments=8)
+
+    bearings = (
+        (-4.66, "No. 1 front"),
+        (-2.35, "No. 2 compressor"),
+        (0.76, "No. 3 compressor rear"),
+        (3.42, "No. 4 HPT front"),
+        (4.88, "No. 5 free-turbine front"),
+        (7.36, "No. 6 free-turbine rear"),
+    )
+    for x, name in bearings:
         add_torus(f"{name} bearing race", 0.31, 0.052, x, collection, mats["machined"], major_segments=56, minor_segments=12)
-        # Rolling elements are radial spheres set in a visible race.
         balls = 10 if quick else 18
         for index in range(balls):
             theta = TAU * index / balls
-            add_uv_sphere(f"{name} bearing roller {index + 1:02d}", 0.036, radial_point(x, 0.31, theta), collection, mats["nickel"], segments=12)
-        add_annular_shell(f"{name} bearing housing", x - 0.11, x + 0.11, 0.34, 0.48, collection, mats["casing"], segments=48, bevel=0.003)
+            roller = add_uv_sphere(
+                f"{name} bearing roller {index + 1:02d}", 0.036,
+                radial_point(x, 0.31, theta), collection, mats["nickel"], segments=12,
+            )
+            tag(roller, "rolling bearing element", name)
+        add_annular_shell(
+            f"{name} bearing housing", x - 0.11, x + 0.11, 0.34, 0.48,
+            collection, mats["casing"], segments=48, bevel=0.003,
+        )
+    for seal_index, x in enumerate((-4.44, -0.22, 3.18, 4.69, 8.20)):
+        add_seal_teeth(
+            f"Shaft cavity seal {seal_index + 1}", x, 0.255,
+            collection, mats["nickel"], count=5, spacing=0.017, tooth_radius=0.009,
+        )
 
-    # Exhaust cone, struts, and nozzle body.
+    # Exhaust frame, cone and output coupling follow the sixth free-power stage.
     add_annular_shell(
-        "Exhaust transition case — cutaway", 5.68, 6.50, 1.10, 1.34, casing, mats["casing"],
-        inner1=0.93, outer1=1.15, start=CUTAWAY_START, sweep=CUTAWAY_SWEEP, segments=96, bevel=0.008,
+        "Power-turbine exhaust transition case — cutaway", 8.46, 9.28, 1.24, 1.64,
+        casing, mats["casing"], inner1=1.02, outer1=1.31,
+        start=CUTAWAY_START, sweep=CUTAWAY_SWEEP, segments=96, bevel=0.008,
     )
-    add_cone("Exhaust centrebody plug", 0.48, 0.075, 1.40, 6.25, exhaust, mats["nickel"], vertices=64, bevel=0.004)
+    add_cone("Exhaust centrebody plug", 0.52, 0.075, 1.52, 9.02, exhaust, mats["nickel"], vertices=64, bevel=0.004)
     add_annular_shell(
-        "Exhaust nozzle shell — cutaway", 6.37, 7.06, 0.91, 1.16, exhaust, mats["machined"],
-        inner1=0.70, outer1=0.88, start=CUTAWAY_START, sweep=CUTAWAY_SWEEP, segments=96, bevel=0.006,
+        "Exhaust nozzle shell — cutaway", 9.12, 9.92, 0.98, 1.32,
+        exhaust, mats["machined"], inner1=0.76, outer1=0.96,
+        start=CUTAWAY_START, sweep=CUTAWAY_SWEEP, segments=96, bevel=0.006,
     )
-    add_torus("Exhaust nozzle rolled lip", 0.79, 0.048, 7.06, exhaust, mats["machined"], major_segments=96, minor_segments=12)
+    add_torus("Exhaust nozzle rolled lip", 0.86, 0.048, 9.92, exhaust, mats["machined"], major_segments=96, minor_segments=12)
     strut_count = 6 if quick else 10
     for index in range(strut_count):
         theta = TAU * index / strut_count + math.radians(9)
-        start = radial_point(5.95, 0.37, theta)
-        end = radial_point(6.19, 1.05, theta + math.radians(7))
-        cylinder_between(f"Exhaust support strut {index + 1:02d}", start, end, 0.037, exhaust, mats["machined"], vertices=12, bevel=0.003)
+        start = radial_point(8.72, 0.37, theta)
+        end = radial_point(9.04, 1.13, theta + math.radians(7))
+        cylinder_between(
+            f"Exhaust frame support strut {index + 1:02d}", start, end, 0.037,
+            exhaust, mats["machined"], vertices=12, bevel=0.003,
+        )
+    add_axial_cylinder("Free-power output coupling", 0.33, 0.30, 9.65, exhaust, mats["machined"], vertices=48, bevel=0.005)
+    add_torus("Free-power output coupling flange", 0.34, 0.036, 9.79, exhaust, mats["machined"], major_segments=56, minor_segments=9)
 
-    # Oil scavenge lines visible around bearing stations.
+    # Oil feed and scavenge routing make the bearing cavities serviceable.
     add_tube("Front-bearing oil feed", [(-4.67, -0.38, 0.16), (-4.30, -1.25, 0.22), (-3.55, -1.46, -0.14)], 0.028, external, mats["copper"], resolution=3)
-    add_tube("Rear-bearing oil scavenge", [(5.58, -0.38, 0.12), (5.88, -1.16, -0.02), (5.38, -1.47, -0.27)], 0.032, external, mats["copper"], resolution=3)
-
+    add_tube("HPT bearing oil scavenge", [(3.42, -0.38, 0.12), (3.74, -1.20, -0.02), (3.24, -1.51, -0.27)], 0.030, external, mats["copper"], resolution=3)
+    add_tube("Free-power rear bearing scavenge", [(7.36, -0.40, 0.12), (7.70, -1.30, -0.03), (7.22, -1.58, -0.26)], 0.032, external, mats["copper"], resolution=3)
 
 def build_external_systems(
     cols: Dict[str, bpy.types.Collection], mats: Dict[str, bpy.types.Material], quick: bool
@@ -1317,7 +1588,7 @@ def build_external_systems(
         )
 
     # Lift lugs make the casing serviceable rather than a clean concept sculpture.
-    for index, x in enumerate((-3.83, 0.44, 3.94, 5.32)):
+    for index, x in enumerate((-3.83, 0.44, 3.94, 7.36)):
         block = add_cube(f"Service lift lug {index + 1}", (0.18, 0.15, 0.36), (x, 0.0, 1.70 if x < 1.0 else 1.48), collection, mats["machined"], bevel=0.018)
         tag(block, "lifting lug")
         add_torus(f"Service lift lug eye {index + 1}", 0.066, 0.016, x, collection, mats["machined"], major_segments=32, minor_segments=8, y=0.0, z=(1.86 if x < 1.0 else 1.64))
@@ -1336,9 +1607,10 @@ def build_cutaway_edges(
         (-5.69, -4.78, 2.08, 1.85),
         (-4.78, 0.46, 1.78, 1.20),
         (1.12, 3.36, 1.48, 1.40),
-        (3.47, 5.72, 1.43, 1.35),
-        (5.68, 6.50, 1.34, 1.15),
-        (6.37, 7.06, 1.16, 0.88),
+        (3.47, 4.88, 1.43, 1.37),
+        (4.96, 8.56, 1.43, 1.63),
+        (8.46, 9.28, 1.64, 1.31),
+        (9.12, 9.92, 1.32, 0.96),
     )
     for shell_index, (x0, x1, r0, r1) in enumerate(shells):
         for edge_index, theta in enumerate((CUTAWAY_START, CUTAWAY_START + CUTAWAY_SWEEP)):
@@ -1360,7 +1632,7 @@ def build_environment(
     floor = add_cube("Matte studio floor", (24.0, 24.0, 0.18), (0.4, 0.0, -2.35), collection, mats["floor"], bevel=0.02)
     tag(floor, "studio floor")
     # Low plinth blocks support the engine at believable service points.
-    for index, x in enumerate((-3.25, 4.75)):
+    for index, x in enumerate((-3.25, 7.25)):
         pedestal = add_cube(f"Engine support pedestal {index + 1}", (0.78, 1.10, 1.08), (x, 0.0, -1.83), collection, mats["casing"], bevel=0.06)
         tag(pedestal, "engine mounting pedestal")
         add_cube(f"Pedestal isolation pad {index + 1}", (0.94, 1.28, 0.10), (x, 0.0, -2.33), collection, mats["rubber"], bevel=0.025)
@@ -1399,13 +1671,13 @@ def add_text_label(
 def build_optional_labels(cols: Dict[str, bpy.types.Collection], mats: Dict[str, bpy.types.Material]) -> None:
     collection = cols["11 • Optional Labels"]
     stations = (
-        (-5.15, "INLET"),
-        (-3.55, "LPC"),
-        (-1.00, "HPC"),
-        (2.20, "ANNULAR COMBUSTOR"),
-        (4.03, "HPT"),
-        (5.22, "LPT"),
-        (6.55, "EXHAUST"),
+        (-5.15, "INLET / IGV"),
+        (-3.45, "HPC 01–06 VSV"),
+        (-1.05, "HPC 07–16"),
+        (2.20, "30-NOZZLE ANNULAR COMBUSTOR"),
+        (4.15, "2-STAGE AIR-COOLED HPT"),
+        (6.72, "6-STAGE FREE POWER TURBINE"),
+        (9.46, "EXHAUST"),
     )
     for index, (x, text) in enumerate(stations):
         add_text_label(f"Section label {index + 1}", text, (x, -2.23, -2.16), collection, mats["label"], size=0.17 if len(text) > 5 else 0.23)
@@ -1446,7 +1718,7 @@ def configure_cameras_and_lights(
     cols: Dict[str, bpy.types.Collection], mats: Dict[str, bpy.types.Material]
 ) -> bpy.types.Object:
     collection = cols["10 • Cameras & Lights"]
-    target = (0.55, 0.0, -0.10)
+    target = (1.72, 0.0, -0.10)
     target_obj = bpy.data.objects.new("Hero camera target", None)
     collection.objects.link(target_obj)
     target_obj.location = target
@@ -1458,7 +1730,7 @@ def configure_cameras_and_lights(
     camera_data.sensor_width = 36
     camera = bpy.data.objects.new("Hero Cutaway Camera", camera_data)
     collection.objects.link(camera)
-    camera.location = (14.9, -18.4, 7.4)
+    camera.location = (19.4, -24.0, 8.8)
     look_at(camera, target)
     bpy.context.scene.camera = camera
 
@@ -1470,17 +1742,17 @@ def configure_cameras_and_lights(
     look_at(detail, (2.15, -0.15, 0.0))
 
     # Large soft sources mimic a premium product/engineering studio; warm key, cool rim, low fill.
-    add_area_light("Key — warm overhead", (0.5, -6.0, 10.5), target, 1800.0, 7.5, (1.0, 0.61, 0.35, 1), collection)
-    add_area_light("Rim — cool back", (5.7, 7.5, 6.8), (1.8, 0.0, 0.4), 1550.0, 5.0, (0.22, 0.55, 1.0, 1), collection)
-    add_area_light("Fill — neutral front", (-7.5, -5.0, 3.2), (-2.5, 0.0, -0.3), 1200.0, 4.5, (0.75, 0.84, 1.0, 1), collection)
+    add_area_light("Key — warm overhead", (1.4, -7.6, 11.5), target, 2050.0, 8.5, (1.0, 0.61, 0.35, 1), collection)
+    add_area_light("Rim — cool back", (8.5, 8.5, 7.6), (3.4, 0.0, 0.4), 1800.0, 5.5, (0.22, 0.55, 1.0, 1), collection)
+    add_area_light("Fill — neutral front", (-8.5, -6.2, 3.5), (-2.5, 0.0, -0.3), 1350.0, 5.0, (0.75, 0.84, 1.0, 1), collection)
     add_area_light("Interior — combustion glow", (2.30, -0.9, 0.25), (2.30, 0.0, 0.0), 600.0, 2.2, (1.0, 0.14, 0.015, 1), collection)
-    add_area_light("Long top strip", (-1.0, 1.5, 8.0), (-0.4, 0.0, 0.0), 900.0, 8.5, (0.92, 0.95, 1.0, 1), collection)
+    add_area_light("Long top strip", (1.0, 1.5, 8.0), (1.4, 0.0, 0.0), 1050.0, 11.5, (0.92, 0.95, 1.0, 1), collection)
 
     # A small emissive engineering placard placed far below the frame is useful in viewport orientation.
-    plaque = add_cube("Model information plaque", (3.25, 0.08, 0.72), (0.40, 1.88, -1.72), cols["00 • Environment"], mats["casing"], bevel=0.035)
+    plaque = add_cube("Model information plaque", (4.40, 0.08, 0.72), (1.55, 1.88, -1.72), cols["00 • Environment"], mats["casing"], bevel=0.035)
     tag(plaque, "informational plaque")
-    add_text_label("Plaque title", "AXIAL GAS TURBINE — CUTAWAY", (-0.85, 1.82, -1.73), cols["00 • Environment"], mats["label"], size=0.15)
-    add_text_label("Plaque subtitle", "PROCEDURAL ENGINEERING VISUALISATION", (-0.68, 1.81, -2.00), cols["00 • Environment"], mats["label"], size=0.09)
+    add_text_label("Plaque title", "LM2500-CLASS TOPOLOGY — CUTAWAY", (0.85, 1.82, -1.73), cols["00 • Environment"], mats["label"], size=0.14)
+    add_text_label("Plaque subtitle", "PUBLIC-DATA STRUCTURAL VISUALISATION — NOT OEM CAD OR CFD", (0.85, 1.81, -2.00), cols["00 • Environment"], mats["label"], size=0.072)
     return camera
 
 
@@ -1523,34 +1795,53 @@ def configure_scene(args: argparse.Namespace) -> None:
         pass
     scene.unit_settings.system = "METRIC"
     scene.unit_settings.length_unit = "METERS"
-    scene["asset_name"] = "High-detail axial gas turbine cutaway"
-    scene["asset_scope"] = "Generic physically informed visualisation; not OEM-controlled dimensional data."
+    scene.unit_settings.scale_length = 0.51
+    scene["asset_name"] = "LM2500-class public-topology axial gas turbine cutaway"
+    scene["asset_scope"] = "Public-data-calibrated structural visualisation; not OEM CAD, CFD, FEA, thermal analysis, or manufacturing data."
+    scene["reference_basis"] = "Public GE LM2500 architecture: 16-stage axial compressor, first six VSV rows, 30 fuel nozzles in an annular combustor, 2 air-cooled HPT stages, 6 free-power turbine stages."
+    scene["public_reference_url"] = "https://www.geaerospace.com/sites/default/files/2023-11/LM2500-Datasheet.pdf"
     scene["cutaway_sector_degrees"] = 120
     scene["generator"] = "blender/generate_gas_turbine.py"
 
 
 def attach_model_notes(args: argparse.Namespace) -> None:
+    """Embed provenance and scope limits inside the delivered .blend file."""
     notes = bpy.data.texts.get("MODEL NOTES — READ ME") or bpy.data.texts.new("MODEL NOTES — READ ME")
     notes.clear()
     notes.write(
-        "AXIAL GAS TURBINE CUTAWAY\n"
-        "=========================\n\n"
+        "LM2500-CLASS AXIAL GAS TURBINE CUTAWAY\n"
+        "=======================================\n\n"
         "Generated procedurally by blender/generate_gas_turbine.py.\n\n"
-        "Assembly hierarchy:\n"
-        "• inlet guide vanes, 8 compressor stages, diffuser, annular combustor,\n"
-        "  fuel manifold/injectors/swirler/liners/igniters, 3 turbine stages,\n"
-        "  concentric shafts, bearings, labyrinth seals, exhaust support frame,\n"
-        "  service systems, casing flanges, bolts, instrumentation and cutaway lips.\n\n"
-        "VISUALISATION SCOPE\n"
-        "This is a generic, physically informed two-spool axial gas-turbine visualisation.\n"
-        "It is intentionally not represented as an OEM-engine CAD model or a source of\n"
-        "manufacturing dimensions. Exact internal layouts, blade profiles, cooling passages,\n"
-        "clearances, materials, and inspection limits must be replaced with controlled data\n"
-        "from the specific engine configuration before any engineering use.\n\n"
+        "PUBLIC-REFERENCE TOPOLOGY\n"
+        "This editable visualisation is calibrated to published GE LM2500 architecture:\n"
+        "• inlet guide vanes and a 16-stage axial compressor;\n"
+        "• the first six compressor stator rows modelled as variable stator vanes;\n"
+        "• a straight-through annular combustor with a 30-nozzle manifold;\n"
+        "• two air-cooled high-pressure turbine stages; and\n"
+        "• six mechanically independent free-power turbine stages.\n\n"
+        "Primary public source: GE Aerospace LM2500 datasheet, November 2023\n"
+        "https://www.geaerospace.com/sites/default/files/2023-11/LM2500-Datasheet.pdf\n"
+        "Architecture / evolution context: GE Aerospace, Technological evolution\n"
+        "of the LM2500 aeroderivative gas turbine.\n"
+        "https://www.geaerospace.com/news/press-releases/marine-industrial-engines/technological-evolution-popular-aeroderivative-gas-turbine\n\n"
+        "WHAT IS MODELLED\n"
+        "Sixteen compressor rotor/stator pairs, six external VSV actuation collars,\n"
+        "thirty numbered fuel injectors, annular fuel manifold, diffuser, liners,\n"
+        "qualitative liner perforations, two igniters, HPT cooling passage teaching\n"
+        "detail, six free-power rows, split casing, shaft cavities, bearing races,\n"
+        "labyrinth seals, exhaust frame, service pipes, sensors and fasteners.\n\n"
+        "SCOPE AND SAFETY LIMIT\n"
+        "This is a public-data-calibrated structural visualisation, NOT a complete\n"
+        "physical simulation, OEM CAD model, certified configuration, CFD result,\n"
+        "thermal/structural FEA result, performance map, or manufacturing drawing.\n"
+        "Blade profiles, blade counts, exact dimensions, nozzle flow splits, cooling\n"
+        "holes/passages, materials, clearances, controls and bearing layout that are\n"
+        "not publicly released are illustrative proxies. Do not use this asset for\n"
+        "design, maintenance, certification, operational or safety decisions.\n\n"
+        "For source notes and verification limits, see blender/REFERENCE_BASIS.md.\n"
         f"Build mode: {'quick' if args.quick else 'full detail'}\n"
         f"Saved output requested: {os.path.abspath(args.output)}\n"
     )
-
 
 def build_engine(args: argparse.Namespace) -> Path:
     started = time.perf_counter()
@@ -1575,7 +1866,7 @@ def build_engine(args: argparse.Namespace) -> Path:
     # Make the root collection easy to find in a busy Blender scene.
     root = bpy.data.collections.get("GAS TURBINE — CUTAWAY ASSEMBLY")
     if root:
-        root["description"] = "High-detail axial gas turbine cutaway; select child collections for subsystems."
+        root["description"] = "LM2500-class public-topology cutaway; select child collections for editable subsystems. See MODEL NOTES — READ ME."
     bpy.context.view_layer.update()
 
     output = Path(args.output).expanduser().resolve()

@@ -1,3 +1,7 @@
-# Binary scene/renders are reproducible from generate_gas_turbine.py.
+# Preview/scratch output remains reproducible and ignored by default.
+# The explicitly delivered .blend and its verified hero render are exceptions:
+# they are tracked because the task requires a directly usable Blender asset.
 output/*
 !output/.gitkeep
+!output/axial_gas_turbine_cutaway.blend
+!output/axial_gas_turbine_hero_preview.png
