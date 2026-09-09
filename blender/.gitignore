@@ -1,0 +1,3 @@
+# Binary scene/renders are reproducible from generate_gas_turbine.py.
+output/*
+!output/.gitkeep
