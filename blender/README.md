@@ -32,7 +32,10 @@
 1. 在 **Outliner** 展开 `GAS TURBINE — CUTAWAY ASSEMBLY`；其下分为入口、前 6 级 VSV 压气机、后 10 级压气机、燃烧室、HPT、自由动力涡轮、轴系、附件和剖切机匣等集合。
 2. 选择 **Hero Cutaway Camera**，按 `Numpad 0` 进入主镜头；切掉面向镜头的 120° 机匣扇区，以露出内部流道与部件层级。
 3. 在 **Text Editor** 打开 `MODEL NOTES — READ ME`；该说明嵌入 `.blend`，记录公开资料基线、对象范围和不能宣称为仿真的部分。
-4. 需要局部编辑时，叶排使用 linked mesh。编辑每排的 `Blade master` 会同步该排；需要个别叶片变化时可在 Blender 中执行 **Make Single User**。
+4. **播放旋转：** 将时间线停在 Frame 1，按 `Space` 或点击播放。`Gas Generator Rotor — visual-speed controller` 与 `Free Power Rotor — visual-speed controller` 会以不同的、可读的显示速度循环转动；机匣、静叶、燃烧室和外部附件保持静止。
+5. 需要局部编辑时，叶排使用 linked mesh。编辑每排的 `Blade master` 会同步该排；需要个别叶片变化时可在 Blender 中执行 **Make Single User**。
+
+> 文件查看器通常只展示 `.blend` 的静态内容；实际播放请在 Blender 时间线中进行。该动画仅表示两个转子总成的视觉运动，故意使用低得多的显示速度，**不是**实际 LM2500 RPM、动力学、温度、振动、控制或性能仿真。
 
 ## 细节范围
 
@@ -80,6 +83,7 @@ blender --background --python blender/generate_gas_turbine.py -- --quick \
 | `--render <路径>` | 在保存 `.blend` 后输出 PNG/EXR 静帧。 |
 | `--engine CYCLES` | 默认渲染器；也可尝试 `BLENDER_EEVEE_NEXT`。 |
 | `--labels` | 在模型下方添加工段文字和引线。 |
+| `--static` | 不创建默认的旋转播放轨道；默认构建会提供显示用循环转子动画。 |
 | `--no-floor` | 去除摄影棚地面和背景，方便移入其他场景。 |
 | `--resolution-scale 25..200` | 按百分比调整 1920×1080 输出。 |
 

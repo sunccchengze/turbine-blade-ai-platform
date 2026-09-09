@@ -101,6 +101,11 @@ def parse_args() -> argparse.Namespace:
         help="Add section labels below the model (off by default for a clean render).",
     )
     parser.add_argument(
+        "--static",
+        action="store_true",
+        help="Do not add the default display-only reduced-speed rotor animation.",
+    )
+    parser.add_argument(
         "--resolution-scale",
         type=int,
         default=100,
@@ -164,6 +169,7 @@ def collection_tree() -> Dict[str, bpy.types.Collection]:
         ("09 • Cutaway Casing", root),
         ("10 • Cameras & Lights", root),
         ("11 • Optional Labels", root),
+        ("12 • Animation Controllers", root),
     )
     return {name: get_collection(name, parent) for name, parent in names}
 
@@ -1989,6 +1995,112 @@ def configure_cameras_and_lights(
     return camera
 
 
+
+def add_display_rotation_animation(cols: Dict[str, bpy.types.Collection]) -> None:
+    """Add a lightweight, clearly non-physical rotor playback animation.
+
+    Geometry remains separated into stationary casing/stator hardware and two
+    independently rotating assemblies.  The intentionally reduced visual rate
+    makes the motion legible in Blender's viewport; it is not an RPM, dynamics,
+    power, bearing-load, or control-system prediction.
+    """
+    scene = bpy.context.scene
+    controllers = cols["12 • Animation Controllers"]
+
+    # This makes the helper idempotent when it is used to upgrade an already
+    # generated .blend: detach children from old identity controllers first.
+    for old_name in ("Gas Generator Rotor — visual-speed controller", "Free Power Rotor — visual-speed controller"):
+        old = bpy.data.objects.get(old_name)
+        if old is not None:
+            for child in list(old.children):
+                child.parent = None
+            bpy.data.objects.remove(old, do_unlink=True)
+
+    gas_generator = bpy.data.objects.new("Gas Generator Rotor — visual-speed controller", None)
+    free_power = bpy.data.objects.new("Free Power Rotor — visual-speed controller", None)
+    controllers.objects.link(gas_generator)
+    controllers.objects.link(free_power)
+    for controller, label in ((gas_generator, "gas-generator rotor"), (free_power, "free-power rotor")):
+        controller.empty_display_type = "SINGLE_ARROW"
+        controller.empty_display_size = 0.30
+        controller["component"] = label + " animation controller"
+        controller["animation_scope"] = "Display-only reduced-speed motion; not a physical operating speed."
+
+    gas_components = {
+        "rotating compressor blade",
+        "compressor blade root platform",
+        "illustrative compressor blade retention lug",
+        "air-cooled rotating turbine blade",
+        "turbine blade root platform",
+        "illustrative turbine blade retention lug",
+        "illustrative sectioned air-cooled turbine blade",
+        "illustrative internal serpentine cooling passage",
+        "illustrative film cooling exit",
+    }
+    free_components = {
+        "free power turbine rotating blade",
+        "free-power turbine blade root platform",
+        "illustrative free-power blade retention lug",
+    }
+
+    def is_gas_generator_part(obj: bpy.types.Object) -> bool:
+        if obj.get("component") in gas_components:
+            return True
+        if obj.name in {"Compressor spinner", "Gas-generator high-pressure shaft", "Gas-generator shaft thermal sleeve"}:
+            return True
+        return (
+            (obj.name.startswith("HPC Stage ") and "rotor disk" in obj.name)
+            or (obj.name.startswith("HPT Stage ") and ("turbine disk" in obj.name or "tip shroud" in obj.name))
+        )
+
+    def is_free_power_part(obj: bpy.types.Object) -> bool:
+        if obj.get("component") in free_components:
+            return True
+        if obj.name in {"Free-power turbine hollow shaft", "Free-power output shaft core", "Free-power output coupling", "Free-power output coupling flange"}:
+            return True
+        return obj.name.startswith("Free Power Turbine Stage ") and ("rotor disk" in obj.name or "tip shroud" in obj.name)
+
+    gas_count = 0
+    free_count = 0
+    for obj in list(bpy.data.objects):
+        if obj == gas_generator or obj == free_power:
+            continue
+        if is_gas_generator_part(obj):
+            obj.parent = gas_generator
+            gas_count += 1
+        elif is_free_power_part(obj):
+            obj.parent = free_power
+            free_count += 1
+
+    scene.frame_start = 1
+    scene.frame_end = 181
+    scene.render.fps = 30
+    scene.render.fps_base = 1.0
+
+    def animate(controller: bpy.types.Object, turns: float, visual_rpm: int) -> None:
+        controller.rotation_mode = "XYZ"
+        controller.rotation_euler = (0.0, 0.0, 0.0)
+        controller.keyframe_insert(data_path="rotation_euler", index=0, frame=scene.frame_start)
+        controller.rotation_euler.x = TAU * turns
+        controller.keyframe_insert(data_path="rotation_euler", index=0, frame=scene.frame_end)
+        action = controller.animation_data.action if controller.animation_data else None
+        if action:
+            for curve in action.fcurves:
+                for point in curve.keyframe_points:
+                    point.interpolation = "LINEAR"
+                curve.modifiers.new("CYCLES")
+        controller["visual_turns_per_loop"] = turns
+        controller["visual_equivalent_rpm"] = visual_rpm
+        controller["note"] = "Display only — deliberately reduced to make rotation readable; not an LM2500 operating RPM."
+
+    # Six seconds at 30 fps.  These speed ratios merely distinguish the two
+    # mechanical assemblies in an educational render.
+    animate(gas_generator, turns=16.0, visual_rpm=160)
+    animate(free_power, turns=10.0, visual_rpm=100)
+    scene.frame_set(scene.frame_start)
+    scene["animation_scope"] = "Frame 1–181 looping display animation: independent reduced-speed gas-generator and free-power rotor motion only; not a physical simulation."
+    scene["animation_controller_counts"] = f"gas-generator={gas_count}; free-power={free_count}"
+
 def configure_scene(args: argparse.Namespace) -> None:
     scene = bpy.context.scene
     try:
@@ -2067,6 +2179,13 @@ def attach_model_notes(args: argparse.Namespace) -> None:
         "detail and cooling collars, six free-power rows, split casing, removable\n"
         "service covers, shaft cavities, bearing cages / webs / races, labyrinth\n"
         "seals, exhaust frame, service pipes, sensors and fasteners.\n\n"
+        "VIEWPORT ANIMATION\n"
+        "Default builds animate frame 1–181 at 30 fps.  The gas-generator and\n"
+        "free-power assemblies are separately parented and loop at deliberately\n"
+        "reduced display speeds so their rotation is visible when you press Play\n"
+        "or Space in Blender.  This is motion visualization only, not an LM2500\n"
+        "operating RPM, load, vibration, thermal, bearing, or controls simulation.\n"
+        f"Animation enabled for this build: {'no (--static)' if args.static else 'yes'}\n\n"
         "SCOPE AND SAFETY LIMIT\n"
         "This is a public-data-calibrated structural visualisation, NOT a complete\n"
         "physical simulation, OEM CAD model, certified configuration, CFD result,\n"
@@ -2094,6 +2213,10 @@ def build_engine(args: argparse.Namespace) -> Path:
     build_turbine(cols, mats, args.quick)
     build_shaft_bearings_and_exhaust(cols, mats, args.quick)
     build_external_systems(cols, mats, args.quick)
+    if not args.static:
+        add_display_rotation_animation(cols)
+    else:
+        bpy.context.scene["animation_scope"] = "Static build requested with --static; no rotor motion keys were created."
     build_cutaway_edges(cols, mats)
     if args.labels:
         build_optional_labels(cols, mats)
