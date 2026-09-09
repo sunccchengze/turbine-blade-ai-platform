@@ -810,6 +810,60 @@ def blade_row(
     return blade_objects
 
 
+
+def blade_footprint(chord: float, stagger_deg: float, twist_deg: float, thickness: float) -> Tuple[float, float]:
+    """Return conservative axial and tangential blade-envelope widths.
+
+    The estimates mirror the procedural airfoil's root/tip chord taper and
+    are used as a build-time guard against visibly interpenetrating rows.
+    They are geometric display checks, not stress or aerodynamic analysis.
+    """
+    axial_width = 0.0
+    tangential_width = 0.0
+    for span_t, chord_scale, thickness_scale in ((0.0, 1.0, 1.0), (1.0, 0.86, 0.88)):
+        angle = math.radians(stagger_deg + twist_deg * (span_t - 0.5))
+        local_chord = chord * chord_scale
+        local_thickness = thickness * thickness_scale
+        axial_width = max(axial_width, abs(local_chord * math.cos(angle)) + abs(local_thickness * math.sin(angle)))
+        tangential_width = max(tangential_width, abs(local_chord * math.sin(angle)) + abs(local_thickness * math.cos(angle)))
+    return axial_width, tangential_width
+
+
+def validate_blade_row_schedule(
+    rows: Sequence[Tuple[str, float, float, int, float, float, float, float]],
+    *,
+    label: str,
+    minimum_clearance: float = 0.004,
+) -> float:
+    """Fail early if visual blade envelopes are too close or overlap.
+
+    The small positive margin avoids z-fighting and visibly intersecting rows
+    after bevels and smooth shading are evaluated.
+    """
+    evaluated = []
+    min_clearance = float("inf")
+    for name, x, root_radius, count, chord, stagger, twist, thickness in rows:
+        axial_width, tangential_width = blade_footprint(chord, stagger, twist, thickness)
+        circumferential_pitch = TAU * root_radius / count
+        tangential_clearance = circumferential_pitch - tangential_width
+        if tangential_clearance < minimum_clearance:
+            raise ValueError(
+                f"{label}: {name} circumferential clearance is below the "
+                f"{minimum_clearance:.4f}-unit visual minimum ({tangential_clearance:+.4f})."
+            )
+        evaluated.append((name, x, axial_width))
+        min_clearance = min(min_clearance, tangential_clearance)
+
+    for (left_name, left_x, left_width), (right_name, right_x, right_width) in zip(evaluated, evaluated[1:]):
+        axial_clearance = right_x - left_x - 0.5 * (left_width + right_width)
+        if axial_clearance < minimum_clearance:
+            raise ValueError(
+                f"{label}: {left_name} / {right_name} axial clearance is below "
+                f"the {minimum_clearance:.4f}-unit visual minimum ({axial_clearance:+.4f})."
+            )
+        min_clearance = min(min_clearance, axial_clearance)
+    return min_clearance
+
 def blade_platform_ring(
     name: str,
     x: float,
@@ -1087,7 +1141,10 @@ def build_compressor(
 
     stage_count = 16
     first_x = -4.28
-    pitch = 0.267
+    # Sixteen pairs fit the compressor case only when their projected airfoil
+    # envelopes have explicit axial clearance; do not crowd them for density.
+    pitch = 0.290
+    stator_offset = 0.145
     vsv_count = 6
     stage_records = []
 
@@ -1100,15 +1157,26 @@ def build_compressor(
         x = first_x + pitch * index
         root = 0.57 - 0.205 * t
         tip = 1.52 - 0.565 * t
-        count = int(round(27 + 16 * t))
-        chord = 0.385 - 0.105 * t
+        # Visual populations and profiles are deliberately limited by minimum
+        # circumferential pitch at the blade root, avoiding mesh intersection.
+        count = int(round(25 + 8 * t))
+        chord = 0.150 - 0.070 * t
         stagger = 40.0 - 14.0 * t
         twist = -14.0 - 12.0 * t
-        thickness = 0.062 - 0.019 * t
+        thickness = 0.024 - 0.012 * t
         collection = vsv_compressor if stage_number <= vsv_count else hpc
         material = mats["titanium"] if stage_number <= 11 else mats["nickel"]
         stage = f"HPC Stage {stage_number:02d}"
         stage_records.append((stage, x, root, tip, count, chord, stagger, twist, thickness, collection, material))
+
+    compressor_rows = []
+    for stage, x, root, _tip, count, chord, stagger, twist, thickness, _collection, _material in stage_records:
+        compressor_rows.extend((
+            (f"{stage} rotor", x, root, count, chord, stagger, twist, thickness),
+            (f"{stage} stator", x + stator_offset, root + 0.020, count + 4, chord * 0.90, -stagger * 0.90, -twist * 0.55, thickness * 0.88),
+        ))
+    compressor_clearance = validate_blade_row_schedule(compressor_rows, label="16-stage compressor")
+    bpy.context.scene["compressor_visual_min_clearance"] = round(compressor_clearance, 5)
 
     for index, (stage, x, root, tip, count, chord, stagger, twist, thickness, collection, material) in enumerate(stage_records):
         phase = math.radians(7.0 + index * 9.0)
@@ -1123,19 +1191,24 @@ def build_compressor(
         )
         # Separate linked root platforms and retention lugs make the disk/airfoil
         # interface more legible than a blade emerging from a plain annulus.
+        # Tangential widths scale with local pitch so late-stage hardware never
+        # piles into its neighbour as the hub diameter contracts.
+        root_pitch = TAU * root / count
+        platform_width = max(0.026, min(0.100, root_pitch * 0.70))
+        lug_width = max(0.018, min(0.068, root_pitch * 0.55))
         add_radial_hardware_instances(
             f"{stage} rotor blade-root platform", x + chord * 0.018, root + 0.044, count,
-            (max(0.058, chord * 0.30), 0.050, 0.120), collection, mats["machined"],
+            (max(0.048, chord * 0.30), 0.050, platform_width), collection, mats["machined"],
             phase=phase, component="compressor blade root platform", stage=stage, quick=quick,
         )
         add_radial_hardware_instances(
             f"{stage} rotor retention lug", x - chord * 0.032, root - 0.020, count,
-            (max(0.050, chord * 0.19), 0.064, 0.082), collection, mats["nickel"],
+            (max(0.040, chord * 0.19), 0.064, lug_width), collection, mats["nickel"],
             phase=phase, component="illustrative compressor blade retention lug", stage=stage, quick=quick,
         )
         # Each rotor is followed by an annular stator row.  The first six are
         # tagged and mechanically linked as variable stators.
-        stator_x = x + 0.137
+        stator_x = x + stator_offset
         stator_kind = "variable compressor stator vane" if index < vsv_count else "fixed compressor stator vane"
         blade_row(
             f"{stage} stator", stator_x, root + 0.020, tip, count + 4, chord * 0.90,
@@ -1195,7 +1268,7 @@ def build_compressor(
         rail_points = []
         for stage_index in range(vsv_count):
             _, x, _, tip, _, _, _, _, _, _, _ = stage_records[stage_index]
-            stator_x = x + 0.137
+            stator_x = x + stator_offset
             pivot_radius = tip + 0.225
             pivot = radial_point(stator_x, pivot_radius, theta)
             rail_points.append(pivot)
@@ -1238,7 +1311,7 @@ def build_compressor(
     )
     for ring_index in range(stage_count):
         t = ring_index / (stage_count - 1)
-        x = first_x + pitch * ring_index + 0.137
+        x = first_x + pitch * ring_index + stator_offset
         radius = 1.72 - 0.535 * t
         add_annular_shell(
             f"Compressor case stiffener {ring_index + 1:02d}", x - 0.016, x + 0.016,
@@ -1405,7 +1478,7 @@ def add_hpt_cooling_blade_detail(
     """
     sectioned_blade = airfoil_mesh(
         "HPT Stage 1 — transparent cooling-blade section", x, root, tip - 0.025,
-        0.47, 42.0, -30.0, 0.068, collection, mats["glass"],
+        0.27, 20.0, -8.0, 0.024, collection, mats["glass"],
         span_segments=9, chord_segments=16, sweep=0.025, lean=-0.010,
     )
     sectioned_blade.rotation_euler = (phase, 0.0, 0.0)
@@ -1463,14 +1536,23 @@ def build_turbine(
 
     # The GE LM2500 public configuration identifies two air-cooled HPT stages.
     hpt_stages = (
-        ("HPT Stage 1", 3.67, 0.43, 1.18, 34, 0.47),
-        ("HPT Stage 2", 4.33, 0.40, 1.14, 38, 0.45),
+        ("HPT Stage 1", 3.67, 0.43, 1.18, 18, 0.27),
+        ("HPT Stage 2", 4.33, 0.40, 1.14, 18, 0.25),
     )
+    hpt_rows = []
+    for stage, stator_x, root, _tip, count, chord in hpt_stages:
+        hpt_rows.extend((
+            (f"{stage} nozzle guide vane", stator_x, root + 0.060, count - 4, chord * 0.93, -28.0, 6.0, 0.026),
+            (f"{stage} rotor", stator_x + 0.305, root, count, chord, 20.0, -8.0, 0.024),
+        ))
+    hpt_clearance = validate_blade_row_schedule(hpt_rows, label="two-stage HPT")
+    bpy.context.scene["hpt_visual_min_clearance"] = round(hpt_clearance, 5)
+
     for index, (stage, stator_x, root, tip, count, chord) in enumerate(hpt_stages):
         phase = math.radians(13.0 + 9.0 * index)
         blade_row(
             f"{stage} air-cooled nozzle guide vane", stator_x, root + 0.06, tip, count - 4, chord * 0.93,
-            -56.0, 12.0, 0.066, hpt, mats["nickel"], row_kind="air-cooled nozzle guide vane", stage=stage,
+            -28.0, 6.0, 0.026, hpt, mats["nickel"], row_kind="air-cooled nozzle guide vane", stage=stage,
             phase=phase, quick=quick, sweep=-0.018,
         )
         add_radial_hardware_instances(
@@ -1493,7 +1575,7 @@ def build_turbine(
             inner_radius=0.25, outer_margin=0.095,
         )
         blade_row(
-            f"{stage} air-cooled rotor", rotor_x, root, tip - 0.025, count, chord, 42.0, -30.0, 0.068,
+            f"{stage} air-cooled rotor", rotor_x, root, tip - 0.025, count, chord, 20.0, -8.0, 0.024,
             hpt, mats["coated"], row_kind="air-cooled rotating turbine blade", stage=stage,
             phase=phase + math.radians(4), quick=quick, sweep=0.025, lean=-0.010,
             omit_angles=(math.radians(158.0),) if index == 0 else (),
@@ -1560,7 +1642,7 @@ def build_turbine(
     # spacing, blade counts and profiles are intentionally visual proxies.
     power_stage_count = 6
     power_first_x = 5.20
-    power_pitch = 0.555
+    power_pitch = 0.580
     power_records = []
     for index in range(power_stage_count):
         t = index / (power_stage_count - 1)
@@ -1568,15 +1650,24 @@ def build_turbine(
         stator_x = power_first_x + power_pitch * index
         root = 0.365 + 0.038 * t
         tip = 1.135 + 0.205 * t
-        count = int(round(34 + 12 * t))
-        chord = 0.455 + 0.026 * t
+        count = 16
+        chord = 0.285 + 0.006 * t
         power_records.append((stage, stator_x, root, tip, count, chord))
+
+    free_power_rows = []
+    for stage, stator_x, root, _tip, count, chord in power_records:
+        free_power_rows.extend((
+            (f"{stage} nozzle guide vane", stator_x, root + 0.052, count - 4, chord * 0.93, -24.0, 5.0, 0.024),
+            (f"{stage} rotor", stator_x + 0.300, root, count, chord, 18.0, -6.0, 0.023),
+        ))
+    free_power_clearance = validate_blade_row_schedule(free_power_rows, label="six-stage free-power turbine")
+    bpy.context.scene["free_power_visual_min_clearance"] = round(free_power_clearance, 5)
 
     for index, (stage, stator_x, root, tip, count, chord) in enumerate(power_records):
         phase = math.radians(22.0 + 7.0 * index)
         blade_row(
             f"{stage} nozzle guide vane", stator_x, root + 0.052, tip, count - 4, chord * 0.93,
-            -50.0, 10.0, 0.062, fpt, mats["nickel"], row_kind="free power turbine nozzle guide vane",
+            -24.0, 5.0, 0.024, fpt, mats["nickel"], row_kind="free power turbine nozzle guide vane",
             stage=stage, phase=phase, quick=quick, sweep=-0.012,
         )
         add_radial_hardware_instances(
@@ -1593,13 +1684,13 @@ def build_turbine(
             f"{stage} nozzle inner band", stator_x - 0.135, stator_x + 0.135,
             root - 0.055, root + 0.062, fpt, mats["machined"], segments=48, bevel=0.002,
         )
-        rotor_x = stator_x + 0.292
+        rotor_x = stator_x + 0.300
         blade_platform_ring(
             f"{stage} rotor disk", rotor_x, root, 0.205, fpt, mats["machined"],
             inner_radius=0.25, outer_margin=0.090,
         )
         blade_row(
-            f"{stage} rotor", rotor_x, root, tip - 0.025, count, chord, 38.0, -24.0, 0.064,
+            f"{stage} rotor", rotor_x, root, tip - 0.025, count, chord, 18.0, -6.0, 0.023,
             fpt, mats["nickel"], row_kind="free power turbine rotating blade", stage=stage,
             phase=phase + math.radians(4), quick=quick, sweep=0.020, lean=-0.008,
         )
@@ -1708,7 +1799,7 @@ def build_shaft_bearings_and_exhaust(
 
     # Exhaust frame, cone and output coupling follow the sixth free-power stage.
     add_annular_shell(
-        "Power-turbine exhaust transition case — cutaway", 8.46, 9.28, 1.24, 1.64,
+        "Power-turbine exhaust transition case — cutaway", 8.56, 9.28, 1.24, 1.64,
         casing, mats["casing"], inner1=1.02, outer1=1.31,
         start=CUTAWAY_START, sweep=CUTAWAY_SWEEP, segments=96, bevel=0.008,
     )
@@ -1841,7 +1932,7 @@ def build_cutaway_edges(
         (1.12, 3.36, 1.48, 1.40),
         (3.47, 4.88, 1.43, 1.37),
         (4.96, 8.56, 1.43, 1.63),
-        (8.46, 9.28, 1.64, 1.31),
+        (8.56, 9.28, 1.64, 1.31),
         (9.12, 9.92, 1.32, 0.96),
     )
     for shell_index, (x0, x1, r0, r1) in enumerate(shells):
@@ -2093,10 +2184,11 @@ def add_display_rotation_animation(cols: Dict[str, bpy.types.Collection]) -> Non
         controller["visual_equivalent_rpm"] = visual_rpm
         controller["note"] = "Display only — deliberately reduced to make rotation readable; not an LM2500 operating RPM."
 
-    # Six seconds at 30 fps.  These speed ratios merely distinguish the two
-    # mechanical assemblies in an educational render.
-    animate(gas_generator, turns=16.0, visual_rpm=160)
-    animate(free_power, turns=10.0, visual_rpm=100)
+    # Six seconds at 30 fps.  Keep per-frame travel below half the smallest
+    # visible blade pitch: high rates make repeated blade patterns strobe and
+    # can falsely look stationary or reverse.  These are display-only speeds.
+    animate(gas_generator, turns=3.0, visual_rpm=30)
+    animate(free_power, turns=2.0, visual_rpm=20)
     scene.frame_set(scene.frame_start)
     scene["animation_scope"] = "Frame 1–181 looping display animation: independent reduced-speed gas-generator and free-power rotor motion only; not a physical simulation."
     scene["animation_controller_counts"] = f"gas-generator={gas_count}; free-power={free_count}"
@@ -2178,7 +2270,9 @@ def attach_model_notes(args: argparse.Namespace) -> None:
         "qualitative liner perforations, two igniters, HPT cooling passage teaching\n"
         "detail and cooling collars, six free-power rows, split casing, removable\n"
         "service covers, shaft cavities, bearing cages / webs / races, labyrinth\n"
-        "seals, exhaust frame, service pipes, sensors and fasteners.\n\n"
+        "seals, exhaust frame, service pipes, sensors and fasteners.\n"
+        "The generator also rejects staged blade envelopes with insufficient\n"
+        "visual axial or circumferential clearance before it saves the scene.\n\n"
         "VIEWPORT ANIMATION\n"
         "Default builds animate frame 1–181 at 30 fps.  The gas-generator and\n"
         "free-power assemblies are separately parented and loop at deliberately\n"

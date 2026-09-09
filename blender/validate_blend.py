@@ -61,6 +61,11 @@ def main() -> None:
     gas_controller = bpy.data.objects.get("Gas Generator Rotor — visual-speed controller")
     free_controller = bpy.data.objects.get("Free Power Rotor — visual-speed controller")
     scene = bpy.context.scene
+    visual_clearances = {
+        "compressor": float(scene.get("compressor_visual_min_clearance", -1.0)),
+        "hpt": float(scene.get("hpt_visual_min_clearance", -1.0)),
+        "free_power": float(scene.get("free_power_visual_min_clearance", -1.0)),
+    }
     notes = bpy.data.texts.get("MODEL NOTES — READ ME")
 
     report = {
@@ -82,6 +87,7 @@ def main() -> None:
         "detail_cameras_present": sorted(detail_camera_names & set(bpy.data.objects.keys())),
         "animation_controllers_present": sorted(animation_controller_names & set(bpy.data.objects.keys())),
         "animation_frame_range": [scene.frame_start, scene.frame_end],
+        "visual_blade_min_clearances": visual_clearances,
         "gas_generator_animated_children": len(gas_controller.children) if gas_controller else 0,
         "free_power_animated_children": len(free_controller.children) if free_controller else 0,
         "has_model_notes": notes is not None,
@@ -97,7 +103,8 @@ def main() -> None:
         "30_fuel_nozzles": len(nozzle_bodies) == 30,
         "2_hpt_stages": hpt_rotor_stations == {"HPT Stage 1", "HPT Stage 2"},
         "6_free_power_stages": free_power_stations == {f"Free Power Turbine Stage {index:02d}" for index in range(1, 7)},
-        "blade_root_detail": root_platform_count >= 500,
+        "blade_root_detail": root_platform_count >= 400,
+        "visual_blade_clearance": all(clearance >= 0.004 for clearance in visual_clearances.values()),
         "vsv_unison_linkage": vsv_rail_count == 3,
         "30_nozzle_swirler_cups": nozzle_cup_count == 30,
         "bearing_cage_detail": bearing_cage_count == 6,
