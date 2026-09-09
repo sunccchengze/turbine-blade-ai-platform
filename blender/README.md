@@ -49,7 +49,7 @@
 
 ## 验证
 
-本场景以 Blender 4.5.3 LTS 的 `bpy` runtime 生成、重新打开并通过结构核验。核验器检查的是场景对象层级和已公开的级数/喷嘴数量声明，不是工程性能验证：
+本场景以 Blender 4.5 LTS 的 `bpy` runtime 生成、重新打开并通过结构核验（`.blend` 文件头为 `v405`，对应 4.5 系列；patch 版本号无法从文件头佐证，故此处只写到 minor）。核验器检查的是场景对象层级和已公开的级数/喷嘴数量声明，不是工程性能验证：
 
 ```bash
 blender --background blender/output/axial_gas_turbine_cutaway.blend \
@@ -60,7 +60,7 @@ blender --background blender/output/axial_gas_turbine_cutaway.blend \
 
 ## 重新生成
 
-生成器不依赖外部插件或下载素材，在 Blender 3.6 LTS+ 中可运行；交付的 `.blend` 用 Blender 4.5.3 LTS 验证。默认构建保留完整可见叶排密度和 30 个喷嘴：
+生成器不依赖外部插件或下载素材，在 Blender 3.6 LTS+ 中可运行；交付的 `.blend` 用 Blender 4.5 LTS 验证。默认构建保留完整可见叶排密度和 30 个喷嘴：
 
 ```bash
 blender --background --python blender/generate_gas_turbine.py -- \
@@ -68,7 +68,9 @@ blender --background --python blender/generate_gas_turbine.py -- \
   --render blender/output/axial_gas_turbine_hero_preview.png
 ```
 
-快速构图模式会降低叶排密度，并为了性能将喷嘴减少到 18 个；它**不应**通过完整交付版的 `30_fuel_nozzles` 核验：
+热端细节图（`axial_gas_turbine_hot_section_detail.png`）用 `HPT Cooling Detail Camera` 作活动相机渲染：在 Blender 中选中该相机后执行 `View → Cameras → Set Active Object as Camera`，再 `Render → Render Image`（或 headless 下用一段设置 `scene.camera` 后渲染的小脚本）。
+
+快速构图模式会降低叶排密度，并为了性能将喷嘴减少到 18 个；它**不应**通过完整交付版的以下三项核验（属预期行为，非 bug）：`30_fuel_nozzles`（18≠30）、`30_nozzle_swirler_cups`（18≠30）、`blade_root_detail`（约 261<400）：
 
 ```bash
 blender --background --python blender/generate_gas_turbine.py -- --quick \
@@ -85,7 +87,7 @@ blender --background --python blender/generate_gas_turbine.py -- --quick \
 | `--labels` | 在模型下方添加工段文字和引线。 |
 | `--static` | 不创建默认的旋转播放轨道；默认构建会提供显示用循环转子动画。 |
 | `--no-floor` | 去除摄影棚地面和背景，方便移入其他场景。 |
-| `--resolution-scale 25..200` | 按百分比调整 1920×1080 输出。 |
+| `--resolution-scale 25..200` | 按百分比调整 1920×1080 输出。随附的两张预览图为 960×540（即 50% 分辨率渲染，用于控制仓库体积）；默认命令输出 1920×1080。 |
 
 ## 使用与精度边界
 

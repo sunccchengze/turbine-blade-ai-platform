@@ -213,3 +213,14 @@ Corrections, insights, and knowledge gaps captured during development.
   4. 引用 v6 时代运维条目（SnapDeploy Redeploy、uvicorn 端口、`VITE_API_URL`）前必须先 grep 现行代码对账；
   5. 判据：`grep -rn "VITE_API_URL\|localhost:8000" frontend/src` 为空 ⇒ 确无后端依赖。
 
+
+## [LRN-20260909-01] 同一文件多处编辑必须串行或原子脚本，禁止同块并行调用
+- **Logged**: 2026-09-09T10:00:00Z
+- **Priority**: high
+- **Status**: verified
+- **Category**: best_practice
+- **Trigger**: 2026-09-09 blender 自查修 README：同块两个 edit_file 并行改同一文件，后写覆盖先写（2 处修改静默丢失），且一次写坏在文件尾追加了半截残行
+- **Correct Approach**:
+  1. 同一文件的多次 edit 必须串行（一次一调、调完即 `git diff` 验），或改用单次 python 原子脚本做完全部替换后一次性写回；
+  2. 凡涉及删除/替换含子串关系的文本（如垃圾行是合法行的子串），先断言出现次数（`count==1`），禁止裸 `replace` 全量替换；
+  3. 收工判据：`git diff` 逐 hunk 目检，确认只有预期修改、无尾部截断、无 `\ No newline at end of file` 异常新增。
