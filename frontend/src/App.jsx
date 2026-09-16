@@ -15,6 +15,7 @@ const UQPage       = lazy(() => import('./pages/UQPage'))
 const AboutPage    = lazy(() => import('./pages/AboutPage'))
 const MethodologyPage = lazy(() => import('./pages/MethodologyPage'))
 const GeneratePage   = lazy(() => import('./pages/GeneratePage'))
+const LearningCardsPage = lazy(() => import('./pages/LearningCardsPage'))
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
 
 // 懒加载占位屏：与站点暗色风格一致的轻量转圈
@@ -31,6 +32,8 @@ function PageLoading() {
 }
 
 function NewsBanner() {
+  const location = useLocation()
+  if (location.pathname === '/cards') return null
   return (
     <div style={{ borderBottom: '1px solid var(--line)', background: 'var(--ink-2)' }}>
       <div style={{ maxWidth: 1240, margin: '0 auto', padding: '9px 28px', display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
@@ -50,7 +53,8 @@ const PAGE_TITLES = {
   '/optimize':    '代理候选 · Rotor 37 筛选站',
   '/uq':          '启发式不确定度 · Rotor 37 筛选站',
   '/methodology': '方法 · Rotor 37 筛选站',
-  '/generate':    '库内检索 · Rotor 37 筛选站',
+  '/generate':  '库内检索 · Rotor 37 筛选站',
+  '/cards':      'Aero Atlas · 卡片学习 · AI × 叶轮机械',
   '/about':       '关于 · 气动代理筛选站',
 }
 
@@ -160,6 +164,7 @@ export default function App() {
             <Route path="/about"    element={<AboutPage />}   />
             <Route path="/methodology" element={<MethodologyPage />} />
             <Route path="/generate"  element={<GeneratePage />} />
+            <Route path="/cards"     element={<LearningCardsPage />} />
             <Route path="*"           element={<NotFoundPage />}  />
           </Routes>
         </Suspense>

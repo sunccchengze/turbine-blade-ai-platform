@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { Activity, Compass, Cpu, TrendingUp, BarChart3, Home, Menu, X, User, BookOpen, Wand2, Radio, Sun, Moon } from 'lucide-react'
+import { Activity, Compass, Cpu, TrendingUp, BarChart3, Home, Menu, X, User, BookOpen, Wand2, Radio, Sun, Moon, Sparkles } from 'lucide-react'
 
 const navItems = [
   { path: '/', label: '概览', en: 'Overview', icon: Home },
@@ -8,6 +8,7 @@ const navItems = [
   { path: '/explore', label: '探索', en: 'Explore', icon: Compass },
   { path: '/optimize', label: '优化', en: 'Optimize', icon: TrendingUp },
   { path: '/generate', label: '生成', en: 'Generate', icon: Wand2 },
+  { path: '/cards', label: '学习', en: 'Cards', icon: Sparkles },
   { path: '/uq', label: 'UQ', en: 'Uncertainty', icon: BarChart3 },
   { path: '/methodology', label: '方法', en: 'Method', icon: BookOpen },
 ]
