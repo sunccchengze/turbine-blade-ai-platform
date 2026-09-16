@@ -1,0 +1,67 @@
+{
+  "blend": "/home/user/turbine-blade-ai-platform/blender/output/axial_gas_turbine_cutaway.blend",
+  "blender": "4.5.3 LTS",
+  "objects": 4565,
+  "meshes": 1347,
+  "collections_present": [
+    "02 • Variable Geometry Compressor — Stages 01–06",
+    "03 • High-Pressure Compressor — Stages 07–16",
+    "04 • Diffuser & Annular Combustor",
+    "05 • High-Pressure Turbine",
+    "06 • Free Power Turbine & Exhaust",
+    "07 • Shafts, Bearings & Seals"
+  ],
+  "compressor_rotor_stage_count": 16,
+  "vsv_stage_count": 6,
+  "fuel_nozzle_body_count": 30,
+  "hpt_rotor_stage_count": 2,
+  "free_power_rotor_stage_count": 6,
+  "compressor_blade_root_platform_count": 464,
+  "vsv_unison_rail_count": 3,
+  "fuel_nozzle_swirler_cup_count": 30,
+  "bearing_cage_count": 6,
+  "service_cover_count": 5,
+  "detail_cameras_present": [
+    "Combustor Detail Camera",
+    "HPT Cooling Detail Camera"
+  ],
+  "animation_controllers_present": [
+    "Free Power Rotor — visual-speed controller",
+    "Gas Generator Rotor — visual-speed controller"
+  ],
+  "animation_frame_range": [
+    1,
+    181
+  ],
+  "visual_blade_min_clearances": {
+    "compressor": 0.00863,
+    "hpt": 0.01602,
+    "free_power": 0.01415
+  },
+  "gas_generator_animated_children": 1561,
+  "free_power_animated_children": 394,
+  "has_model_notes": true,
+  "asset_scope": "Public-data-calibrated structural visualisation; not OEM CAD, CFD, FEA, thermal analysis, or manufacturing data.",
+  "reference_basis": "Public GE LM2500 architecture: 16-stage axial compressor, first six VSV rows, 30 fuel nozzles in an annular combustor, 2 air-cooled HPT stages, 6 free-power turbine stages.",
+  "detail_pass": "Blade-root platforms and retention lugs, stator hooks, VSV unison rails, nozzle cups, bearing cages, service covers and illustrative external runs were added for inspectable cutaway detail.",
+  "checks": {
+    "required_collections": true,
+    "16_compressor_stages": true,
+    "first_6_variable_stator_rows": true,
+    "30_fuel_nozzles": true,
+    "2_hpt_stages": true,
+    "6_free_power_stages": true,
+    "blade_root_detail": true,
+    "visual_blade_clearance": true,
+    "vsv_unison_linkage": true,
+    "30_nozzle_swirler_cups": true,
+    "bearing_cage_detail": true,
+    "service_cover_detail": true,
+    "detail_cameras": true,
+    "animation_controllers": true,
+    "rotation_keyframes": true,
+    "animated_rotor_children": true,
+    "scope_note_embedded": true,
+    "scope_property_present": true
+  }
+}

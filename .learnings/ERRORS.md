@@ -80,3 +80,10 @@ Command failures, integration errors, and critical precedent rollbacks.
 - **Root Cause**: 重写总文档时按「本轮主题」取舍内容，把与当轮任务无关的运维纪律当噪音删掉；且纪律只寄生活在会被重写的正文里，无专用载体、无条目级校验。
 - **Resolution / Prevention**: 2026-09-02 回补：铁律恢复为 11 条（§0.-1）、§9 沙盒坑回补并增补 #18 shallow 假报无共同祖先、#19 体积；细则迁入专用文件 `docs/BRANCH-SAFETY.md`，HANDOFF 顶部挂「开工必读」指针并写明「下次重写禁止再删铁律区与 §9」；配套 LRN-20260902-02 强制重写前做条目级 diff + 收工 grep 自检。
 
+
+## [ERR-20260909-01] 并行编辑同一文件导致修改丢失并写坏文件尾 (High)
+- **Severity**: high
+- **Context**: 2026-09-09 blender 自查修 `blender/README.md`（4 处纯文档口径 fix）
+- **Error Description**: ① 同块并行发两个 edit_file 改同一文件：每块以后写者为准，先写的修改静默丢失（4 处只落 2 处）。② 其中一次写坏在文件尾追加残行 `rating boundary conditions...`。③ 修复时用裸 `replace` 删垃圾行，因垃圾行恰是合法行尾的子串（`ope|rating boundary...`），连带把合法行尾一并删掉，文件变无尾换行+行截断。
+- **Root Cause**: 把「同块多调」当成串行执行；删除时未先断言目标出现次数与边界。
+- **Resolution / Prevention**: ① 用单次 python 原子脚本重做全部 4 处修改；② 恢复被误伤的行尾并用 `git diff` + `tail` 双重确认 diff 只含预期 hunk；③ 配套 LRN-20260909-01。
