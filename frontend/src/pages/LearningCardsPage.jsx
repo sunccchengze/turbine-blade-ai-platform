@@ -8,6 +8,7 @@ import {
   ChevronRight,
   Clock3,
   Eye,
+  FileDown,
   Gauge,
   HardDrive,
   Keyboard,
@@ -326,6 +327,7 @@ export default function LearningCardsPage() {
             </div>
             <div className="learning-roadmap-foot">
               <div className="learning-storage-note"><HardDrive size={13} /><span>进度只保存在此浏览器</span></div>
+              <a href="/aero-atlas-cards.html" className="learning-standalone-link"><FileDown size={13} /> 单文件离线版 /aero-atlas-cards.html</a>
               <button type="button" className="learning-reset" onClick={resetProgress}><RotateCcw size={13} /> 清除本地进度</button>
             </div>
           </aside>

@@ -246,8 +246,13 @@ Predict          Explore           不确定性量化      100 Pareto 解
 | **设计空间探索器 Explore** | `/explore` | **主功能**。任选两维参数生成响应面热力图，一次批量推理算完整张网格，点击任意点读数并对比基准 |
 | 多目标优化 Optimize | `/optimize` | Pareto 前沿可视化，100 个非支配解 |
 | 不确定性 UQ | `/uq` | 置信区间带、不确定性分布、σ-误差相关性 |
+| **Aero Atlas 卡片学习** | `/cards` | **18 张 10 分钟学习卡**（公式桥 → 叶轮机械 → 证据闭环）：正面回忆 / 背面解释 / 微任务过关，掌握状态只存本地浏览器；键盘 ← → / Space / R，支持移动端与减动画模式 |
 
 全站 **逐句中英双语**（中文在前，英文以次级样式紧随）。
+
+卡片学习另提供**单文件离线版** `/aero-atlas-cards.html`（随 Pages 部署；仓库根目录同名文件即本副本）：
+零依赖、双击即用、进度同样只存本地。卡片内容的唯一事实源是 `frontend/src/data/learningCards.js`，
+两份前端（React 路由与单文件版）共用同一份数据，改卡片后跑 `node scripts/build-standalone-cards.mjs` 重新生成单文件版。
 
 ---
 
