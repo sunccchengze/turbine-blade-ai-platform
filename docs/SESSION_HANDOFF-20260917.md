@@ -71,10 +71,20 @@ clone 是 shallow：别信本地 merge-base，祖先判断走 GitHub compare 或
 | `c4939b1` | 单文件版双输出 + 交叉引用 + README | ✅ |
 | 本提交 | 本交接 + HANDOFF 指针 | ✅ |
 
-main 快进推送按 2026-09-07 常设授权执行（`git push origin <分支>:main`），推送前后核对：
+main 快进推送按 2026-09-07 常设授权执行（`git push origin <分支>:main`），实测结果：
 
-- 自检：`git merge-base --is-ancestor origin/main HEAD` → ✅
-- 推后核对：`git ls-remote --heads origin` main 与会话分支同指 → ✅
+| 步骤 | 命令 | 结果 |
+|---|---|---|
+| 自检（浅克隆） | `git merge-base --is-ancestor origin/main HEAD` | ❌ 假报非祖先（§9 #18 shallow 坑，本会话第三次实证） |
+| 交叉验证 | GitHub API `compare f93801a...b7647ac` | ✅ `status=ahead, ahead_by=20, behind_by=0` |
+| 取全量 | `git fetch --unshallow origin` | ✅ clone 不再 shallow，本地自检转 ✅ |
+| 干跑 | `git push --dry-run origin <分支>:main` | ✅ `f93801ab..b7647ac0` |
+| 快进推 main | `git push origin <分支>:main` | ✅ `f93801ab..b7647ac0` |
+| 推后核对 | `git ls-remote --heads origin` | ✅ main 与会话分支同指 `b7647ac0`，通道未断 |
+
+**教训补记**：本会话开头所有 `git log` 都只有 2 笔（浅克隆），祖先判断一度只能靠 GitHub compare；
+`--unshallow` 之后本地工具链恢复正常。新会话开工先跑 `git rev-parse --is-shallow-repository`，
+为 `true` 且需要推 main 时先 `git fetch --unshallow origin`。
 
 ## 6. 下一会话建议顺序
 
