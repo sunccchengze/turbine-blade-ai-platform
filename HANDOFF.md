@@ -2,17 +2,17 @@
 
 > **写给下一会话的 AI Agent（和孙承泽本人）**：读完本文件与 `学习路.md`，你应该能 100% 接手本项目与承泽的长期科研成长辅导，不丢任何上下文、不重复劳动、严格执行苏格拉底式 Deep Tutor 教学。
 >
-> **最后更新**：2026-09-02（Session `01a061af` · 仓库收敛 + 会话纪律回补）
+> **最后更新**：2026-09-17（Session `01a0afe9` · 卡片学习系统收口，更新收工指针；正文其余各节未动）
 > **项目线上地址**：`https://turbine-blade-ai-scz.pages.dev/`（Cloudflare Pages 全球 CDN）
 > **关联大创仓库**：`sunccchengze/wind_farm_viz`（风电场偏航优化可视化系统，技能库已 100% 对齐）
-> **当前会话分支**：`arena/01a061af-turbine-blade-ai-platform`
+> **当前会话分支**：`arena/01a0afe9-turbine-blade-ai-platform`（2026-09-17 起；各会话分支按 `arena/<会话id>-turbine-blade-ai-platform` 命名）
 > **‼️ 开工必读（高于本文件任何一节）**：`docs/BRANCH-SAFETY.md` —— Arena 会话通道安全手册。
 > v8 重写曾把「绝不主动合并 PR」连同整节沙盒坑删掉，本文件不再承担这份纪律，改由该文件专载。
 > **对外名称**：气动代理筛选站（结构/热接入前禁用 MDO）
 > **Agent 宪章**：`docs/AGENT_CHARTER.md` · 目标 Level 2 · 公开数字只出 `evidence/`
 > **对承泽讲课**：`docs/agent-charter/chengze-deep-tutor.md` + `docs/tutor-style-changelog.md`（A1：深入浅出，禁儿童故事，禁生词硬猜）
-> **继承提交**：`a8d0fe1a`（`arena/019ffee7-turbine-blade-ai-platform`，A7 全量去 LaTeX 版）——2026-09-02 仓库收敛后的内容终点
-> **收工指针**：当前会话以 **`docs/SESSION_HANDOFF-20260902.md`** 为准；`docs/SESSION_HANDOFF-20260813.md` / `-20260814.md` 与 `docs/branch-audit-20260902.md` 为历史与背景。讲课术以 `docs/tutor-style-changelog.md` 最后一条（现 A7）为准。本文件 §2 里 η 从 0.9211 暴跌等旧叙事不得写入给郭老师的信。
+> **继承提交**：`d2c6fd2`（`arena/01a0aa74-turbine-blade-ai-platform`，2026-09-16 卡片学习系统 + 单文件 Aero Atlas deck）——当前内容终点；更早终点 `a8d0fe1a`（`019ffee7`，A7 全量去 LaTeX 版）
+> **收工指针**：当前会话以 **`docs/SESSION_HANDOFF-20260917.md`** 为准（卡片学习系统收口 + 第 5 步验收自测）；`docs/SESSION_HANDOFF-20260902.md` / `-20260813.md` / `-20260814.md` 与 `docs/branch-audit-20260902.md` 为历史与背景。讲课术以 `docs/tutor-style-changelog.md` 最后一条（现 A7）为准。本文件 §2 里 η 从 0.9211 暴跌等旧叙事不得写入给郭老师的信。
 
 > ⚠️ 2026-09-02 修订说明：v8 重写时**删掉了** v6 的「绝不主动合并 PR」铁律与整节「沙盒坑与教训（血泪汇总）」，
 > 当时只剩 `SESSION_HANDOFF` 里一句无来由的「不推 main。不主动开/合 PR。」。现已把二者回补（§0.-1 十一条 + 文末 §9），
