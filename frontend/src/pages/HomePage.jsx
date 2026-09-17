@@ -15,7 +15,8 @@ import {
   Wand2,
   BookOpen,
   Terminal,
-  Activity
+  Activity,
+  GraduationCap
 } from 'lucide-react'
 import AerodynamicBackground from '../components/AerodynamicBackground'
 
@@ -790,6 +791,16 @@ export default function HomePage() {
               badge: 'THEORETICAL PROOF',
               icon: BookOpen,
               accent: 'var(--paper)'
+            },
+            {
+              path: '/cards',
+              num: '07',
+              title: 'Aero Atlas 卡片学习',
+              en: 'Aero Atlas · 18-Card Learning Route',
+              desc: '人工智能 × 叶轮机械的 10 分钟卡片式学习：18 张卡从公式桥、叶轮机械到证据闭环。正面回忆、背面解释、微任务过关，掌握状态只存本地浏览器。',
+              badge: '18 CARDS',
+              icon: GraduationCap,
+              accent: 'var(--yellow)'
             },
           ].map(({ path, num, title, en, desc, badge, icon: Icon, accent }) => (
             <Link
