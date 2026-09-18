@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
   AlertTriangle,
@@ -23,6 +23,7 @@ import './LearningCardsPage.css'
 
 const PROGRESS_KEY = 'turbine-learning-card-progress-v1'
 const CARD_SECONDS = 10 * 60
+const MARK_FEEDBACK_MS = 700
 
 function readProgress() {
   try {
@@ -59,19 +60,36 @@ export default function LearningCardsPage() {
   const [sessionStarted, setSessionStarted] = useState(false)
   const [remaining, setRemaining] = useState(CARD_SECONDS)
   const [roadmapOpen, setRoadmapOpen] = useState(false)
+  // 学习模式 'learn'（顺路线）/ 复习模式 'review'（只走「需要复习」队列）
+  const [mode, setMode] = useState('learn')
+  // 评级即时反馈：{ id, status }，700ms 后自动进入下一张
+  const [marked, setMarked] = useState(null)
+  const advanceRef = useRef(null)
 
   const current = learningCards[currentIndex]
   const currentStatus = progress[current.id]?.status || 'idle'
+  const reviewQueue = learningCards.filter(card => progress[card.id]?.status === 'review')
+  const reviewPos = mode === 'review' ? reviewQueue.findIndex(card => card.id === current.id) : -1
   const masteredCount = learningCards.filter(card => progress[card.id]?.status === 'mastered').length
-  const reviewCount = learningCards.filter(card => progress[card.id]?.status === 'review').length
+  const reviewCount = reviewQueue.length
   const completion = Math.round((masteredCount / learningCards.length) * 100)
-  const nextCard = currentIndex < learningCards.length - 1 ? learningCards[currentIndex + 1] : null
-  const previousCard = currentIndex > 0 ? learningCards[currentIndex - 1] : null
 
   const currentPhase = useMemo(
     () => cardPhases.find(phase => phase.id === current.phase),
     [current.phase],
   )
+
+  // 复习模式下导航被限制在复习队列内；学习模式走路线顺序
+  function navTarget(step) {
+    if (mode === 'review' && reviewPos !== -1) {
+      const nextPos = reviewPos + step
+      if (nextPos < 0 || nextPos >= reviewQueue.length) return null
+      return learningCards.findIndex(card => card.id === reviewQueue[nextPos].id)
+    }
+    const nextIndex = currentIndex + step
+    if (nextIndex < 0 || nextIndex >= learningCards.length) return null
+    return nextIndex
+  }
 
   useEffect(() => {
     try {
@@ -98,13 +116,15 @@ export default function LearningCardsPage() {
   useEffect(() => {
     const onKeyDown = event => {
       if (['INPUT', 'TEXTAREA', 'SELECT'].includes(event.target?.tagName)) return
-      if (event.key === 'ArrowRight' && flipped && nextCard) {
+      const right = navTarget(1)
+      const left = navTarget(-1)
+      if (event.key === 'ArrowRight' && flipped && right !== null) {
         event.preventDefault()
-        goTo(currentIndex + 1)
+        goTo(right)
       }
-      if (event.key === 'ArrowLeft' && previousCard) {
+      if (event.key === 'ArrowLeft' && left !== null) {
         event.preventDefault()
-        goTo(currentIndex - 1)
+        goTo(left)
       }
       if (event.key === ' ' && !flipped) {
         event.preventDefault()
@@ -120,6 +140,10 @@ export default function LearningCardsPage() {
     return () => window.removeEventListener('keydown', onKeyDown)
   })
 
+  useEffect(() => () => {
+    if (advanceRef.current) window.clearTimeout(advanceRef.current)
+  }, [])
+
   function begin() {
     if (remaining <= 0) setRemaining(CARD_SECONDS)
     setSessionStarted(true)
@@ -131,7 +155,12 @@ export default function LearningCardsPage() {
   }
 
   function goTo(index) {
-    if (index < 0 || index >= learningCards.length) return
+    if (index === null || index < 0 || index >= learningCards.length) return
+    if (advanceRef.current) {
+      window.clearTimeout(advanceRef.current)
+      advanceRef.current = null
+    }
+    setMarked(null)
     setCurrentIndex(index)
     setFlipped(false)
     setTaskOpen(false)
@@ -140,26 +169,67 @@ export default function LearningCardsPage() {
     setRoadmapOpen(false)
   }
 
+  function startReview() {
+    if (reviewQueue.length === 0) return
+    setMode('review')
+    goTo(learningCards.findIndex(card => card.id === reviewQueue[0].id))
+  }
+
+  function exitReview() {
+    setMode('learn')
+  }
+
   function mark(status) {
-    setProgress(previous => ({
-      ...previous,
-      [current.id]: {
+    const target = current
+    const nextProgress = {
+      ...progress,
+      [target.id]: {
         status,
-        attempts: (previous[current.id]?.attempts || 0) + 1,
+        attempts: (progress[target.id]?.attempts || 0) + 1,
         updatedAt: new Date().toISOString(),
       },
-    }))
+    }
+    setProgress(nextProgress)
     setSessionStarted(false)
+    setMarked({ id: target.id, status })
+    if (advanceRef.current) window.clearTimeout(advanceRef.current)
+    advanceRef.current = window.setTimeout(() => {
+      advanceRef.current = null
+      setMarked(null)
+      scheduleNext(target, status, nextProgress)
+    }, MARK_FEEDBACK_MS)
+  }
+
+  function scheduleNext(target, status, nextProgress) {
+    const queue = learningCards.filter(card => nextProgress[card.id]?.status === 'review')
+    if (mode === 'review') {
+      // 复习队列推进：出队（已掌握）取该位置剩余队首，留在队列取下一张
+      const targetPos = queue.findIndex(card => card.id === target.id)
+      const next = targetPos !== -1 ? queue[targetPos + 1] : queue[targetPos]
+      if (next) {
+        goTo(learningCards.findIndex(card => card.id === next.id))
+      } else {
+        setMode('learn')
+      }
+      return
+    }
+    // 学习模式：过关 → 下一张（C18 停留）
+    if (target.order < learningCards.length) goTo(target.order)
   }
 
   function resetProgress() {
     if (!window.confirm('确定要清除 18 张卡片的本地学习记录吗？')) return
     setProgress({})
+    setMode('learn')
     setCurrentIndex(0)
     setFlipped(false)
     setTaskOpen(false)
     setRemaining(CARD_SECONDS)
   }
+
+  const prevTarget = navTarget(-1)
+  const nextTarget = navTarget(1)
+  const markFeedback = marked && marked.id === current.id ? marked.status : null
 
   return (
     <main className="learning-page">
@@ -192,6 +262,17 @@ export default function LearningCardsPage() {
           <div className="learning-progress-meta">
             <span><Check size={13} /> {completion}% complete</span>
             <span><RotateCcw size={13} /> {reviewCount} 待复习</span>
+            {mode === 'learn' ? (
+              reviewCount > 0 && (
+                <button type="button" className="learning-review-entry" onClick={startReview}>
+                  <RotateCcw size={13} /> 复习 {reviewCount} 张
+                </button>
+              )
+            ) : (
+              <button type="button" className="learning-review-entry exit" onClick={exitReview}>
+                <Undo2 size={13} /> 退出复习
+              </button>
+            )}
           </div>
         </section>
 
@@ -211,6 +292,9 @@ export default function LearningCardsPage() {
                 <span className="learning-slash">/</span>
                 <span>{currentPhase.en}</span>
               </div>
+              {mode === 'review' && reviewPos !== -1 && (
+                <span className="learning-review-badge">REVIEW MODE · 第 {reviewPos + 1}/{reviewQueue.length} 张</span>
+              )}
               <div className="learning-shortcuts"><Keyboard size={13} /> ← → 导航 · Space 显示答案 · R 返回正面</div>
             </div>
 
@@ -278,8 +362,12 @@ export default function LearningCardsPage() {
                   <div className="learning-card-footer learning-back-footer">
                     <button type="button" className="learning-secondary-button" onClick={() => { setFlipped(false); setTaskOpen(false) }} tabIndex={!flipped ? -1 : 0}><Undo2 size={15} /> 返回正面</button>
                     <div className="learning-rating-actions">
-                      <button type="button" className="learning-review-button" onClick={() => mark('review')} tabIndex={!flipped ? -1 : 0}><RotateCcw size={14} /> 需要复习</button>
-                      <button type="button" className="learning-master-button" onClick={() => mark('mastered')} tabIndex={!flipped ? -1 : 0}><Check size={15} /> 我能解释</button>
+                      <button type="button" className={`learning-review-button ${markFeedback === 'review' ? 'marked' : ''}`} onClick={() => mark('review')} tabIndex={!flipped ? -1 : 0}>
+                        {markFeedback === 'review' ? <><Check size={14} /> 已记录，进入下一张</> : <><RotateCcw size={14} /> 需要复习</>}
+                      </button>
+                      <button type="button" className={`learning-master-button ${markFeedback === 'mastered' ? 'marked' : ''}`} onClick={() => mark('mastered')} tabIndex={!flipped ? -1 : 0}>
+                        {markFeedback === 'mastered' ? <><Check size={15} /> 已记录，进入下一张</> : <><Check size={15} /> 我能解释</>}
+                      </button>
                     </div>
                   </div>
                 </article>
@@ -296,9 +384,9 @@ export default function LearningCardsPage() {
             </div>
 
             <div className="learning-navigation">
-              <button type="button" onClick={() => goTo(currentIndex - 1)} disabled={!previousCard}><ArrowLeft size={15} /> 上一张</button>
-              <span>Card {current.order} of {learningCards.length}</span>
-              <button type="button" onClick={() => goTo(currentIndex + 1)} disabled={!nextCard}>下一张 <ArrowRight size={15} /></button>
+              <button type="button" onClick={() => goTo(prevTarget)} disabled={prevTarget === null}><ArrowLeft size={15} /> 上一张</button>
+              <span>Card {current.order} of {learningCards.length}{mode === 'review' && reviewPos !== -1 ? ` · 复习 ${reviewPos + 1}/${reviewQueue.length}` : ''}</span>
+              <button type="button" onClick={() => goTo(nextTarget)} disabled={nextTarget === null}>下一张 <ArrowRight size={15} /></button>
             </div>
           </section>
 
@@ -316,7 +404,7 @@ export default function LearningCardsPage() {
                   {cards.map(card => {
                     const status = progress[card.id]?.status
                     const active = card.id === current.id
-                    return <button type="button" className={`learning-roadmap-card ${active ? 'active' : ''} ${status || ''}`} key={card.id} onClick={() => goTo(card.order - 1)} aria-current={active ? 'step' : undefined}>
+                    return <button type="button" className={`learning-roadmap-card ${active ? 'active' : ''} ${status || ''}`} key={card.id} onClick={() => { if (mode === 'review') setMode('learn'); goTo(card.order - 1) }} aria-current={active ? 'step' : undefined}>
                       <span className="learning-roadmap-number">{card.glyph}</span>
                       <span className="learning-roadmap-title"><strong>{card.title}</strong><small>{card.en}</small></span>
                       <StatusMark status={status} />
